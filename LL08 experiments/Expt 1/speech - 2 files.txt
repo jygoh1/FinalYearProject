@@ -1,0 +1,62 @@
+the birch canoe slid on a smooth plank. he knew the skill of the great young actress. her purse is full of useless trash.
+
+
+
+----------- 5db noise -----------
+
+unprocessed
+- 3.5 wrong
+
+-40db threshold
+- 3 wrong
+ 
+-30db threshold
+- 2.5 wrong
+
+-20db threshold
+- 1.5 wrong
+
+-10db threshold
+- 1 wrong
+
+0db threshold
+- 0.5 wrong
+
+5db threshold
+- 0.5 wrong
+
+10db threshold
+- 1 wrong
+
+15db threshold
+- 4.5 wrong 
+
+
+----------- 10db noise -----------
+
+unprocessed
+- 4.5 wrong
+
+-40db threshold
+- 3.5 wrong
+
+-30db threshold
+- 3 wrong
+
+-20db threshold
+- 2 wrong
+
+-10db threshold
+- 1 wrong
+
+0db threshold
+- 0.5 wrong
+
+5db threshold
+- 1 wrong
+
+10db threshold
+- 1.5 wrong
+
+15db threshold
+- 5 wrong

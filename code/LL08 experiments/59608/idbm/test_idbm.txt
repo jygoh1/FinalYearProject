@@ -1,0 +1,3 @@
+SegSNR        clean : 35.00
+SegSNR        noisy : -4.29
+SegSNR    processed :  5.44
