@@ -65,13 +65,13 @@ Ts = 4e-3;          % frame shift in s (overlap)
 LC = 0;             % LC for IBM (in dB)
 y_MDKF_IBM = ExptIbmKF(y_babble, y_clean, fs, Tw, Ts, p_MDKF, LC);       % reduce noise but has distortion
 spgrambw(y_MDKF_IBM, fs, mode);
-title(['IBM-observation MDKF with p=' num2str(p_MDKF)]);
+title(['IBM-observation MDKF with p=' num2str(p_MDKF) ', LC=' num2str(LC) 'dB']);
 
 
 subplot(m,n,4);
 p_MDKF = 2;
 Tw = 32e-3;         % frame duration in s  
 Ts = 4e-3;          % frame shift in s (overlap)
-y_MDKF = idealMDKF(y_babble, y_clean, fs, Tw, Ts, p_MDKF);       % reduce noise but has distortion
+y_MDKF = idealMDKF_linear(y_babble, y_clean, fs, Tw, Ts, p_MDKF);       % reduce noise but has distortion
 spgrambw(y_MDKF, fs, mode);
-title(['MDKF with p=' num2str(p_MDKF)]);
+title(['Linear MDKF with p=' num2str(p_MDKF)]);

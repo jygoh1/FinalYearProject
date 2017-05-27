@@ -6,7 +6,7 @@ function Y_MDKF = ExptIbmKF(noisy, clean, fs, Tw, Ts, p, LC)
 %   Tw: frame duration in s
 %   Ts: frame shift in s (overlap)
 %   p: MDKF order
-%   q: (for coloured noise case)
+%   LC: SNR threshold
 %
 %   MDKF: Apply modulation-domain Kalman filtering for speech enhancement
 %   Author: Jia Ying Goh, Imperial College London, January 2017
@@ -14,11 +14,11 @@ function Y_MDKF = ExptIbmKF(noisy, clean, fs, Tw, Ts, p, LC)
 %       Mike Brookes, Imperial College London - VOICEBOX: A speech processing toolbox for MATLAB
 
 
-
 % time-domain signal -> STFT, each modulation signal is time signal for one freq bin over time
 % each noisy modulation signal |Y(n,k)| windowed into short modulation frames
 % LPCs and excitation var estimated for each frame
 % perform the KF for each freq bin (in each column, using enframe)
+
 d=zeros(p,1);
 d(1)=1;
 
@@ -46,78 +46,94 @@ noisepow
 noisyfft_mag = noisyfft_mag';
 noisy_fft = noisy_fft'; 
 cleanfft_mag = cleanfft_mag';
-
-
 numBins = size(noisy_fft, 1);
 
-% get binary mask - each row is one freq bin
-[~, mask] = IdBM(noisy, clean, fs, Tw, Ts, LC);
-present = mask .* noisyfft_mag;
-absent = noisyfft_mag - present;
 
-u_present = zeros(numBins, 1);
-var_present = zeros(numBins, 1);
-u_absent = zeros(numBins, 1);
-var_absent = zeros(numBins, 1);
+% mask used to scale mean and variance of observation
+% enframe + rfft same dimensions as that applied in this function, so same numBins
+[y_IBM, mask] = IdBM(noisy, clean, fs, Tw, Ts, LC);
+u_present = zeros(numBins,1);
+var_present = zeros(numBins,1);
+u_absent = zeros(numBins,1);
+var_absent = zeros(numBins,1);
 for i = 1:numBins
-    present_elements = (present(i,(present(i,:) > 0)));
-    u_present(i) = mean(present_elements);    % mean of each frequency bin
-    var_present(i) = var(present_elements);
-    
-    absent_elements = (absent(i,(absent(i,:) > 0)));
-    u_absent(i) = mean(absent_elements);    % mean of each frequency bin
-    var_absent(i) = var(absent_elements);
+    present = noisyfft_mag(i, mask(i,:) > 0);
+    absent = noisyfft_mag(i, mask(i,:) == 0);
+    u_present(i) = mean(present);
+    var_present(i) = var(present);
+    u_absent(i) = mean(absent);
+    var_absent(i) = var(absent);
 end
 
 
-for m = 1:numBins           % each frequency bin (rows of f) has its own KF
-    Tw_slow = 16e-3;        % window and shift for each KF
-    Ts_slow = 4e-3;
-    fs_slow = 1/Ts;
-    [W_slow, Nw_slow, Ns_slow] = makeHammingWindow(fs_slow, Tw_slow, Ts_slow);
-    
-    modulation_frames = enframe(noisyfft_mag(m,:), W_slow, Ns_slow);
-    angles = enframe(noisy_fft(m,:), W_slow, Ns_slow);      % noisy phase used as phase of output
+Tw_slow = 20e-3;     % window and shift for each KF (in seconds)
+Ts_slow = 4e-3;
+fs_slow = 1/Ts;
+[W_slow, Nw_slow, Ns_slow] = makeHammingWindow(fs_slow, Tw_slow, Ts_slow);
+
+filtered_matrix = zeros(size(noisyfft_mag));
+
+for m = 1:numBins     % each frequency bin (rows of f) has its own KF
+    % assume |noisy| = |signal| + |noise| in modulation domain
     cleanmag_frames = enframe(cleanfft_mag(m,:), W_slow, Ns_slow);
     
-    % assume |noisy| = |signal| + |noise| in modulation domain
-    
-    state = modulation_frames(1, 1:p)';  % initial state - doesn't really matter
-    
-    y = zeros(size(modulation_frames));
-    
-    for i = 1:size(modulation_frames, 1)        % number of frames
-        % LPCs and excitation variance constant within modulation frame
-        [ar, excitation_var] = lpcauto(cleanmag_frames(i,:), p);     % LPCs estimated from clean speech
-%         [ar, excitation_var] = lpcauto(modulation_frames(i,:), p);   % LPCs estimated from noisy speech
-        
-        A(1,:) = -ar(2:p+1);
-        
-        % estimate the noise power spectrum using current modulation frame
-        % comment out to use noise estimated from entire signal
-        x = estnoiseg((modulation_frames(i,:)), Ns_slow/fs_slow);
-        
-        % ------- subjective -------
-        % noise estimated from current frame results in less noisy output
-        % but either more musical noise or musical noise more obvious
-        varV = sum(mean(x,2),1);
-        
-        varW = excitation_var/length(modulation_frames(i,:));
-        
-        P = varV*eye(p);              % initial error covariance matrix 
-        for j = 1:size(modulation_frames, 2)     % for each sample within modulation frame
-            state = A*state;
-            P = A*P*A' + varW*(d*d');
+    numFrames = size(cleanmag_frames, 1);
+    framelen = Nw_slow;      % length of each frame
 
-            K = P*d*((varV + d'*P*d)^(-1));
-            state = state + K*(modulation_frames(i,j) - d'*state);
-            P = (eye(p) - K*d')*P;
-            y(i,j) = state(1);    % update estimated output
-        end
+    centres = zeros(numFrames, 1);
+    centres(1) = round(framelen/2);
+    for i = 2:numFrames
+        centres(i) = round(i*Ns_slow + framelen/2);
     end
 
-    f_filtered = y .* exp(1i*angle(angles));
-    filtered_matrix(m,:) = overlapadd(f_filtered, W_slow, Ns_slow);
+    for i = 1:size(cleanmag_frames, 1)        % number of frames
+        % LPCs and excitation variance constant within modulation frame
+        [ar_coefs(i,:), energy_residual(i)] = lpcauto(cleanmag_frames(i,:),p);     % LPCs estimated from clean speech
+    end
+    
+    state = noisyfft_mag(m,1:p)';  % initial state - not that important
+    
+    varV = sum(x(:,m));     % variance of noise    
+    P = varV*eye(p);      % error covariance matrix
+    
+    for j=1:size(noisyfft_mag,2)       % process each time sample individually within frequency bin
+        % pick the LPC frame whose centre is closest to current index
+        [~, closest] = min(abs(j*ones(size(centres)) - centres));   
+
+        A(1,:) = -ar_coefs(closest, 2:p+1);  
+        
+        varW = energy_residual(closest)/length(cleanmag_frames(closest,:)); % variance of excitation, calculated from lpcauto
+    %     varW = var(cleanFrames(lpc_frame_index, :));
+
+        % scale mean and variance of observation depending on whether mask gave 1 or 0 at this T-F unit
+        if mask(m,j) == 1
+            var1 = varV;
+            var2 = var_present(m);
+            varV_scaled = 1/((1/var1 + 1/var2));
+            obs_scaled = varV_scaled*(noisyfft_mag(m,j)/var1 + u_present(m)/var2);
+        else
+            var1 = varV;
+            var2 = var_absent(m);
+            varV_scaled = 1/((1/var1 + 1/var2));
+            obs_scaled = varV_scaled*(noisyfft_mag(m,j)/var1 + u_absent(m)/var2);
+        end
+            
+        state = A*state;
+        P = A*P*A' + varW*(d*d');
+        K = P*d*((varV_scaled + d'*P*d)^(-1));
+        state = state + K*(obs_scaled - d'*state);
+        P = (eye(p) - K*d')*P;
+        
+%         state = A*state;
+%         P = A*P*A' + varW*(d*d');
+%         K = P*d*((varV + d'*P*d)^(-1));
+%         state = state + K*(noisyfft_mag(m,j) - d'*state);
+%         P = (eye(p) - K*d')*P;
+
+        filtered_matrix(m,j) = state(1);  % update estimated output
+    end
+    
+    filtered_matrix(m,:) = filtered_matrix(m,:) .* exp(1i*angle(noisy_fft(m,:)));
 end
 
 filtered_matrix = filtered_matrix';     % so that output time signal is col vector
