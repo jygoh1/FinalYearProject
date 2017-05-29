@@ -1,0 +1,640 @@
+\documentclass{report}
+
+\usepackage{blindtext}
+\usepackage{titlesec}
+\usepackage{listings}
+\usepackage{geometry}
+\usepackage{mathtools}
+\usepackage[utf8]{inputenc}
+\usepackage{siunitx}
+\usepackage{soul}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{units}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{minted}
+\usepackage{caption}
+\usepackage{csquotes}
+\usepackage{nomencl}
+
+\usepackage[
+backend=biber,
+style=numeric,
+sorting=none        % sort by order of appearance
+]{biblatex}
+\addbibresource{biblio.bib}
+
+\setlength{\parskip}{0.7em}   		%paragraph separation = 0.9em
+\setlength{\parindent}{0pt} 		% 0 paragraph indent
+
+% \geometry{
+%  a4paper,
+%  total={170mm,257mm},
+%  left=20mm,
+%  top=20mm,
+%  }
+
+\begin{document}
+
+
+\begin{titlepage}
+\newgeometry{top=36mm,bottom=36mm,left=40mm,right=40mm}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+% \fontfamily{phv}\selectfont
+
+{
+\Large
+\raggedright
+  Imperial College London\\[17pt]
+  Department of Electrical and Electronic Engineering\\[17pt]
+  Final Year Project 2017: Final Report\\[17pt]
+}
+
+\rule{\columnwidth}{3pt}
+\vfill
+\centering
+\includegraphics[width=0.7\columnwidth,height=60mm,keepaspectratio]{ic_crest.png}
+\vfill
+\setlength{\tabcolsep}{0pt}
+
+\begin{tabular}{p{40mm}p{\dimexpr\columnwidth-40mm}}
+Project Title: & \textbf{Quality-preserving Speech Intelligibility Enhancement using a Kalman Filter} \\[12pt]
+Student: & \textbf{Jia Ying Goh} \\[12pt]
+CID: & \textbf{00749529} \\[12pt]
+Course: & \textbf{4T} \\[12pt]
+Project Supervisor: & \textbf{Brookes, D.M.} \\[12pt]
+Second Marker: & \textbf{Evers, C.} \\[12pt]
+\end{tabular}
+\end{titlepage}
+
+\restoregeometry
+
+
+\newpage
+\pagenumbering{roman}
+\newgeometry{top=20mm}
+\tableofcontents
+\clearpage
+
+\restoregeometry
+
+
+\nomlabelwidth=20mm					% standard indentation between nomenclature acronym and description
+\makenomenclature 
+\nomenclature{$PESQ$}{Perceptual Evaluation of Speech Quality}
+\nomenclature{$STOI$}{Short-Time Objective Intelligibility}
+\nomenclature{$SNR$}{Signal-to-Noise Ratio}
+\nomenclature{$MOS$}{Mean Opinion Score}
+\nomenclature{$STFT$}{Short-Time Fourier Transform}
+\nomenclature{$IBM$}{Ideal Binary Mask}
+\nomenclature{$TBM$}{Target Binary Mask}
+\nomenclature{$AMS$}{Analysis-Modification-Synthesis}
+\nomenclature{$KF$}{Kalman Filter}
+\nomenclature{$TDKF$}{Time-Domain Kalman Filter}
+\nomenclature{$MDKF$}{Modulation-Domain Kalman Filter}
+\printnomenclature
+
+
+\chapter{Introduction}
+\pagenumbering{arabic}
+
+\section{Motivation}
+
+In today's highly interconnected world, communication between people, as well as with the world around them, is a major and critical aspect of their lives. Among the methods of communication (including but not limited to speech, text, images and bodily cues), speech generally stands out as the most efficient. Other methods such as visual indicators are sometimes useful to communicate ideas and thoughts, but a complex message is often best brought across via speech.
+
+Applications utilising speech are therefore widespread and numerous, and are generally designed to make use of clean speech. In a real-world environment, however, when speech is recorded, the recording inherently picks up not just the speech signal of interest, but also undesired background noise and channel noise. This damages the quality and intelligibility of the recorded speech, which poses a major problem for these applications requiring undamaged speech. Speech enhancement is hence often needed, with the goal of restoring the desired speech signal from the noisy mix, by ideally eliminating this noise while fully retaining the quality and intelligibility of the original speech signal.
+
+There are various types of noise, including but not limited to additive noise, convolution noise and transcoding noise \cite{Loizou2007}. Additive acoustic noise that is uncorrelated with the speech signal generally degrades the intelligibility and quality of the perceived speech, and in cases of large noise may dominate and mask out the original speech. Convolution noise, on the other hand, manifests as reverberation, which is introduced by acoustic reflection, degrading intelligibility. Unlike additive noise, reverberation is highly correlated with the speech signal. Finally, transcoding noise can occur due to amplitude clipping in a microphone and appears as distortion. This report is concerned with the removal of additive acoustic noise.
+
+Speech enhancement methods can be broadly classified into two types. Single-channel methods consider a single signal source. On the other hand, multi-channel methods consider multiple speech signals obtained from multiple microphones, where noise reduction can be achieved using information unavailable to a method relying on a single source, such as phase alignment from each microphone, leading to better overall noise reduction. However, this introduces additional costs and complexity, and in many applications such as hearing aids and mobile phones, single-channel methods are necessary due to constraints such as size. This report focuses on single-channel speech enhancement methods.
+
+However, speech enhancement is complex. Traditional speech enhancement techniques such as spectral subtraction have very successfully improved speech quality by attenuating noise, but they tend to introduce speech spectral distortion \cite{FukaneSahare2011}, thus damaging its intelligibility. This project therefore aims to modify existing techniques to improve both the quality and intelligibility of speech.
+
+\section{Project Objectives}
+
+In this project, the objective is to improve both speech quality and intelligibility by modifying an existing speech enhancement algorithm. Standard tests for quality and intelligibility will be used to quantify the enhanced speech, and these include the Perceptual Evaluation of Speech Quality (PESQ, \cite{PESQ}) and Short-Time Objective Intelligibility (STOI, \cite{STOI}) respectively. 
+
+Specifically, this project aims to modify an existing speech enhancement algorithm based on a Kalman filter, by further including additional information obtained from a so-called "ideal binary mask". The goal is to scale the predicted value in the Kalman filter and modify its variance by an amount pre-determined from training data. The desired outcome is that PESQ remains high and STOI increases.
+
+\section{Project Scope}
+
+This project focuses on the implementation-side, assuming the binary mask is already provided provided; how the mask is generated is therefore out of scope of this project. This project focuses on incorporating a given estimated binary mask into an existing Kalman filter speech enhancement implementation.
+
+This project makes use of MATLAB and signal processing techniques. In particular, the project utilises VOICEBOX, a speech processing toolbox for MATLAB \cite{VOICEBOX}, which is included in the Imperial College London Software Library.
+
+\section{Report Overview}
+
+CHANGE THIS ******************
+
+This interim report is categorised into four main chapters. Chapter 1 focuses on introducing and providing context to the problem, as well as providing a high-level overview of the project objectives. Chapter 2 describes the background information required for this project, offering more detail regarding the algorithms used.
+
+Chapter 3 describes the implementation plan, identifying the milestones and timeline for the remainder of the project. This includes a summary of completed project work and identifies a checklist of upcoming tasks. Finally, Chapter 4 details the expected measures of success for the project.
+
+
+\chapter{Background}
+
+The world that we live in today contains a lot of noise, originating from sources such as vehicles and babble from other human speakers. In the numerous applications that utilise microphones, including telecommunications, speech recognition software and hands-free communications, the desired signal can be significantly degraded by background noise. This noise damages the signal's quality and intelligibility. In many cases, this noise degradation is undesirable and unavoidable.
+
+Therefore, the noisy signal needs to be processed before it is useful for transmission or storage \cite{SpeechEnhancement2005}. Speech enhancement techniques, which vary in terms of the algorithms used, aim to improve the speech using audio signal processing techniques; some of which are described in this section.
+
+\section{Enhancement Domains}
+
+\subsection{Time Domain}
+
+\subsection{Frequency Domain}
+
+\subsection{Modulation Domain}
+
+\section{Noise Estimation}
+
+\section{MMSE Estimator}
+
+\section{Spectral Subtraction}
+
+Traditionally, speech enhancement algorithms for noise reduction can be grouped into three main categories: noise reduction via filtering techniques, noise reduction via spectral restoration, and speech-model-based noise reduction methods \cite{Springer2007}.
+
+A particularly common filtering technique is spectral subtraction, which operates in the frequency domain. In spectral subtraction, stationary or slowly-varying noise is attenuated from noisy speech by subtracting the magnitude noise spectrum, estimated during periods where speech is absent \cite{Boll1979}. It is also possible to estimate the noise using a secondary sensor \cite{Widrow1975}. The estimated noise spectrum is then subtracted from the noisy spectrum to produce an approximated spectrum of the clean speech. The spectral error can then be computed and reduced separately. The algorithm can be further enhanced by incorporating residual noise reduction and non-speech signal attenuation \cite{Boll1979}, achieving even greater noise reduction.
+
+Spectral subtraction works on the back of a few assumptions: firstly, that the background noise is additive to the clean signal \cite{Boll1979}. This assumption means that the complex spectrum of the input noisy signal can be expressed as the sum of the speech spectrum and the noise spectrum. Next, it is assumed that the noise is a stationary or a slowly varying process (locally stationary). This allows the algorithm enough time to accurately formulate an updated estimate for the new noise magnitude spectrum before speech activity starts again. Lastly, the underlying assumption is that noise can be significantly reduced by removing its effect in the magnitude spectrum only i.e. phase spectrum is untouched, and the estimate of the clean speech magnitude spectrum is combined with the phase spectrum of the noisy input signal \cite{ADSP2009}.
+
+The local stationarity assumption means the processing should be done on small-enough chunks of the input. Therefore, the input must first be split into overlapping frames using overlap-add processing. In the final step after processing, these frames are reassembled to form the continuous output signal.
+
+To avoid signal distortion introduced by data segmentation \cite{Aydin2000}, each frame is first multiplied by a windowing function before performing the Fourier Transform (typically using the Fast Fourier Transform or FFT). The output signal is then formed by the sum of these overlapping windowed frames. After processing, when the signal is being reassembled, the window is applied again.
+
+For the signal to remain undistorted, multiplying by these windows should not change its magnitude. To achieve this, particular overlap factor/window pairs must be used; for example, if a Hamming window is chosen, applying the window twice requires that the overlapped windows approximately sum to unity for an overlap factor of 4 i.e. each windowed frame overlaps each of its neighbours by 50\%, ensuring the output signal remains undistorted.
+
+Spectral subtraction is popular largely because it is simple and easy to implement, requiring mainly the forward and inverse Fourier Transforms. However, this comes at a cost to performance. Subtracting the noise spectrum from the noisy input spectrum introduces distortion in the signal, known as musical noise \cite{Loizou2007}. Variations have been developed in attempts to mitigate this. A common variation involves over-subtraction and a noise floor. This method involves an over-subtraction factor, whereby an overestimate of the noise power spectrum is subtracted from that of the input, and using a noise spectral floor, which prevents the processed spectrum from going below a preset minimum value, to control both the amount of residual noise and musical noise \cite{Berouti1979}. However, it is generally evaluated that these modifications improve speech quality further but do not significantly affect the intelligibility of the input signals \cite{Loizou2007}.
+
+\section{MMSE Speech Enhancement}
+
+\section{Ideal Binary Mask}
+
+Sound is generated by acoustic sources, and these sources are typically complex, containing multiple frequency components. In a typical environment, multiple acoustic sources are simultaneously active, including undesired background noise, and a listener's ear will pick up only the sum of all these sources. There are various types of corrupting background noise, including but not limited to acoustic noise (e.g. vehicle vibration), speech-shaped noise, industrial noise and multi-talker babble (e.g. noisy cafeteria with other speakers) \cite{Kozou2005}. For the listener to distinguish between the different sounds in the incoming mix, such as picking out a particular speaker in a busy supermarket, the incoming audio signal has to be partitioned and categorised accurately into individual sounds.
+ 
+Human beings have auditory systems that are remarkably capable at doing this; humans are thus generally able to understand speech in many of these noisy conditions. The signal separation process, known as auditory scene analysis, is typically performed in two stages, to understand the message spoken by the target speaker. Firstly, the input sound is decomposed into a matrix of time-frequency (T-F) units, where each unit represents the signal occurring at a particular instance in time with a particular frequency component. These T-F units are then analysed, and the auditory system utilises a combination of cues, learned patterns and other prior knowledge about the target to pick out the T-F units of the target signal, and group these individual components into a single recognisable ``image'' of the desired signal \cite{Bregman1990}. Essentially, the auditory system employs an analysis-synthesis strategy to organise the input into separate streams corresponding to different audio sources.
+
+To model the human auditory system, computational auditory scene analysis (CASA) was proposed to approach sound separation in two stages: segregation and grouping \cite{WangBrown2006}. The aim of using these CASA techniques was to pick out the target signal from the noisy mix, and the computational method of choice was the ideal T-F binary mask \cite{Wang2005}.
+
+The ideal binary mask (IBM) is defined in the T-F domain as a matrix of binary numbers, and is constructed by comparing the local signal-to-noise ratio (SNR), defined as the difference between the target signal energy and the noise energy, in each T-F unit against a threshold known as a local criterion (LC). In the IBM, the T-F units with local SNR exceeding the LC (in decibels) are assigned $1$, and $0$ otherwise. If a $0$dB SNR threshold is used to generate the mask, a T-F unit being assigned $1$ indicates that the energy of the target signal is stronger than that of the interference (masker) within that particular T-F unit, which is a particularly intuitive implementation. Let $T(t,f)$ and $M(t,f)$ denote the target and masker signal power measured in dB respectively, at time $t$ and frequency $f$; the IBM is then defined as
+
+\begin{equation}\label{eq:IBM}
+IBM(t,f) = 
+\begin{cases}
+    1 & \text{if $T(t,f)-M(t,f)>LC$} \\
+    0 & \text{otherwise}
+\end{cases}
+\end{equation}
+
+This mask can then be applied to the T-F representation of the incoming noisy signal; it acts as a selective filter, allowing some parts of the signal to pass through (those T-F units assigned to $1$) while eliminating other parts (those assigned to $0$). This means that at each T-F unit, the IBM either retains target energy or discards interference energy. The IBM therefore offers an indication of the T-F areas of audible target speech, and offers significant improvements in intelligibility \cite{Brungart2006}. 
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.87\linewidth]{IBM_example1}
+\captionof{figure}{Top to bottom: clean speech, noisy speech, IBM and IBM-processed speech}
+\label{fig:IBM_eg1}
+\end{figure}
+
+An example of the IBM at work is shown in Fig. \ref{fig:IBM_eg1}, with a clean sentence obtained from the TIMIT database \cite{TIMIT}. From top to bottom, the spectrograms shown are that of: a) clean speech; b) clean speech corrupted with white Gaussian noise at $-5$dB SNR; c) IBM constructed using LC threshold of $0$dB, where black pixels denote $1$ (target stronger than interference masker) and white pixels denote $0$ (target weaker than masker); d) segregated mixture obtained with the $0$dB LC IBM, obtained by multiplying the spectrograms in (b) and (c), one T-F unit at a time.
+
+The $0$dB LC IBM, a particularly simple and intuitive comparison, is theoretically optimal in terms of SNR gain (\cite{HuWang2004}, \cite{Ellis2006}); Fig. \ref{fig:IBM_eg1} shows its good performance, whereby the spectrogram of the processed speech is nearly identical to that of clean speech. It was later shown that while it is not optimal due to certain constraints, it performs almost as well as the proposed alternative, and is in fact more practical for real-world implementation \cite{LiWang2009}. Multiple studies have examined further the effects of the LC, input SNR level and masker type on the performance of the IBM. For example, a technique called ideal T-F segregation (ITFS) has been effective in making use of the IBM to improve the intelligibility of human speech masked by competing voices \cite{Brungart2006}. It is argued that the ITFS removes informational masking caused by the IBM-eliminated T-F units with large masker energy, where informational masking refers to the inability to accurately distinguish the target signal from the noisy mixture.
+
+To demonstrate the benefits of IBM processing, various studies carried out intelligibility tests, in which listeners listen to a set of IBM-processed sentences and write down the words they hear; results produced are in terms of the percentage of words identified correctly.
+
+A typical test result looks like Fig. \ref{fig:IBM_int}, where UN represents the unprocessed noisy speech (replicated from \cite{LiLoizou2008}). In this example, the short-time Fourier Transform was used to process the input noisy signal, where multitalker babble was used as the masker \cite{LiLoizou2008}. As shown, the performance peaks out between approximately $-20$dB and $5$dB for an input SNR of $-5$dB, and the range is slightly smaller for an input SNR of $-10$dB.
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.76\linewidth]{IBM_intelligibilityTest}
+\captionof{figure}{Performance (percentage of words identified accurately) as a function of LC (dB) for two input SNR levels, masked in multitalker babble (replicated from \cite{LiLoizou2008})}
+\label{fig:IBM_int}
+\end{figure}
+
+Large intelligibility benefits were demonstrated in \cite{LiLoizou2008}, but they came up with a range of LC values for near-perfect intelligibility (performance plateaus of near $100$\% accuracy) that were different to that in \cite{Brungart2006}. Attributing this to differences in the setup and signals used, it was suggested that the pattern of the IBM was the critical factor for intelligibility, rather than the local SNR of individual T-F units \cite{LiLoizou2008}.
+
+The significant improvements to intelligibility made IBM a notable candidate for speech enhancement applications such as hearing aids, provided the IBM could be approximated to a high degree of accuracy. However, to apply it, it is important to understand how IBM enhances intelligibility. In \cite{Brungart2006}, it is argued that the IBM suppresses informational masking by directing the listener's attention to the T-F units containing target information i.e. \emph{where}, in a T-F auditory space, the target signal is \cite{LiLoizou2008}. This led to the conclusion that listeners need not extract specific knowledge from individual T-F units, but rather the overall pattern of the IBM, i.e. pattern of target-dominated and masker-dominated T-F units, was the most important factor for intelligibility. However, this interpretation is limited to the range of LCs where the IBM pattern represents the T-F units that are audible to normal human listeners i.e. LCs close to 0 dB \cite{KBP10}.
+
+An alternative ideal mask definition was proposed in \cite{Anzalone2006}, which also produced large intelligibility improvements. This alternative mask was named the target binary mask (TBM), as the mask was calculated based on the target signal only. TBM depends on the long-term spectrum of the target speaker, and compares with an average spectrum i.e. a time-invariant threshold. The mask pattern naturally resembles the target signal and is unaffected by the masker specifically. Instead, the TBM generated in this manner can be applied to a mixture of the target signal and a different masker. On the other hand, the IBM pattern depends on the masking signal; IBM compares with the actual noise in the T-F units, which is time-dependent.
+
+In certain applications, it may be easier to estimate the TBM than the IBM, and so it was of interest to investigate the intelligibility performance of the TBM: it was shown that the TBM has comparable performance to the IBM \cite{KBP09}. A noise-robust method based on target sound estimation to estimate the TBM was proposed in \cite{KLPB10}.
+
+\subsection{Musical Noise}
+The largest calculated SNR gain is achieved by using a fully-binary mask of $1$s and $0$s. However, doing so generally degrades the quality of the enhanced speech due to the introduction of musical noise, which refers to random, short tone-like bursts that, in some situations, can be more bothersome than the original noise. In \cite{Anzalone2006}, the mask values were instead $1$ and $0.2$: if the mask indicates that speech is present, the gain is $1$, otherwise the gain is set to $0.2$ instead of cutting completely. By doing so, the attenuation is limited to less than $20$dB, which reduced the overall amount of musical noise introduced by the mask.
+
+\subsection{Practical Considerations}
+
+By definition, the IBM depends on oracle knowledge; the mask definition is constructed based on the target and interfering signals before mixing. In a real-world situation, the target signal is of course unavailable, meaning the IBM has to be estimated from noisy data only. In the presence of significant noise, this can be a difficult task, and it is impossible to compute the IBM for all T-F units with complete accuracy. The effect of overall binary mask estimation error was investigated further in \cite{LiLoizou2008}, and it was demonstrated that the estimation needs to be very accurate overall. As an example, $>90\%$ accuracy is required to estimate the IBM for the case of $-5$dB input masked with multitalker babble to yield significant gains in intelligibility.
+
+While it is of interest to further investigate the effects of estimation uncertainty and error on speech intelligibility improvements, this project largely focuses on the Kalman filter algorithm, and assumes that an ideal or estimated binary mask has already been computed and is available.
+
+
+\section{Kalman Filter}
+
+The Kalman filter \cite{Kalman1960} is a recursive optimal data processing algorithm. Under certain assumptions, it is optimal with respect to any practical measure. This is because the Kalman filter (KF) makes use of all data available to it, processing all available information to estimate the current value of the desired variables. In the context of speech enhancement, speech signals are modelled as autoregressive processes using the state space method, where the processed speech is recursively estimated, one sample at a time \cite{WuChen1998}.
+
+The filter has a recursive "predictor-corrector" structure \cite{Maybeck1979}; firstly, a prediction of the desired variable at the next measurement time is made, based on all previously available data, producing a prediction value and its associated uncertainty. When the next measurement is actually taken, the difference between the measurement and the predicted value is used to "correct" the prediction, to produce the new estimate. Note that this recorded measurement comes with its associated uncertainty, arising from imperfections of measuring instruments. The new estimate is thus updated using a linear combination of the prediction and the measurement, with more weight given to estimates with lower uncertainty.
+
+The KF was initially proposed for speech enhancement by Paliwal and Basu in 1987 \cite{PaliwalBasu1987}, where excellent noise reduction was achieved when linear prediction coefficients (LPCs) were estimated from clean speech. The KF is of particular interest for speech enhancement, as the speech model is inbuilt into the KF recursion equations, and the enhanced speech contains no musical noise, assuming clean LPCs are available \cite{MBG2006}; the performance of the KF is highly dependent on the accurate estimation of LPCs. However, for practical use, these parameters have to be estimated from noisy speech since the clean speech is not known a priori, causing a significant drop in performance. Better performance has been demonstrated in variations of the original KF algorithm, including a cascaded estimator/encoder structure which improves LPC estimates \cite{Gibson1991} and a subband KF algorithm that achieves better performance and reduces computational complexity \cite{WuChen1998} than the original KF method.
+
+In recent years, the focus has shifted away from the traditional KF methods which utilise the acoustic domain, defined as the short-time Fourier Transform (STFT) of the signal. Instead, there has been growing interest in the modulation domain, defined as the variation over time of the magnitude spectrum at all acoustic frequencies \cite{Atlas2003}. Studies have increasingly shown the importance of the modulation domain for speech analysis; for example, very low frequency modulations of sound have been shown to be the fundamental carriers of information in speech \cite{Atlas2003}, due to physiological limitations on how rapidly the vocal tract is able to change with time \cite{PWS2010}. The slowly-varying modulation domain hence represents how the vocal tract changes over time \cite{SP11}.
+
+The KF is capable of handling non-stationary signals as well as estimating both magnitude and phase spectra \cite{Li2006Phd}, which puts it at an advantage over STFT-based, acoustic domain-based methods for speech processing, as phase information has been shown to be more important in the modulation domain than in the acoustic domain \cite{GreenBergArai2001}. It was also noted in \cite{SP11} that the low order linear predictor KF was more appropriate for enhancing slower-varying modulating signals than for enhancing time-domain speech, as the time-domain signals contain long-term correlation which the low order linear predictor cannot capture. This is important for the KF, as its optimality works on the basis of incorporating and using all data available to the algorithm. These results suggest the use of the KF in the modulation domain as an improved method of speech enhancement \cite{SP11}.
+
+\subsection{Modulation-domain Kalman filter}
+
+The modulation-domain KF (MDKF) is an adaptive minimum mean-squared error (MMSE) estimator that uses the statistics of time-varying changes in the magnitude spectrum of both speech and noise \cite{SP11}. In the MDKF, an analysis-modification-synthesis (AMS) framework is used to obtain the modulation domain in three steps. In the analysis stage, the input speech signal is processed using STFT; next, the noisy input spectrum undergoes some modification or processing; and lastly, the output processed signal is synthesised by inverse STFT followed by the overlap-add method. 
+
+\subsubsection{Analysis-modification-synthesis framework in the acoustic domain}
+
+Considering an additive noise model, where $y(n)$, $x(n)$ and $v(n)$ represent zero-mean signals of noisy speech, clean speech and noise respectively:
+
+\begin{equation}\label{eq:additive_noise_time}
+y(n)=x(n)+v(n)
+\end{equation}
+
+Assuming speech is quasi-stationary means that it can be analysed in frames using the STFT (analysis), thus obtaining the STFT of the noisy signal $y(n)$:
+
+\begin{equation}\label{eq:noisy_STFT_conv}
+Y(n,k)=\sum_{l=-\infty}^{\infty}y(l)w(n-l)e^{-j\frac{2\pi kl}{N}}
+\end{equation}
+
+which can be represented using STFT analysis as Equation \ref{eq:additive_noise_STFT}:
+
+\begin{equation}\label{eq:additive_noise_STFT}
+Y(n,k)=X(n,k)+V(n,k)
+\end{equation}
+
+where $Y(n,k)$, $X(n,k)$ and $V(n,k)$ denote the STFTs of noisy speech, clean speech and noise respectively and $k$ refers to the discrete acoustic frequency index, $N$ is the acoustic frame duration in number of samples and $w(n)$ is a window analysis function. For speech enhancement, a Hamming window is typically used. Note that this model is noise-additive in the complex STFT domain.
+
+Each one of $Y(n,k)$, $X(n,k)$ and $V(n,k)$ is a complex spectrum, and can be expressed in terms of their acoustic magnitude and acoustic phase spectra. For example, $Y(n,k)$ can be represented as:
+
+\begin{equation}\label{eq:noisy_STFT_complex}
+Y(n,k)=|Y(n,k)|e^{j\angle Y(n,k)}
+\end{equation}
+
+where $|Y(n,k)|$ is the acoustic magnitude spectrum and $\angle Y(n,k)$ is the acoustic phase spectrum.
+
+Traditionally, AMS-based methods only modify the noisy acoustic magnitude spectrum $|Y(n,k)|$ to obtain a processed magnitude spectrum $|\hat{X}(n,k)|$; the modified spectrum is thus obtained by combining the enhanced magnitude spectrum with the original noisy phase spectrum $\angle Y(n,k)$:
+
+\begin{equation}\label{eq:AMS_STFT}
+\hat{X}(n,k)=|\hat{X}(n,k)|e^{j\angle Y(n,k)}
+\end{equation}
+
+The enhanced speech $\hat{x}(n)$ is then reconstructed by performing the inverse STFT of the enhanced acoustic spectrum $\hat{X}(n,k)$ followed by synthesis windowing and overlap-add \cite{Quatieri2002}.
+
+\subsubsection{Kalman filter model in the modulation domain}
+
+In the modulation domain, the acoustic magnitude spectrum of noisy speech is interpreted as a series of modulating signals spanning across time, where each modulating signal $|Y(n,k)|$ represents the variation of one frequency component over time, with $k=1,2,...,N$ where $N$ is the number of frequency bins. Each modulating signal is individually processed with a separate KF \cite{SP11}.
+
+To visualise this, imagine that a time-domain noisy speech signal is windowed with a $64$ms frame (window) length and $4$ms frame shift. Taking the STFT, each window is analysed individually: the samples within a $64$ms window are viewed as a frequency-domain signal with (for example) $256$ frequency bins. When the next window is taken (original window shifted by $4$ms), the samples are again analysed into a set of $256$ frequency bins. Doing this for the entire signal produces $256$ time-varying signals (modulating signals), one for each frequency component and processed with its own KF, where the samples in each signal are $4$ms apart. Within each KF, the modulating signal is further windowed, but the signal now has a much lower frequency: in this case, $\frac{1}{0.004}=250$Hz. Assuming a modulating window of $64$ms, each window only contains $\frac{64}{4}=16$ samples, compared to $512$ samples for a $64$ms window of a $8$kHz time-domain signal.
+
+Going back to the model, recall that the phase spectrum is left untouched, and an additive noise model is assumed for each modulating signal, assuming white Gaussian noise, giving Equation \ref{eq:MDKF_additive_noise}. Note that this assumes that the speech and noise are additive in the STFT magnitude domain rather than the STFT complex domain from Equation \ref{eq:additive_noise_STFT}.
+
+\begin{equation}\label{eq:MDKF_additive_noise}
+|Y(n,k)|=|X(n,k)|+|V(n,k)|
+\end{equation}
+
+In the KF autoregressive model, a $p$-order linear predictor is used to model the evolution of speech over time, as shown in Equation \ref{eq:KF_linear_predictor_speech}, where ${a_{j,k}; j=1,2,...,p}$ are the LPCs and $W(n,k)$ is a random white excitation with a variance of $\sigma^2_{W(k)}$.
+
+\begin{equation}\label{eq:KF_linear_predictor_speech}
+|X(n,k)|=-\sum_{j=1}^{p}a_{j,k}|X(n-j,k)|+W(n,k)
+\end{equation}
+
+Including the noise signal, the overall state space representation for noisy speech can be written as:
+
+\begin{equation}\label{eq:KF_X_statespace}
+\textbf{X}(n,k)=\textbf{A}(k)\textbf{X}(n-1,k)+\textbf{d}W(n,k)
+\end{equation}
+
+\begin{equation}\label{eq:KF_Y_statespace}
+|Y(n,k)|=\textbf{d}^{T}\textbf{X}(n,k)+|V(n,k)|
+\end{equation}
+
+where $\textbf{X}(n,k)=[|X(n,k)|,|X(n-1,k)|,...|X(n-p+1,k)|]^T$ is the clean speech modulation state vector, $\textbf{d}=[1,0,...,0]^T$ is the measurement vector for both the excitation noise $W(n,k)$ and observation, and $\textbf{A}(k)$ is the state transition matrix utilising the LPCs:
+
+\begin{equation}\label{eq:KF_statetransition}
+\textbf{A}(k)=
+\begin{bmatrix}
+    -a_{1,k} & -a_{2,k} & \dots  & -a_{p-1,k} & -a_{p,k} \\
+    1        & 0        & \dots  & 0          & 0        \\
+    0        & 1        & \dots  & 0          & 0        \\
+    \vdots   & \vdots   & \ddots & \vdots     & \vdots   \\
+    0        & 0        & \dots  & 1          & 0        \\
+\end{bmatrix}
+\end{equation}
+
+The Kalman filter recursively calculates a linear unbiased MMSE estimate $\hat{\textbf{X}}(n|n,k)$ of the $k$-th modulation state vector at time $n$, given the noisy modulating signal up to and including time $n$ (i.e. $|Y(1,k)|,|Y(2,k)|,...|Y(n,k)|$) using the following equations:
+
+\begin{equation}\label{eq:MDKF_predictP}
+\textbf{P}(n|n-1,k)=\textbf{A}(k)\textbf{P}(n-1|n-1,k)\textbf{A}(k)^T+\sigma^2_{W(k)}\textbf{d}\textbf{d}^T
+\end{equation}
+
+\begin{equation}\label{eq:MDKF_predictXhat}
+\hat{\textbf{X}}(n|n-1,k)=\textbf{A}(k)\hat{\textbf{X}}(n-1|n-1,k)
+\end{equation}
+
+\begin{equation}\label{eq:MDKF_updateK}
+\textbf{K}(n,k)=\textbf{P}(n|n-1,k)\textbf{d}[\sigma^2_{V(k)}+\textbf{d}^T\textbf{P}(n|n-1,k)\textbf{d}]^{-1}
+\end{equation}
+
+\begin{equation}\label{eq:MDKF_updateP}
+\textbf{P}(n|n,k)=[\textbf{I}-\textbf{K}(n,k)\textbf{d}^T]\textbf{P}(n|n-1,k)
+\end{equation}
+
+\begin{equation}\label{eq:MDKF_updateXhat}
+\hat{\textbf{X}}(n|n,k)=\hat{\textbf{X}}(n|n-1,k)+\textbf{K}(n,k)[|Y(n,k)|-\textbf{d}^T\hat{\textbf{X}}(n|n-1,k)]
+\end{equation}
+
+where $\sigma^2_{V(k)}$ is the variance of the corrupting noise and $\textbf{P}(n|n,k)$ is the error covariance matrix. These equations can be categorised into two main steps: prediction and updating. Equations \ref{eq:MDKF_predictP} and \ref{eq:MDKF_predictXhat} predict the error covariance and state based on past samples respectively, while the other equations update the Kalman gain, error covariance and state based on the predicted values.
+
+In particular, Equation \ref{eq:MDKF_updateXhat} is the main updating step, whereby a linear combination of the estimate based on previous samples $|\hat{X}(n|n-1,k)|$ and the current measurement $|Y(n,k)|$ is used to compute the current estimate $|\hat{X}(n|n,k)|$. To view this more clearly, we can rewrite Equation \ref{eq:MDKF_updateXhat} as:
+
+\begin{equation}\label{eq:MDKF_updateXhat_linearCombi}
+\hat{\textbf{X}}(n|n,k)=[\textbf{I}-\textbf{K}(n,k)\textbf{d}^T]\hat{\textbf{X}}(n|n-1,k)+\textbf{K}(n,k)|Y(n,k)|
+\end{equation}
+
+The accuracy of the weighted sum producing the updated state is critical in determining the correctness of the algorithm. It is therefore imperative that the error variances are estimated as accurately as possible. Particularly, the noise variance can be estimated in a number of ways.
+
+**********UNFINISHED DESCRIPTION AND EXPLANATION
+
+As the algorithm is running, each modulating signal $|Y(n,k)|$ is windowed into modulation frames, and the LPCs and excitation variance $\sigma^2_{W(k)}$ are estimated. Within each frame, the LPCs are kept constant, whereas the Kalman gain $\textbf{K}(n,k)$, error covariance matrix $\textbf{P}(n|n,k)$ and estimated state vector $\hat{\textbf{X}}(n|n,k)$ are updated every sample, regardless of frame.
+
+\subsection{Comparison with time-domain KF}
+For comparison purposes, the time-domain Kalman filter (TDKF) equations are shown below:
+
+\begin{equation}\label{eq:TDKF_predictP}
+\textbf{P}(n|n-1)=\textbf{A}\textbf{P}(n-1|n-1)\textbf{A}^T+\sigma^2_{w}\textbf{d}\textbf{d}^T
+\end{equation}
+
+\begin{equation}\label{eq:TDKF_predictXhat}
+\hat{\textbf{x}}(n|n-1)=\textbf{A}\hat{\textbf{x}}(n-1|n-1)
+\end{equation}
+
+\begin{equation}\label{eq:TDKF_updateK}
+\textbf{K}(n)=\textbf{P}(n|n-1)\textbf{d}[\sigma^2_{v}+\textbf{d}^T\textbf{P}(n|n-1)\textbf{d}]^{-1}
+\end{equation}
+
+\begin{equation}\label{eq:TDKF_updateP}
+\textbf{P}(n|n)=[\textbf{I}-\textbf{K}(n)\textbf{d}^T]\textbf{P}(n|n-1)
+\end{equation}
+
+\begin{equation}\label{eq:TDKF_updateXhat}
+\hat{\textbf{x}}(n|n)=\hat{\textbf{x}}(n|n-1)+\textbf{K}(n)[y(n)-\textbf{d}^T\hat{\textbf{x}}(n|n-1)]
+\end{equation}
+
+where $\hat{\textbf{x}}(n|n-1)$ and $\hat{\textbf{x}}(n|n)$ are the \textit{a priori} (predicted) and \textit{a posteriori} (updated) state vectors respectively, $\textbf{P}(n|n-1)$ and $\textbf{P}(n|n)$ are the \textit{a priori} and \textit{a posteriori} error covariance matrices respectively, $\textbf{K}(n)$ is the Kalman gain, and $\sigma^2_{v}$, $\sigma^2_{w}$ are the noise and excitation variances respectively.
+
+Fig. \ref{fig:compareTDKF_MDKF} compares the spectrograms of TDKF and MDKF applied on speech from the TIMIT database \cite{TIMIT}, corrupted by white Gaussian noise and sampled at $8$kHz. For the purposes of comparing performance limits, clean speech LPCs were used in the filters. Generally, both algorithms perform well in removing noise, especially when speech is absent. However, there is visibly some noise in the TDKF-enhanced speech; particularly, frequency components above $1.8$kHz have been noticeably degraded by noise. A listening test confirmed this, detecting the presence of high-frequency artifacts.
+
+%%%%%%%%%%%%%%%%
+USE A CLEANER GRAPH HERE!!!!!!!
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=1\linewidth]{compareTDKF_MDKF}
+\captionof{figure}{Top row: clean speech (left), speech corrupted with white Gaussian noise (right); bottom row: TDKF-enhanced speech (left), MDKF-enhanced speech (right)}
+\label{fig:compareTDKF_MDKF}
+\end{figure}
+
+This TDKF noise is a limitation of using the KF for speech enhancement. Similarly to how we rearranged Equation \ref{eq:MDKF_updateXhat}, Equation \ref{eq:TDKF_updateXhat} can be rewritten to show that the enhanced output is a weighted combination of the estimated speech and measured speech, where the relative weight depends on the Kalman gain $\textbf{K}(n)$. When speech is absent, $\textbf{P}(n|n-1)=\textbf{0}$, meaning that $\textbf{K}(n)=\textbf{0}$ and the estimated state is equal to the predicted state, being completely unaffected by the noisy measurement.
+
+When speech is present, however, the algorithm does not work quite so perfectly. A typical TDKF model order is $p=2+f_s(in kHz)$, which in this case is $10$, meaning that the model only uses short-term correlation information up to $10$ adjacent samples. This TDKF linear predictor model is unable to fully replicate the harmonic structure of speech, requiring autocorrelation lags in the order of the number of samples in a pitch period \cite{SP11}. The prediction thus has unvoiced and noise-like characteristics, and the result is that the updated output only preserves the speech component below $1.8$kHz \cite{SP11}. The resultant noise will be especially prevalent in regions of low SNR, where the prediction is weighted more heavily due to Equation \ref{eq:TDKF_updateK} producing a smaller $\textbf{K}(n)$.
+
+%%%%%%%%%%%%%%%%
+INCOMPLETE
+
+\subsection{Performance of MDKF}
+
+Overall, experimental results from the TIMIT corpus (Fig. \ref{fig:compareTDKF_MDKF}) show that under ideal conditions where clean speech LPCs can be obtained accurately, the linear predictor is sufficient to model the modulating signals of clean speech. As described earlier, the vocal tract tends to change slowly due to physiological constraints, and thus low LPC orders ($p=2$) were found to be sufficient. Using this, the MDKF was by far the best performing algorithm, doing better than all acoustic and time-domain methods tested, including the TDKF, for both white and coloured noise \cite{SP11}. This was despite both algorithms having access to clean speech LPCs.
+
+However, clean speech is not available in reality; the presence of noise generally degrades the LPC estimates, worsening the performance of the MDKF algorithm. In \cite{SP11}, a practical MDKF algorithm was evaluated, which used an acoustic-domain pre-processor for LPC estimation to reduce the effect of noise degradation.
+
+
+\chapter{Implementation Plan}
+
+The overall goal of this project is to modify an existing Kalman Filter (KF) speech enhancement algorithm by incorporating data obtained from an ideal binary mask (IBM) or target binary mask (TBM), by scaling its predicted value and variance by amounts determined from training data.
+
+The overall implementation plan of this project can therefore be split into a few main parts: 1) implement an IBM/TBM algorithm; 2) calculate the IBM/TBM and note the parameters required for the most intelligibility gain; 3) implement an existing KF enhancement algorithm, and evaluate it using PESQ and STOI; and finally 4) modify the KF implementation to incorporate information from the IBM/TBM.
+
+\section{Completed Work}
+
+At this early stage, an IBM algorithm has been implemented, based on oracle data providing both the target and masker signals; the algorithm and its demonstration is based on \cite{LiLoizou2008}.
+
+To synthesise the mask, the target signal (clean) and noisy signal (mixture) were used. Both signals were processed using a Fast Fourier Transform (FFT) applied to 20ms segments of the signal, which were Hamming-windowed with $50\%$ overlap between adjacent segments. The windowing and FFT were performed using algorithms from \cite{VOICEBOX} and done in MATLAB. In IBM implementation, the masker signal is required; the masker spectrum was obtained by subtracting the clean spectrum from the noisy spectrum.
+
+Using Equation \ref{eq:IBM}, the energy of the target signal was compared to that of the masker. The resultant local SNR of each T-F unit was compared against a pre-determined LC threshold (in Fig. \ref{fig:IBM_eg1}, 0 dB was used) to determine whether to retain the noisy mixture's T-F unit (binary mask value of 1) or not (mask value of 0). This unit-wise comparison produced a pattern of binary mask values consisting of 0s and 1s, and this mask was applied to the magnitude spectrum of the noisy signal using a simple unit-wise matrix multiplication.
+
+Inverse-FFT was then applied to the resultant processed spectrum, with the phase spectrum of the original noisy spectrum being used. This was the exact inverse of the initial FFT processing, thus producing 20ms segments. The resultant time-domain waveform of this processed spectrum was thus generated using the overlap-add method, performed on these segments.
+
+The results have been shown in Fig. \ref{fig:IBM_eg1} to be very good, and previously-discussed studies have illustrated that optimal performance depends on parameters such as the local criterion (LC) threshold, masker type and input signal-to-noise ratio (SNR). As discussed earlier, estimating the binary mask is out of scope of this project, and so an existing mask implementation will simply be selected and implemented. The choice of mask and its corresponding parameters will be critical in determining the eventual effectiveness of the modified KF algorithm.
+
+Significant intelligibility gains were observed with IBM processing for a range of LC threshold values: the intelligibility of the -10 dB input mixture dramatically rose from $10\%$ for the original noisy mixture to $95\%$ (almost perfect intelligibility score) when processed using an IBM with an LC threshold of 0 dB. Similarly, the intelligibility of the -5 dB input signal increased from $25\%$ for the original noisy mixture to $95\%$ when processed using an IBM with an LC threshold of 0 dB (Fig. \ref{fig:IBM_int}). Unsurprisingly, the plateau region for near-perfect performance was wider for the -5 dB input signal as compared to the -10 dB input signal.
+
+\section{Milestones}
+
+The remainder of the project can be set as the following overall milestones:
+
+1) Calculate the IBM or TBM and note the parameters required for optimal intelligibility improvements
+
+2) Implement an existing KF enhancement algorithm, and evaluate it using PESQ and STOI standards
+
+3) Modify the KF implementation to incorporate information from the IBM/TBM, to provide a third piece of information for the KF predictor
+
+\section{Timeline}
+
+Given the milestones above, the next steps will involve tweaking the IBM to find its optimal performance parameters in a variety of situations, choosing between the IBM or TBM, implementing an existing KF speech enhancement algorithm, and modifying the KF algorithm. A table of achievables, along with their associated risks and expected dates, is shown below.
+
+\begin{table}[ht!]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\multicolumn{1}{|c|}{\textbf{Date}} & \multicolumn{1}{c|}{\textbf{Objective}}                                                                                                                         \\ \hline
+\multicolumn{1}{|c|}{2/2/2017}      & Implement TBM and compare to IBM                                                                                                                                \\ \hline
+                                    & No associated risks; completed IBM requires minor tweaking to get TBM                                                                                           \\ \hline
+\multicolumn{1}{|c|}{10/2/2017}     & Determine optimal parameters and associated assumptions/conditions                                                                                              \\ \hline
+                                    & Process can be sped up by starting with known results                                                                                                           \\ \hline
+\multicolumn{1}{|c|}{17/2/2017}     & Complete readings about KF                                                                                                                                      \\ \hline
+                                    & Papers based on modified MDKF algorithms                                                                                                                        \\ \hline
+\multicolumn{1}{|c|}{24/2/2017}     & Implement existing ideal KF algorithm (TDKF, MDKF)                                                                                                              \\ \hline
+                                    & This has been started, but progress has been slow                                                                                                               \\ \hline
+3/3/2017                            & Implement KF algorithm based on noisy LPC estimates                                                                                                             \\ \hline
+                                    & \begin{tabular}[c]{@{}l@{}}When ideal KF algorithms have been implemented, should only require\\ minor changes to incorporate noisy data estimates\end{tabular} \\ \hline
+10/3/2017                           & Determine optimal algorithm to use                                                                                                                              \\ \hline
+                                    & As with IBM, start off using known results                                                                                                                      \\ \hline
+\multicolumn{1}{|c|}{24/3/2017}     & Generate training data from IBM                                                                                                                                 \\ \hline
+                                    & Risks currently unknown                                                                                                                                         \\ \hline
+28/4/2017                           & Incorporate training data into KF                                                                                                                               \\ \hline
+                                    & Use training data to generate scaling/shifting of KF-generated estimates                                                                                        \\ \hline
+12/5/2017                           & Evaluate enhanced algorithm using PESQ and STOI                                                                                                                 \\ \hline
+                                    & Proper procedures (PESQ, STOI) required to evaluate modified algorithm                                                                                          \\ \hline
+\end{tabular}
+\caption{Timeline of deliverables and associated dates}
+\label{table:timeline}
+\end{table}
+
+The first major next step is to implement the TBM, which requires a minor modification from the IBM. Parameters will need to be varied for both masks to find the optimal mask under specific conditions such as input SNR level, LC and masker type. To avoid unnecessary repeats, preliminary results can be obtained from previous studies, such as \cite{LiLoizou2008} and \cite{Anzalone2006}. Once this has been determined, the binary mask is then available for use, and can be set aside for the time being.
+
+Next, the primary step is to implement an existing KF algorithm. Work is still in progress regarding background reading for this section, and a variety of KF algorithms for speech enhancement need to be implemented and compared with one another. Their advantages and disadvantages need to be assessed and a final algorithm should then be chosen. Based on \cite{SP11}, the modulation-domain KF is a good place to start; the paper compares a variety of different KF-based methods, and the MDKF was demonstrated to be the best-performing algorithm.
+
+After that, the useful data needs to be generated from the IBM to be included into the KF algorithm. Currently, this step has not been evaluated in much detail, and what information gets incorporated into the KF may change slightly as the project progresses. Based on the ideal timeline, the final step would be to evaluate the modified algorithm using PESQ and STOI standards.
+
+
+\chapter{Problem Analysis}
+
+
+\chapter{Improved Observation}
+From the MDKF iteration equations (Equations \ref{eq:MDKF_predictP} to \ref{eq:MDKF_updateXhat_linearCombi}), we see that there are two variables used in forming the updated state: the prediction of the current state and the observation of the current (noisy) state. This observation is noisy; if the observation can be modified in some way to better represent the inherent speech (or silence in absence of speech), the algorithm can perform better. One way to do so is to include information from an IBM or TBM.
+
+\section{Incorporating IBM into observation}
+
+
+\chapter{Incorporate Binary Mask into Kalman filter}
+The IBM can be used in a slightly different way; instead of tweaking the observation itself, information from the mask can be directly used in the KF equations. Now, the KF equations use three pieces of information (prediction, observation, binary mask) to estimate the current state, rather than just the former two as in the original KF equations.
+
+\section{Gaussian Product Derivation}
+
+RMB TO CITE PAPER FROM MIKE BROOKES
+
+For the scalar output case i.e. $|Y(n,k)|$ is a scalar, with $\textbf{d}=[1,0,...,0]^T$, the observation can be decorrelated from the rest of the state vector.
+
+
+\chapter{Implementation}
+For the MDKF, an acoustic frame length of $32$ms was used with a $4$ms frame shift, giving a $250$Hz sampling frequency in the modulation domain. For each frequency bin, a modulation frame of $$ms was used with a $$ms frame increment to determine the LPC coefficients. A model order of $p=2$ was used. However, it was shown in \cite{PSW2011} that short modulation frame durations of $10-20$ms retain good intelligibility overall as compared to longer frame lengths, and thus a modulation frame length of $$ms was used in this project, with a $$ms frame shift.
+
+white noise - overall estimate of noise better? so used an overall noise estimate for entire speech duration
+
+
+\chapter{Testing}
+There are two aspects to speech quality: the overall perceived speech quality, and the speech intelligibility \cite{Kazuhiro2012}.
+
+The perceived overall speech quality is how ``good'' the quality of the speech is. The definition of ``good'' is typically left to the listener, who then gives a score to the speech. On the other hand, speech intelligibility is the accuracy with which we can hear what is being said. Specifically, it is measured as the percentage of correctly identified words relative to the number of words. Instead of words, one may also use phonemes or syllables as the test unit. If words or complete sentences are used, they typically encompass linguistically meaningful units, and thus the choice of test words is important to ensure a fair assessment.
+
+Although there does not exist a completely clear relationship between speech quality and intelligibility, there exists some correlation between the two. Generally, ``good'' quality speech also gives high intelligibility and vice versa. However, this generalisation does not always hold; there are some samples that are highly intelligible yet are perceived as ``poor'' quality and vice versa.
+
+\section{Speech Quality}
+Methods to assess speech quality can be grouped into subjective and objective measures.
+
+\subsection{Subjective Speech Quality Measures}
+Subjective quality measures typically compare the original and processed speech by a listener or a group of listeners. The listeners subjectively rate or rank the speech according to a predetermined scale. Since every listener is unique, their ratings will vary; this variation in results can be reduced by averaging the scores from a group of listeners.
+
+\subsubsection{Mean Opinion Score}
+A widely used subjective quality measure is the Mean Opinion Score (MOS) \cite{ITU830}. Each listener gives a numeric MOS score, typically in the range $1-5$, where $1$ is the lowest perceived quality and $5$ is the highest perceived quality. The ``Absolute Category Rating'' scale is commonly used, as shown in Table \ref{table:ACR_MOS} \cite{ITU800}. The overall score is obtained by averaging the ratings from all listeners, representing an overall perceived quality of the speech. With a large number of speech files, this test can be costly and time consuming.
+
+\begin{table}[ht!]
+\centering
+\begin{tabular}{|c|c|}
+\hline
+\textbf{Rating} & \textbf{Label} \\ \hline
+1               & Excellent      \\ \hline
+2               & Good           \\ \hline
+3               & Fair           \\ \hline
+4               & Poor           \\ \hline
+5               & Bad            \\ \hline
+\end{tabular}
+\caption{Categories of MOS: Absolute Category Rating}
+\label{table:ACR_MOS}
+\end{table}
+
+\subsection{Objective Speech Quality Measures}
+On the other hand, objective speech quality use physical measurements and some calculated values from these measurements. Typically, these calculations compare objective measurements for the reference clean speech and the distorted speech.
+
+Many of the objective measures are highly correlated with subjective measures; it is thus common for a test to use objective measures to estimate subjective methods, which are usually more time-consuming and costly as they involve human listeners. However, as noted previously, there are situations in which high objective scores do not produce high subjective scores and vice versa.
+
+\subsubsection{SNR}
+Signal-to-Noise Ratio (SNR) is one of the oldest and most widely used objective quality methods. It has low computational complexity, but requires both clean and distorted speech. The classic formula is calculated (in dB) as:
+
+\begin{equation}\label{eq:SNR}
+SNR=10\log_{10}\frac{\sum\limits_{n=1}^{N}x^2(n)}{\sum\limits_{n=1}^{N}\{x(n)-\hat{x}(n)\}^2}
+\end{equation}
+
+where $x(n)$ is the clean speech, $\hat{x}(n)$ is the distorted speech and $N$ is the number of time-domain samples.
+
+This classic SNR formula, however, is not well related to speech quality as it averages over the entire signal even though speech is non-stationary. Speech energy fluctuates over time, and this formula is dominated by parts where speech energy is large and noise energy is small, which is not representative of the entire signal.
+
+Variations of SNR have thus been proposed. To better represent the temporal variation of speech, segmental SNR (SNRseg) was proposed to calculate SNR in short frames and take the average:
+
+\begin{equation}\label{eq:SNRseg}
+SNR_{seg}=\frac{10}{M}\sum_{m=0}^{M-1}\log_{10}\frac{\sum\limits_{n=Lm}^{Lm+L-1}x^2(n)}{\sum\limits_{n=Lm}^{Lm+L-1}\{x(n)-\hat{x}(n)\}^2}
+\end{equation}
+
+where $L$ is the frame length in number of samples and $M$ is the number of frames in the signal ($N=ML$). The logarithm of the ratio is computed before averaging; frames with unusually large ratios are hence weighted less while frames with lower ratios are weighted higher. This matches the perceptual quality better i.e. frames with large speech and low noise do not dominate the overall ratio.
+
+However, if the speech contains too much silence, the overall SNRseg value decreases significantly since silent frames usually give large negative SNRseg values. In this case, silent frames should be excluded from the averaging by using speech activity detectors. In the same manner, excluding frames which exhibit excessively large or small speech values from the averaging produces SNRseg values that match the subjective quality better. Thus, SNRseg often has upper and lower bounds of $35$dB and $-10$dB respectively \cite{HP1998}.
+
+A separate variation of SNR is the frequency-weighed SNR (fwSNRseg), which weights the contribution of the different frequency bands. The fwSNRseg can be defined as:
+
+\begin{equation}\label{eq:fwSNRseg}
+fwSNR_{seg}=\frac{10}{M}\sum_{m=0}^{M-1}\frac{\sum\limits_{j=0}^{K-1}W(j,m)\log_{10}\frac{X(j,m)^2}{\{X(j,m)-\hat{X}(j,m)\}^2}}{\sum\limits_{j=0}^{K-1}W(j,m)}
+\end{equation}
+
+where $W(j,m)$ is the weight of the $j^{th}$ frequency band in the $m^{th}$ frame, $K$ is the number of frequency bands and $X(j,m)$, $\hat{X}(j,m)$ are the spectral amplitude of the clean and distorted speech respectively. The weights can be chosen in many ways, one of which is the ANSI SII Standard \cite{ANSI_SII}.
+
+\subsubsection{Perceptual Evaluation of Speech Quality}
+One of the most popular objective speech quality measures is the ITU-T P.862: Perceptual Evaluation of Speech Quality (PESQ) \cite{PESQ}.
+
+PESQ was developed to model subjective tests commonly used to assess the voice quality by human beings (e.g. MOS), using true voice samples as test signals. It is designed for use over a wide range of conditions. A mapping from PESQ to MOS scores was standardised, allowing PESQ results to model MOS scores that range from 1 (Bad) to 5 (Excellent) (typical of Table \ref{table:ACR_MOS}). The average correlation between PESQ-mapped MOS scores and subjective MOS for a number of tests was a high score of $0.935$ \cite{Evaluate_PESQ}. The block diagram of PESQ is shown in Fig. \ref{fig:PESQ_blockdiagram} (taken from \cite{RBHH_PESQ}).
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.9\linewidth]{PESQ_model}
+\captionof{figure}{Structure of PESQ model (taken from \cite{RBHH_PESQ})}
+\label{fig:PESQ_blockdiagram}
+\end{figure}
+
+In this report, the quality of the enhancement algorithms will be assessed using SNRseg and PESQ. SNRseg will be used to assess the effect of the enhancement on noise level while PESQ will be used to evaluate speech quality.
+
+\section{Speech Intelligibility}
+
+
+\section{Speech Database}
+
+\subsection{TIMIT}
+The TIMIT Acoustic-Phonetic Continuous Speech Corpus of read speech was designed to provide speech data for acoustic-phonetic studies as well as the development and evaluation of automatic speech recognition systems \cite{TIMIT}. It is widely used in the research and testing of speech enhancement algorithms. A combined effort between the Massachusetts Institute of Technology (MIT), SRI International (SRI) and Texas Instruments, Inc. (TI), the TIMIT database contains recordings of $630$ speakers of eight major dialects of American English, each reading ten phonetically rich sentences, each of which is a few seconds long. The recordings were done with a microphone to create $16$-bit resolution, $16$kHz rate speech waveform files, and the database also includes time-aligned phonetic and word transcriptions.
+
+REWRITE
+
+For evaluating the algorithms proposed in this report, the core test set of the TIMIT database will be used which contains 16 male and 8 female speakers each reading 8 sentences for a total of 192 sentences all with distinct texts. This test set is the abridged version of the complete TIMIT test set which consists of 1344 sentences from 168 speakers. Also, in order to optimize the parameters of the algorithms, a development set is formed which consists of 200 speech sentences randomly selected from the test set of the TIMIT database and does not have any overlap with the core test set. The speech sentences in the development set are corrupted by white noise, car noise, factory noise, F16 noise and babble noise at SNRs between -10 and 15 dB at a 10
+
+In this project, all speech sentences used were downsampled to $8$kHz.
+
+
+\chapter{Results}
+
+
+\chapter{Evaluation Plan}
+
+\section{Deliverables}
+
+The primary deliverable is a modified Kalman filter-based speech enhancement algorithm, which takes into account information provided by an ideal/target binary mask. This adjustment should involve scaling the predicted value of the Kalman filter algorithm and tweaking its associated variance, and these adjustments should be based on values determined from training data from the binary mask. The results should be evaluated using PESQ and STOI.
+
+\section{Measures of Success}
+
+The measures of success and risks associated with each mini-goal are displayed in Table \ref{table:timeline}. Primarily, the goal of implementing and replicating known algorithms for IBM and MDKF is to verify the algorithm and its success in terms of PESQ and STOI, so these quality and intelligibility tests should produce similar results to that described in their papers.
+
+Finally, the overall goal of a modified KF algorithm is to improve both the quality and intelligibility of speech. Using internationally-recognised standards, the desire is that PESQ remains high and STOI increases.
+
+
+\chapter{Conclusion and Future Work}
+
+\section{Future Work}
+
+\subsection{}
+for coloured noise/non-stationary noise assumption etc. better estimate of noise?
+
+
+\newpage
+\addcontentsline{toc}{chapter}{Bibliography}
+\printbibliography
+
+
+\appendix
+
+
+\chapter{MATLAB}
+
+
+
+\end{document}
