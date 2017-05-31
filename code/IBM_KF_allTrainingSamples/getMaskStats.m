@@ -59,10 +59,6 @@ for k=1:numFiles
     % read in a speech file
     [clean,fs] = readsph(fileNames{k},'wt');
 
-    % downsample from 16 -> 8kHz
-    fs = fs/2;
-    clean = downsample(clean,2);
-
     clean = activlev(clean,fs,'n');     % normalise active level to 0 dB
 
     ns = length(clean);       % number of speech samples

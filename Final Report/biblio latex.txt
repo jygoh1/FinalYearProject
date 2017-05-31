@@ -1,5 +1,34 @@
+@article {LPCresidual, 
+    author = "B. Yegnanarayanaa and Carlos Avendanob and Hynek Hermanskyb and P. Satyanarayana Murthyc", 
+    title = "Speech enhancement using linear prediction residual", 
+    journal = "Speech Communication",
+    year = "1999",
+    volume = "28",
+}
+
+@article {LPCanalysis, 
+    author = "J. Makhoul", 
+    title = "Linear prediction: A tutorial review", 
+    journal = "Proceedings of the IEEE",
+    year = "1975",
+}
+
+@article {MMSEspeech, 
+    author = "Y. Ephraim and D. Malah", 
+    title = "Speech enhancement using a minimum-mean square error short-time spectral amplitude estimator", 
+    journal = "IEEE Transactions on Acoustics, Speech, and Signal Processing",
+    year = "1984",
+}
+
+@article {WB16, 
+    author = "Yu Wang and Mike Brookes", 
+    title = "Speech enhancement using an MMSE spectral amplitude estimator based on a modulation domain Kalman filter with a Gamma prior", 
+    journal = "IEEE International Conference on Acoustics, Speech, and Signal Processing (ICASSP)",
+    year = "2016",
+}
+
 @article {MMSEnoise, 
-    author = "Richard C. Hendriks and  Richard Heusdens and  Jesper Jensen", 
+    author = "Richard C. Hendriks and Richard Heusdens and Jesper Jensen", 
     title = "MMSE based noise PSD tracking with low complexity", 
     journal = "IEEE International Conference on Acoustics, Speech, and Signal Processing (ICASSP)",
     year = "2010",
@@ -253,7 +282,7 @@ speech intelligibility",
 }
 
 @article {HuWang2004,
-    author  = "Guoning Hu and  DeLiang Wang",
+    author  = "Guoning Hu and DeLiang Wang",
     title   = "Monaural speech segregation based on pitch tracking and amplitude modulation",
     journal = "IEEE Transactions On Neural Networks",
     year    = "2004",
