@@ -1,3 +1,40 @@
+@book {PhonologyBook,
+    author    = "Bruce Hayes",
+    title     = "Introductory Phonology",
+    publisher = "Wiley-Blackwell",
+    year      = "2008",
+}
+
+@book {VowelsBook,
+    author    = "Tsutomu Chiba",
+    title     = "The Vowel: Its Nature and Structure",
+    publisher = "Phonetic Society of Japan",
+    year      = "1958",
+}
+
+@book {PhoneticsBook,
+    author    = "Kenneth N. Stevens",
+    title     = "Acoustic Phonetics",
+    publisher = "The MIT Press",
+    year      = "1999",
+}
+
+@article {noiseMS, 
+    author = "R. Martin", 
+    title = "Noise power spectral density estimation based on optimal smoothing and minimum statistics", 
+    journal = "IEEE Transactions on Speech and Audio Processing",
+    year = "2001",
+    volume = "9",
+}
+
+@article {VAD, 
+    author = "Jongseo Sohn and Nam Soo Kim and Wonyong Sung", 
+    title = "A statistical model-based voice activity detection", 
+    journal = "IEEE Signal Processing Letters",
+    year = "1999",
+    volume = "6",
+}
+
 @article {LPCresidual, 
     author = "B. Yegnanarayanaa and Carlos Avendanob and Hynek Hermanskyb and P. Satyanarayana Murthyc", 
     title = "Speech enhancement using linear prediction residual", 
