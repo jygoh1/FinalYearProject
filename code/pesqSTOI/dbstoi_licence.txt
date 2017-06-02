@@ -1,0 +1,11 @@
+License Agreement for the DBSTOI software (the ”Software”)
+
+By using the Software you agree to the below terms and conditions. If you do not agree with such terms and conditions, do not use the software.
+
+All title, copyrights and pending patents in and to the Software are owned by Oticon A/S and/or Aalborg University (the “Owners”). 
+
+The Software may only be used for non-commercial purposes such as research undertaken by public or private institutions and/or universities. Hence, the Software may not be used in the context of product development.
+
+DISCLAIMER OF WARRANTIES: THE SOFTWARE IS BEING PROVIDED TO YOU "AS IS" WITHOUT WARRANTY, UPGRADES OR SUPPORT OF ANY KIND. THE OWNERS EXPRESSLY DISCLAIM ALL WARRANTIE WITH REGARD TO THE SOFTWARE, EXPRESS OR IMPLIED, INCLUDING, WITHOUT LIMITATION, ANY IMPLIED WARRANTIES OF FITNESS FOR A PARTICULAR PURPOSE, QUALITY, ACCURACY OR NON-INFRINGEMENT OF THIRD PARTY RIGHTS. 
+
+LIMITATION OF LIABILITY: IN NO EVENT THE OWNERS WILL BE LIABLE TO YOU FOR ANY INCIDENTIAL, SPECIAL, INDIRECT, CONSEQUENTIAL, OR PUNITIVE DAMAGES ARISING OUT OF OR IN CONNECTION WITH YOUR USE OF THE SOFTWARE, WHETHER UNDER A THEORY OF CONTRACT, WARRANTY, TORT (INCLUDING NEGLIGENCE), PRODUCTS LIABILITY, OR OTHERWISE, EVEN IF THE OWNERS HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES. 
