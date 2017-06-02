@@ -553,11 +553,11 @@ Next, the primary step is to implement an existing KF algorithm. Work is still i
 After that, the useful data needs to be generated from the IBM to be included into the KF algorithm. Currently, this step has not been evaluated in much detail, and what information gets incorporated into the KF may change slightly as the project progresses. Based on the ideal timeline, the final step would be to evaluate the modified algorithm using PESQ and STOI standards.
 
 
-\chapter{Implementation}
+\chapter{Implementation}\label{implementation}
 
 REMOVE THIS PART AND INCORPORATE INTO PREVIOUS?
 
-In this project, the MDKF in Section \ref{MDKF} is used as a baseline algorithm. For the base MDKF, an acoustic frame length of $16$ ms was used with a $4$ ms frame shift. For each frequency bin, a modulation frame of $24$ ms was used with a $4$ ms frame increment to determine the LPC coefficients. An MDKF model order of $p=2$ was used.
+In this project, the MDKF in Section \ref{MDKF} is used as a baseline algorithm. For the base MDKF, an acoustic frame length of $16$ ms was used with a $4$ ms frame shift. For each frequency bin, a modulation frame of $24$ ms was used with a $4$ ms frame increment to determine the LPC coefficients. An MDKF model order of $p=2$ was used. In most experiments, these settings are used for all algorithms to compare and evaluate performance.
 
 \section{Optimal Modulation Frame Length}
 
@@ -834,9 +834,46 @@ The covariance matrix of \textbf{z} is given by:
 
 \section{Testing}
 
-\subsection{Parameters used}
+The parameters used generally follow those described in Chapter \ref{implementation}. For clarity, these parameters are shown in Table \ref{table:BMMDKFparams}.
+
+\begin{table}[ht!]
+\centering
+\begin{tabular}{|c|c|}
+\hline
+\textbf{Parameter}      & \textbf{Value} \\ \hline
+Sampling frequency      & 16 kHz         \\ \hline
+Acoustic frame length   & 16 ms          \\ \hline
+Acoustic frame shift    & 4 ms           \\ \hline
+Modulation frame length & 24 ms          \\ \hline
+Modulation frame shift  & 4 ms           \\ \hline
+Windowing function      & Hamming window \\ \hline
+MDKF model order        & 2              \\ \hline
+LPCs generated from     & clean speech   \\ \hline
+IBM SNR threshold (LC)  & 0 dB           \\ \hline
+\end{tabular}
+\caption{List of parameters used to evaluate algorithms}
+\label{table:BMMDKFparams}
+\end{table}
 
 \section{Results and Discussion}
+
+In this section, the IBM-modified MDKF algorithm will be termed BMMDKF. The performance of the BMMDKF will be compared to a few control algorithms, namely the original MDKF of Section \ref{MDKF}, the MMSE algorithm and the original noisy input speech. They are respectively named MDKF, MMSE and Noisy in the plots that follow. As a theoretical comparison, all Kalman filter implementations evaluated utilise LPCs generated from clean speech.
+
+\newpage
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.7\linewidth]{BMMDKF_MDKF_MMSE_Noisy_segSNR}
+\captionof{figure}{Average segSNR values of different algorithms vs. speech corrupted by white noise at varying SNR levels}
+\label{fig:BMMDKF_MDKF_MMSE_Noisy_segSNR}
+\end{figure}
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.7\linewidth]{BMMDKF_MDKF_MMSE_Noisy_pesq}
+\captionof{figure}{Average PESQ values of different algorithms vs. speech corrupted by white noise at varying SNR levels}
+\label{fig:BMMDKF_MDKF_MMSE_Noisy_pesq}
+\end{figure}
 
 \section{Evaluation}
 
@@ -864,9 +901,46 @@ where $w(n)$ represents the weight attached to each speech sample $s(n)$.
 
 \section{Testing}
 
-\subsection{Parameters used}
+Similarly to previous experiments, the algorithm modified in this section is run against other control algorithms, with the parameters used shown in Table \ref{table:LMDKFparams}. As before, LPCs for all Kalman filter algorithms are generated from clean speech.
+
+\begin{table}[ht!]
+\centering
+\begin{tabular}{|c|c|}
+\hline
+\textbf{Parameter}      & \textbf{Value} \\ \hline
+Sampling frequency      & 16 kHz         \\ \hline
+Acoustic frame length   & 16 ms          \\ \hline
+Acoustic frame shift    & 4 ms           \\ \hline
+Modulation frame length & 24 ms          \\ \hline
+Modulation frame shift  & 4 ms           \\ \hline
+Windowing function      & Hamming window \\ \hline
+MDKF model order        & 2              \\ \hline
+LPCs generated from     & clean speech   \\ \hline
+LPC weight threshold    & 0.1            \\ \hline
+\end{tabular}
+\caption{List of parameters used to evaluate algorithms}
+\label{table:LMDKFparams}
+\end{table}
 
 \section{Results and Discussion}
+
+In this section, the enhanced-LPC algorithm will be termed LMDKF, with the other algorithms named as before.
+
+\newpage
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.7\linewidth]{LMDKF_MDKF_MMSE_Noisy_segSNR}
+\captionof{figure}{Average segSNR values of different algorithms vs. speech corrupted by white noise at varying SNR levels}
+\label{fig:LMDKF_MDKF_MMSE_Noisy_segSNR}
+\end{figure}
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.7\linewidth]{LMDKF_MDKF_MMSE_Noisy_pesq}
+\captionof{figure}{Average PESQ values of different algorithms vs. speech corrupted by white noise at varying SNR levels}
+\label{fig:LMDKF_MDKF_MMSE_Noisy_pesq}
+\end{figure}
 
 \section{Evaluation}
 
