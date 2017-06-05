@@ -16,13 +16,7 @@ nato = [databases 'Noises\NatoNoise0\'];
 [y_clean,fs,words,phonemes] = readsph([timit 'DR1\MDPK0\SX333.wav'],'wt');
 % [y_clean,fs] = audioread('sp15.wav');
 
-% downsample from 16 -> 8kHz
-fs = fs/2;
-y_clean = downsample(y_clean,2);
-
-
 y_clean = activlev(y_clean,fs,'n');     % normalise active level to 0 dB
-
 
 % % test with stationary signal (sine wave)
 % t = [0:1/30000:0.1]';
@@ -38,14 +32,14 @@ ns = length(y_clean);       % number of speech samples
 
 noises = {'white'};
 % noises = {'f16'};
-noiselevel = -5;      % if noiselevel = 5, target SNR is -5dB
+targetSNR = 5;      % if noiselevel = 5, target SNR is 5dB
 
 % read in the noises
 [vj,fsj] = readwav([nato noises{1}]);
 vjr = resample(vj,fs,fsj);
 v = vjr(1:ns)/std(vjr(1:ns));  % extract the initial chunck of noise and set to 0 dB; v is noise
 
-y_babble = v_addnoise(y_clean,fs,-noiselevel,'nzZ',v); % add noise at chosen level keeping speech at 0 dB
+y_babble = v_addnoise(y_clean,fs,targetSNR,'nzZ',v); % add noise at chosen level keeping speech at 0 dB
 
 % %% spectrogram
 % m=3;
@@ -114,7 +108,7 @@ y_babble = v_addnoise(y_clean,fs,-noiselevel,'nzZ',v); % add noise at chosen lev
 m=2;
 n=2;
 
-mode='pJi'; 
+mode='pJim'; 
 
 figure;
 
@@ -129,14 +123,14 @@ subplot(m,n,2);
 
 spgrambw(y_babble, fs, mode);
 get(gca,'XTickLabel');
-title(['Speech corrupted with white Gaussian noise (' num2str(noiselevel) 'dB SNR)']);
+title(['Speech corrupted with white Gaussian noise (' num2str(targetSNR) ' dB SNR)']);
 
 
 subplot(m,n,3);
 
 p_TDKF=10;
 % q_TDKF=4;
-Tw = 32e-3;         % frame duration in s
+Tw = 16e-3;         % frame duration in s
 Ts = 4e-3;          % frame shift in s (overlap)
 y_TDKF_2 = idealTDKF_framed(y_babble, y_clean, fs, Tw, Ts, p_TDKF);
 % [T,F,B]=spgrambw(y_TDKF', fs, MODE);
@@ -152,7 +146,7 @@ title(['TDKF with p=' num2str(p_TDKF)]);
 subplot(m,n,4);
 
 p_MDKF = 2;
-Tw = 32e-3;         % frame duration in s  
+Tw = 16e-3;         % frame duration in s  
 Ts = 4e-3;          % frame shift in s (overlap)
 y_MDKF_2 = idealMDKF_framed(y_babble, y_clean, fs, Tw, Ts, p_MDKF);       % reduce noise but has distortion
 spgrambw(y_MDKF_2, fs, mode);

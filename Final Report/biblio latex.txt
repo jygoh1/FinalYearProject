@@ -1,3 +1,12 @@
+@article {STOI_orig, 
+    author = "Cees H. Taal and Richard C. Hendriks and Richard Heusdens and Jesper Jensen", 
+    title = "An Algorithm for Intelligibility Prediction of
+Time–Frequency Weighted Noisy Speech", 
+    journal = "IEEE Transactions on Audio, Speech and Language Processing",
+    year = "2011",
+    volume = "19",
+}
+
 @book {PhonologyBook,
     author    = "Bruce Hayes",
     title     = "Introductory Phonology",

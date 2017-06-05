@@ -1,4 +1,4 @@
-function Y_MDKF = idealMDKF_linear(noisy, clean, fs, Tw, Ts, p, Tw_slow, Ts_slow, fs_slow)
+function Y_MDKF = MDKFmaskLPC(noisy, clean, fs, Tw, Ts, p, Tw_slow, Ts_slow, fs_slow, LC, mask_th)
 
 %   noisy: noisy input speech
 %   clean: clean input speech
@@ -63,10 +63,27 @@ cleanfft_mag = cleanfft_mag';
 [W_slow, Nw_slow, Ns_slow] = makeHammingWindow(fs_slow, Tw_slow, Ts_slow);
 
 
+% mask to modify LPC estimation
+[~, mask] = IdBM(noisy, clean, fs, Tw, Ts, LC);
+% u_present = zeros(numBins,1);
+% var_present = zeros(numBins,1);
+% u_absent = zeros(numBins,1);
+% var_absent = zeros(numBins,1);
+% for i = 1:numBins
+%     present = noisyfft_mag(i, mask(i,:) > 0);
+%     absent = noisyfft_mag(i, mask(i,:) == 0);
+%     u_present(i) = mean(present);
+%     var_present(i) = var(present);
+%     u_absent(i) = mean(absent);
+%     var_absent(i) = var(absent);
+% end
+
+
 filtered_matrix = zeros(size(noisyfft_mag));
 for m = 1:size(noisyfft_mag,1)     % each frequency bin (rows of f) has its own KF
     % assume |noisy| = |signal| + |noise| in modulation domain
     cleanmag_frames = enframe(cleanfft_mag(m,:), W_slow, Ns_slow);
+    mask_frames = enframe(mask(m,:), W_slow, Ns_slow);
     
     numFrames = size(cleanmag_frames, 1);
     framelen = Nw_slow;      % length of each frame
@@ -79,7 +96,8 @@ for m = 1:size(noisyfft_mag,1)     % each frequency bin (rows of f) has its own 
 
     for i = 1:size(cleanmag_frames, 1)        % number of frames
         % LPCs and excitation variance constant within modulation frame
-        [ar_coefs(i,:), energy_residual(i)] = lpcauto(cleanmag_frames(i,:),p);     % LPCs estimated from clean speech
+%         [ar_coefs(i,:), energy_residual(i)] = lpcauto(cleanmag_frames(i,:),p);     % LPCs estimated from clean speech
+        [ar_coefs(i,:), energy_residual(i)] = lpcautomask(cleanmag_frames(i,:),p,mask_frames(i,:),mask_th);
     end
     
     state = noisyfft_mag(m,1:p)';  % initial state - not that important
