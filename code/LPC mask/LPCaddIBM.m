@@ -7,79 +7,149 @@ addpath(genpath('FYP'));
 addpath(genpath('voicebox'));
 addpath(genpath('pesqSTOI'));
 
+warning('off','all')
+warning
+
 %%
-Tw = 16e-3;         % frame duration in s  
-Ts = 4e-3;          % frame shift in s (overlap)
-LC = 0;             % LC for IBM (in dB)
-targetSNR = 0;      % -noise level (in dB)
-
-%% generate new test clean and noise signal
-load 'maskstats';
-
 databases = '\\sapfs.ee.ic.ac.uk\Databases\';
-timit = [databases 'Speech\TIMIT\TIMIT\TEST\'];
+timit = [databases 'Speech\TIMIT\TIMIT\TRAIN\'];
+db = [timit 'DR1\'];
 nato = [databases 'Noises\NatoNoise0\'];
 
-% read in a speech file
-[y_clean,fs,words,phonemes] = readsph([timit 'DR1\MSJS1\SA1.wav'],'wt');
+folders = dir(db);
 
-y_clean = activlev(y_clean,fs,'n');     % normalise active level to 0 dB
+for k = length(folders):-1:1
+    % remove non-folders
+    if ~folders(k).isdir
+        folders(k) = [ ];
+        continue
+    end
 
-ns = length(y_clean);       % number of speech samples
+    % remove folders starting with .
+    fname = folders(k).name;
+    if fname(1) == '.'
+        folders(k) = [ ];
+    end
+end
 
+fileNames = {};
+for i=1:length(folders)
+    folder = folders(i).name;
+    directory = [db folder];
+    files = dir(fullfile(directory,'*.wav'));
+    files = {files.name}';                      %'# file names
+
+    data = cell(numel(files),1);                %# store file contents
+    for j=1:numel(files)
+        fname = fullfile(directory,files{j});     %# full path to file
+        fileNames = [fileNames, fname];
+    end
+end
+
+fileNames = datasample(fileNames,floor(length(fileNames)/15),'Replace',false);
+
+%%
+[clean,fs] = readsph(fileNames{1},'wt');
+
+numFiles = length(fileNames)
 noises = {'white'};
 
 % read in the noises
 [vj,fsj] = readwav([nato noises{1}]);
 vjr = resample(vj,fs,fsj);
-v = vjr(1:ns)/std(vjr(1:ns));  % extract the initial chunck of noise and set to 0 dB; v is noise
 
-y_babble = v_addnoise(y_clean,fs,targetSNR,'nzZ',v); % add noise at chosen level keeping speech at 0 dB
+targetSNR = [-20 -15 -10 -5 0 5 10 15 20];
+targetSNR = targetSNR';
 
+numSNR = length(targetSNR);
 
-%% results
+pesqMaskLPC_minuspt20 = zeros(numSNR, numFiles);
+pesqMaskLPC_minuspt15 = zeros(numSNR, numFiles);
+pesqMaskLPC_minuspt10 = zeros(numSNR, numFiles);
+pesqMaskLPC_minuspt05 = zeros(numSNR, numFiles);
+pesqMaskLPC_pt05 = zeros(numSNR, numFiles);
+pesqMaskLPC_pt10 = zeros(numSNR, numFiles);
+pesqMaskLPC_pt15 = zeros(numSNR, numFiles);
+pesqMaskLPC_pt20 = zeros(numSNR, numFiles);
+pesqMaskLPC_pt25 = zeros(numSNR, numFiles);
+
+stoiMaskLPC_minuspt20 = zeros(numSNR, numFiles);
+stoiMaskLPC_minuspt15 = zeros(numSNR, numFiles);
+stoiMaskLPC_minuspt10 = zeros(numSNR, numFiles);
+stoiMaskLPC_minuspt05 = zeros(numSNR, numFiles);
+stoiMaskLPC_pt05 = zeros(numSNR, numFiles);
+stoiMaskLPC_pt10 = zeros(numSNR, numFiles);
+stoiMaskLPC_pt15 = zeros(numSNR, numFiles);
+stoiMaskLPC_pt20 = zeros(numSNR, numFiles);
+stoiMaskLPC_pt25 = zeros(numSNR, numFiles);
+
+Tw = 16e-3;         % frame duration in s  
+Ts = 4e-3;          % frame shift in s (overlap)
+LC = 0;             % LC for IBM (in dB)
 p_MDKF = 2;
 Tw_slow = 24e-3;     % window and shift for each KF (in seconds)
 Ts_slow = 4e-3;
 fs_slow = 1/Ts;
 
-mask_th = 0.5;      % for estimating LPCs
-
-y_mmse = ssubmmse(y_babble, fs);
-
-y_MDKF = idealMDKF_linear(y_babble, y_clean, fs, Tw, Ts, p_MDKF, Tw_slow, Ts_slow, fs_slow);
-
-y_MDKF_uncorrIBM = uncorrelatedMDKF_IBM_all(y_babble, y_clean, fs, Tw, Ts, p_MDKF, Tw_slow, Ts_slow, fs_slow, LC, u_present, var_present, u_absent, var_absent);
-
-y_maskLPC = MDKFmaskLPC(y_babble, y_clean, fs, Tw, Ts, p_MDKF, Tw_slow, Ts_slow, fs_slow, LC, mask_th);
-
 %%
-cutoff = min([length(y_clean), length(y_maskLPC), length(y_MDKF_uncorrIBM), length(y_MDKF)]);
+for k = 1:numFiles
+    [clean,fs] = readsph(fileNames{k},'wt');
 
-y_clean = y_clean(1:cutoff);
-y_MDKF = y_MDKF(1:cutoff);
-y_MDKF_uncorrIBM = y_MDKF_uncorrIBM(1:cutoff);
-y_maskLPC = y_maskLPC(1:cutoff);
+    clean = activlev(clean,fs,'n');     % normalise active level to 0 dB
 
-mode = [];
-segsnr_MDKF = snrseg(y_MDKF,y_clean,fs,mode);
-segsnr_MDKFmask = snrseg(y_MDKF_uncorrIBM,y_clean,fs,mode);
-segsnr_LPCmask = snrseg(y_maskLPC,y_clean,fs,mode);
+    ns = length(clean);       % number of speech samples
+    v = vjr(1:ns)/std(vjr(1:ns));  % extract the initial chunck of noise and set to 0 dB; v is noise
 
-%%
-audiowrite('FYP\testfiles\y_clean.wav',y_clean,fs);
-audiowrite('FYP\testfiles\y_MDKF.wav',y_MDKF,fs);
-audiowrite('FYP\testfiles\y_MDKF_uncorrIBM.wav',y_MDKF_uncorrIBM,fs);
-audiowrite('FYP\testfiles\y_maskLPC.wav',y_maskLPC,fs);
+    for i = 1:length(targetSNR)
+        noisy = v_addnoise(clean, fs, targetSNR(i), 'nzZ', v);  % add noise at chosen level keeping speech at 0 dB
+        
+        y_mmse = ssubmmse(noisy, fs);
 
-pesq_MDKF = pesqITU(fs,'FYP\testfiles\y_clean.wav','FYP\testfiles\y_MDKF.wav');
-pesq_MDKFmask = pesqITU(fs,'FYP\testfiles\y_clean.wav','FYP\testfiles\y_MDKF_uncorrIBM.wav');
-pesq_LPCmask = pesqITU(fs,'FYP\testfiles\y_clean.wav','FYP\testfiles\y_maskLPC.wav');
+        % linear MDKF
+        y_MDKF = idealMDKF_linear(noisy, y_mmse, fs, Tw, Ts, p_MDKF, Tw_slow, Ts_slow, fs_slow);
 
-pesq_LPCmask/pesq_MDKF
-pesq_MDKFmask/pesq_MDKF
+        % mask-enhanced LPCs
+        y_MDKF_lpcMask_minuspt20 = MDKFmaskLPC(noisy, y_mmse, fs, Tw, Ts, p_MDKF, Tw_slow, Ts_slow, fs_slow, LC, -0.2);
+        y_MDKF_lpcMask_minuspt15 = MDKFmaskLPC(noisy, y_mmse, fs, Tw, Ts, p_MDKF, Tw_slow, Ts_slow, fs_slow, LC, -0.15);
+        y_MDKF_lpcMask_minuspt10 = MDKFmaskLPC(noisy, y_mmse, fs, Tw, Ts, p_MDKF, Tw_slow, Ts_slow, fs_slow, LC, -0.1);
+        y_MDKF_lpcMask_minuspt05 = MDKFmaskLPC(noisy, y_mmse, fs, Tw, Ts, p_MDKF, Tw_slow, Ts_slow, fs_slow, LC, -0.05);
+        y_MDKF_lpcMask_pt05 = MDKFmaskLPC(noisy, y_mmse, fs, Tw, Ts, p_MDKF, Tw_slow, Ts_slow, fs_slow, LC, 0.05);
+        y_MDKF_lpcMask_pt10 = MDKFmaskLPC(noisy, y_mmse, fs, Tw, Ts, p_MDKF, Tw_slow, Ts_slow, fs_slow, LC, 0.1);
+        y_MDKF_lpcMask_pt15 = MDKFmaskLPC(noisy, y_mmse, fs, Tw, Ts, p_MDKF, Tw_slow, Ts_slow, fs_slow, LC, 0.15);
+        y_MDKF_lpcMask_pt20 = MDKFmaskLPC(noisy, y_mmse, fs, Tw, Ts, p_MDKF, Tw_slow, Ts_slow, fs_slow, LC, 0.2);
+        y_MDKF_lpcMask_pt25 = MDKFmaskLPC(noisy, y_mmse, fs, Tw, Ts, p_MDKF, Tw_slow, Ts_slow, fs_slow, LC, 0.25);
+        
+        audiowrite('FYP\testfiles\y_clean.wav',y_clean,fs);
+        audiowrite('FYP\testfiles\y_MDKF_lpcMask_minuspt20.wav',y_MDKF_lpcMask_minuspt20,fs);
+        audiowrite('FYP\testfiles\y_MDKF_lpcMask_minuspt15.wav',y_MDKF_lpcMask_minuspt15,fs);
+        audiowrite('FYP\testfiles\y_MDKF_lpcMask_minuspt10.wav',y_MDKF_lpcMask_minuspt10,fs);
+        audiowrite('FYP\testfiles\y_MDKF_lpcMask_minuspt05.wav',y_MDKF_lpcMask_minuspt05,fs);
+        audiowrite('FYP\testfiles\y_MDKF_lpcMask_pt05.wav',y_MDKF_lpcMask_pt05,fs);
+        audiowrite('FYP\testfiles\y_MDKF_lpcMask_pt10.wav',y_MDKF_lpcMask_pt10,fs);
+        audiowrite('FYP\testfiles\y_MDKF_lpcMask_pt15.wav',y_MDKF_lpcMask_pt15,fs);
+        audiowrite('FYP\testfiles\y_MDKF_lpcMask_pt20.wav',y_MDKF_lpcMask_pt20,fs);
+        audiowrite('FYP\testfiles\y_MDKF_lpcMask_pt25.wav',y_MDKF_lpcMask_pt25,fs);
 
-%%
-stoi_MDKF = stoi(y_clean,y_MDKF,fs);
-stoi_LPCmask = stoi(y_clean,y_maskLPC,fs);
-stoi_MDKFmask = stoi(y_clean,y_MDKF_uncorrIBM,fs);
+        pesqMaskLPC_minuspt20(i,k) = pesqITU(fs,'FYP\testfiles\y_clean.wav','FYP\testfiles\y_MDKF_lpcMask_minuspt20.wav');
+        pesqMaskLPC_minuspt15(i,k) = pesqITU(fs,'FYP\testfiles\y_clean.wav','FYP\testfiles\y_MDKF_lpcMask_minuspt15.wav');
+        pesqMaskLPC_minuspt10(i,k) = pesqITU(fs,'FYP\testfiles\y_clean.wav','FYP\testfiles\y_MDKF_lpcMask_minuspt10.wav');
+        pesqMaskLPC_minuspt05(i,k) = pesqITU(fs,'FYP\testfiles\y_clean.wav','FYP\testfiles\y_MDKF_lpcMask_minuspt05.wav');
+        pesqMaskLPC_pt05(i,k) = pesqITU(fs,'FYP\testfiles\y_clean.wav','FYP\testfiles\y_MDKF_lpcMask_pt05.wav');
+        pesqMaskLPC_pt10(i,k) = pesqITU(fs,'FYP\testfiles\y_clean.wav','FYP\testfiles\y_MDKF_lpcMask_pt10.wav');
+        pesqMaskLPC_pt15(i,k) = pesqITU(fs,'FYP\testfiles\y_clean.wav','FYP\testfiles\y_MDKF_lpcMask_pt15.wav');
+        pesqMaskLPC_pt20(i,k) = pesqITU(fs,'FYP\testfiles\y_clean.wav','FYP\testfiles\y_MDKF_lpcMask_pt20.wav');
+        pesqMaskLPC_pt25(i,k) = pesqITU(fs,'FYP\testfiles\y_clean.wav','FYP\testfiles\y_MDKF_lpcMask_pt25.wav');
+
+        pesqMaskLPC_minuspt20(i,k) = stoi(y_clean,y_MDKF_lpcMask_minuspt20,fs);
+        pesqMaskLPC_minuspt15(i,k) = stoi(y_clean,y_MDKF_lpcMask_minuspt15,fs);
+        pesqMaskLPC_minuspt10(i,k) = stoi(y_clean,y_MDKF_lpcMask_minuspt10,fs);
+        pesqMaskLPC_minuspt05(i,k) = stoi(y_clean,y_MDKF_lpcMask_minuspt05,fs);
+        pesqMaskLPC_pt05(i,k) = stoi(y_clean,y_MDKF_lpcMask_pt05,fs);
+        pesqMaskLPC_pt10(i,k) = stoi(y_clean,y_MDKF_lpcMask_pt10,fs);
+        pesqMaskLPC_pt15(i,k) = stoi(y_clean,y_MDKF_lpcMask_pt15,fs);
+        pesqMaskLPC_pt20(i,k) = stoi(y_clean,y_MDKF_lpcMask_pt20,fs);
+        pesqMaskLPC_pt25(i,k) = stoi(y_clean,y_MDKF_lpcMask_pt25,fs);
+        
+    end
+    k
+end

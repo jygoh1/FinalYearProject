@@ -119,6 +119,8 @@ for m = 1:size(noisyfft_mag,1)     % each frequency bin (rows of f) has its own 
         varW = energy_residual(closest)/length(cleanmag_frames(closest,:)); % variance of excitation, calculated from lpcauto
     %     varW = var(cleanFrames(lpc_frame_index, :));
 
+%         resid(m,j) = varW;
+    
         state = A*state;
         P = A*P*A' + varW*(d*d');
         K = P*d*((varV + d'*P*d)^(-1));

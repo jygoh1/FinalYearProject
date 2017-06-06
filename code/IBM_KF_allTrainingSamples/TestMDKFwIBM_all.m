@@ -6,16 +6,20 @@ beep off;
 addpath(genpath('FYP'));
 addpath(genpath('voicebox'));
 
-%% generate mask statistics on set of training files
-
+%%
 Tw = 16e-3;         % frame duration in s  
 Ts = 4e-3;          % frame shift in s (overlap)
 LC = 0;             % LC for IBM (in dB)
-noiselevel = -5;    % noise level (in dB)
+targetSNR = 5;      % target SNR (in dB)
 
-[u_present, var_present, u_absent, var_absent] = getMaskStats(noiselevel, Tw, Ts, LC);
+% %% generate mask statistics on set of training files
+% 
+% [u_present, var_present, u_absent, var_absent] = getMaskStats(noiselevel, Tw, Ts, LC);
+% 
+% save('maskstats','u_present','var_present','u_absent','var_absent');
 
 %% generate new test clean and noise signal
+load 'maskstats';
 
 databases = '\\sapfs.ee.ic.ac.uk\Databases\';
 timit = [databases 'Speech\TIMIT\TIMIT\TEST\'];
@@ -30,23 +34,22 @@ y_clean = activlev(y_clean,fs,'n');     % normalise active level to 0 dB
 ns = length(y_clean);       % number of speech samples
 
 noises = {'white'};
-noiselevel = -5;      % if noiselevel = 5, target SNR is -5dB
 
 % read in the noises
 [vj,fsj] = readwav([nato noises{1}]);
 vjr = resample(vj,fs,fsj);
 v = vjr(1:ns)/std(vjr(1:ns));  % extract the initial chunck of noise and set to 0 dB; v is noise
 
-y_babble = v_addnoise(y_clean,fs,-noiselevel,'nzZ',v); % add noise at chosen level keeping speech at 0 dB
+y_babble = v_addnoise(y_clean,fs,targetSNR,'nzZ',v); % add noise at chosen level keeping speech at 0 dB
 
 %% spectrogram
 m=4;
 n=2;
 
-mode='pJwiatl';   % see spgrambw for list of modes
+mode='pJwiat';   % see spgrambw for list of modes
 bw = [];
 fmax = [];
-dbrange = [-12 20];     % power in dB to plot on spectrogram
+dbrange = [-20 20];     % power in dB to plot on spectrogram
 tinc = [];
 
 p_MDKF = 2;
@@ -65,7 +68,7 @@ title('Spectrogram of clean speech');
 subplot(m,n,2);
 spgrambw(y_babble, fs, mode, bw, fmax, dbrange, tinc, phonemes);
 get(gca,'XTickLabel');
-title(['Speech corrupted with white Gaussian noise (' num2str(noiselevel) ' dB SNR)']);
+title(['Speech corrupted with white Gaussian noise (' num2str(targetSNR) ' dB SNR)']);
 
 
 subplot(m,n,3);

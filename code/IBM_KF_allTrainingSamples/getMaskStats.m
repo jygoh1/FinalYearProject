@@ -43,7 +43,7 @@ end
 % i.e. same number of freq bins
 
 [clean,fs] = readsph(fileNames{1},'wt');
-[W, Nw, Ns] = makeHammingWindow(fs/2, Tw, Ts);
+[W, Nw, Ns] = makeHammingWindow(fs, Tw, Ts);
 test = rfft(enframe(clean,W,Ns),Nw,2);
 numBins = size(test, 2);
 

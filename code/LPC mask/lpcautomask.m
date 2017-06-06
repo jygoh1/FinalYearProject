@@ -65,8 +65,14 @@ e=zeros(nf,1);
 
 % if mask says '0' (noise), error should be reduced to threshold?
 % e.g. want [0 0 0.48 0] -> [0.1 0.1 1 0.1]
-m(m==0) = th;
-m(m~=0) = 1 + th;
+% m(m~=0) = 1 + th;
+% m(m==0) = th;
+
+% m(m~=0) = 1;
+% m(m==0) = th/(1+th);
+
+m(m~=0) = 1 - th;
+m(m==0) = 1 + th;
 
 t1=1;
 it=1;
@@ -88,15 +94,16 @@ for jf=1:nf
     end
     wd=dd(:).*ww;        % windowed data vector
     
-%     % modify autocorrelation by mask
-%     wd = wd.*m';
+    % modify autocorrelation by mask
+    wd = wd.*m';
     
     y(1:nc)=wd;          % data vector with p appended zeros    
     z=zeros(nc,pp+1);    % data matrix
     %  was previously  z(:)=y(c(:,ones(1,pp+1))+r(ones(nc,1),1:pp+1));
     z(:)=y(repmat(c,1,pp+1)+repmat(r,nc,1));
-%     rr=wd'*z;
-    rr=wd' .* m *z;
+    rr=wd'*z;
+    
+%     rr=wd' .* m *z;
     
     rm=toeplitz(rr(1:pp));
     rk=rank(rm);

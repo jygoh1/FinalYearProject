@@ -47,8 +47,7 @@ cleanfft_mag = abs(clean_fft);  % used to estimate LPCs in ideal case
 
 f_noisy = enframe(noisy,W,Ns,'sp');
 x = estnoiseg(f_noisy,Ns/fs);   % estimate the noise power spectrum; each row is 1 time frame
-% noisepow = 10*log10(sum(mean(x,1),2));
-% noisepow
+% noisepow = 10*log10(sum(mean(x,1),2))
 
 % after doing enframe, one row is one time frame (i.e. freq bins along rows)
 % take transpose so that freq bins are along columns (easier to represent)

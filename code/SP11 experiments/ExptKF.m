@@ -108,7 +108,7 @@ y_babble = v_addnoise(y_clean,fs,targetSNR,'nzZ',v); % add noise at chosen level
 m=2;
 n=2;
 
-mode='pJim'; 
+mode='pJimc'; 
 
 figure;
 
@@ -128,7 +128,7 @@ title(['Speech corrupted with white Gaussian noise (' num2str(targetSNR) ' dB SN
 
 subplot(m,n,3);
 
-p_TDKF=10;
+p_TDKF=fs/1e3+2;
 % q_TDKF=4;
 Tw = 16e-3;         % frame duration in s
 Ts = 4e-3;          % frame shift in s (overlap)

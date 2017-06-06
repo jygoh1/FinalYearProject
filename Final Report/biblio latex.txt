@@ -1,10 +1,20 @@
-@article {STOI_orig, 
-    author = "Cees H. Taal and Richard C. Hendriks and Richard Heusdens and Jesper Jensen", 
-    title = "An Algorithm for Intelligibility Prediction of
-Time–Frequency Weighted Noisy Speech", 
-    journal = "IEEE Transactions on Audio, Speech and Language Processing",
-    year = "2011",
-    volume = "19",
+@conference{StokesIBM,
+    title = {Reducing Binary Masking Artifacts in Blind Audio Source Separation},
+    author = {Stokes, T. and Hummersone, C. and Brookes, T.},
+    booktitle = {Audio Engineering Society Convention 134},
+    month = {May},
+    year = {2013},
+}
+
+@article {STOI_orig,
+    author={C. H. Taal and R. C. Hendriks and R. Heusdens and J. Jensen}, 
+    journal={IEEE Transactions on Audio, Speech, and Language Processing}, 
+    title={An Algorithm for Intelligibility Prediction of Time-Frequency Weighted Noisy Speech}, 
+    year={2011}, 
+    volume={19}, 
+    number={7}, 
+    pages={2125-2136}, 
+    month={Sept},
 }
 
 @book {PhonologyBook,
@@ -28,64 +38,87 @@ Time–Frequency Weighted Noisy Speech",
     year      = "1999",
 }
 
-@article {noiseMS, 
-    author = "R. Martin", 
-    title = "Noise power spectral density estimation based on optimal smoothing and minimum statistics", 
-    journal = "IEEE Transactions on Speech and Audio Processing",
-    year = "2001",
-    volume = "9",
+@article {noiseMS,
+    author={R. Martin}, 
+    journal={IEEE Transactions on Speech and Audio Processing}, 
+    title={Noise power spectral density estimation based on optimal smoothing and minimum statistics}, 
+    year={2001}, 
+    volume={9}, 
+    number={5}, 
+    pages={504-512}, 
+    month={Jul},
 }
 
-@article {VAD, 
-    author = "Jongseo Sohn and Nam Soo Kim and Wonyong Sung", 
-    title = "A statistical model-based voice activity detection", 
-    journal = "IEEE Signal Processing Letters",
-    year = "1999",
-    volume = "6",
+@article {VAD,
+    author={Jongseo Sohn and Nam Soo Kim and Wonyong Sung}, 
+    journal={IEEE Signal Processing Letters}, 
+    title={A statistical model-based voice activity detection}, 
+    year={1999}, 
+    volume={6}, 
+    number={1}, 
+    pages={1-3},
+    month={Jan},
 }
 
-@article {LPCresidual, 
-    author = "B. Yegnanarayanaa and Carlos Avendanob and Hynek Hermanskyb and P. Satyanarayana Murthyc", 
-    title = "Speech enhancement using linear prediction residual", 
-    journal = "Speech Communication",
-    year = "1999",
+@article {LPCresidual,
+    title = "Speech enhancement using linear prediction residual",
+    journal = "Speech Communication ",
     volume = "28",
+    number = "1",
+    pages = "25-42",
+    year = "1999",
+    author = "B. Yegnanarayana and C. Avendano and H. Hermansky and P. Satyanarayana Murthy",
 }
 
-@article {LPCanalysis, 
-    author = "J. Makhoul", 
-    title = "Linear prediction: A tutorial review", 
-    journal = "Proceedings of the IEEE",
-    year = "1975",
+@article {LPCanalysis,
+    author={J. Makhoul}, 
+    journal={Proceedings of the IEEE}, 
+    title={Linear prediction: A tutorial review}, 
+    year={1975}, 
+    volume={63}, 
+    number={4}, 
+    pages={561-580},
+    month={April},
 }
 
-@article {MMSEspeech, 
-    author = "Y. Ephraim and D. Malah", 
-    title = "Speech enhancement using a minimum-mean square error short-time spectral amplitude estimator", 
-    journal = "IEEE Transactions on Acoustics, Speech, and Signal Processing",
-    year = "1984",
+@article {MMSEspeech,
+    author={Y. Ephraim and D. Malah}, 
+    journal={IEEE Transactions on Acoustics, Speech, and Signal Processing}, 
+    title={Speech enhancement using a minimum-mean square error short-time spectral amplitude estimator}, 
+    year={1984}, 
+    volume={32}, 
+    number={6}, 
+    pages={1109-1121},
+    month={Dec},
 }
 
-@article {WB16, 
-    author = "Yu Wang and Mike Brookes", 
-    title = "Speech enhancement using an MMSE spectral amplitude estimator based on a modulation domain Kalman filter with a Gamma prior", 
-    journal = "IEEE International Conference on Acoustics, Speech, and Signal Processing (ICASSP)",
-    year = "2016",
+@INPROCEEDINGS{WB16,
+    author={Y. Wang and M. Brookes}, 
+    booktitle={2016 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)}, 
+    title={Speech enhancement using an MMSE spectral amplitude estimator based on a modulation domain Kalman filter with a Gamma prior}, 
+    year={2016}, 
+    pages={5225-5229},
+    month={March},
 }
 
-@article {MMSEnoise, 
-    author = "Richard C. Hendriks and Richard Heusdens and Jesper Jensen", 
-    title = "MMSE based noise PSD tracking with low complexity", 
-    journal = "IEEE International Conference on Acoustics, Speech, and Signal Processing (ICASSP)",
-    year = "2010",
+@INPROCEEDINGS {MMSEnoise,
+    author={R. C. Hendriks and R. Heusdens and J. Jensen}, 
+    booktitle={2010 IEEE International Conference on Acoustics, Speech and Signal Processing}, 
+    title={MMSE based noise PSD tracking with low complexity}, 
+    year={2010}, 
+    pages={4266-4269},
+    month={March},
 }
 
-@article {MMSEnoiseBetter, 
-    author = "Timo Gerkmann and Richard C. Hendriks", 
-    title = "Unbiased MMSE-Based Noise Power Estimation With Low Complexity and Low Tracking Delay", 
-    journal = "IEEE Transactions on Audio, Speech and Language Processing",
-    year = "2012",
-    volume = "20",
+@article {MMSEnoiseBetter,
+    author={T. Gerkmann and R. C. Hendriks}, 
+    journal={IEEE Transactions on Audio, Speech, and Language Processing}, 
+    title={Unbiased MMSE-Based Noise Power Estimation With Low Complexity and Low Tracking Delay}, 
+    year={2012}, 
+    volume={20}, 
+    number={4}, 
+    pages={1383-1393},
+    month={May},
 }
 
 @book {Cohen94,
@@ -102,19 +135,26 @@ Time–Frequency Weighted Noisy Speech",
     year      = "1998",
 }
 
-@article {Cappe94, 
-    author = "Olivier Cappe", 
-    title = "Elimination of the Musical Noise Phenomenon with the Ephraim and Malah Noise Suppressor", 
-    journal = "IEEE Transactions on Speech and Audio Processing",
-    year = "1994",
-    volume = "2",
+@article {Cappe94,
+    author={O. Cappe}, 
+    journal={IEEE Transactions on Speech and Audio Processing}, 
+    title={Elimination of the musical noise phenomenon with the Ephraim and Malah noise suppressor}, 
+    year={1994}, 
+    volume={2}, 
+    number={2}, 
+    pages={345-349},
+    month={Apr},
 }
 
-@article {GriffinLim84, 
-    author = "Daniel W. Griffin and Jae S. Lim", 
-    title = "Signal Estimation from Modified Short-Time Fourier Transform", 
-    journal = "IEEE Transactions on Acoustics, Speech, and Signal Processing",
-    year = "1984",
+@article {GriffinLim84,
+    author={D. Griffin and Jae Lim}, 
+    journal={IEEE Transactions on Acoustics, Speech, and Signal Processing}, 
+    title={Signal estimation from modified short-time Fourier transform}, 
+    year={1984}, 
+    volume={32}, 
+    number={2}, 
+    pages={236-243},
+    month={Apr},
 }
 
 @book {Riley1989book,
@@ -125,18 +165,23 @@ Time–Frequency Weighted Noisy Speech",
 }
 
 @article {DAG2013, 
-    author = "Jyoti Dhiman and Shadab Ahmad and Kuldeep Gulia", 
+    author = "J. Dhiman and S. Ahmad and K. Gulia", 
     title = "Comparison Between Adaptive Filter Algorithms (LMS, NLMS and RLS)", 
     journal = "International Journal of Science, Engineering and Technology Research (IJSETR)",
     year = "2013", 
+    month = "May",
     volume = "2",
 }
 
-@article {WidrowHoff60, 
-    author = "B. Widrow and M. E. Hoff", 
-    title = "Adaptive Switching Circuits", 
-    journal = "IRE WESCON Convention Record",
-    year = "1960",
+@incollection {WidrowHoff60,
+    author = {Widrow, B. and Hoff, M. E.},
+    chapter = {Adaptive Switching Circuits},
+    title = {Neurocomputing: Foundations of Research},
+    editor = {Anderson, James A. and Rosenfeld, Edward},
+    year = {1988},
+    pages = {123--134},
+    publisher = {MIT Press},
+    address = {Cambridge, MA, USA},
 } 
 
 @online {Bro11,
@@ -147,19 +192,26 @@ Time–Frequency Weighted Noisy Speech",
 }
 
 @article {Evaluate_PESQ,
-    author  = "A. W. Rix and J. G. Beerends and D. S. Kim and P. Kroon and O. Ghitza",
-    title   = "Objective Assessment of Speech and Audio Quality: Technology and Applications",
-    journal = "IEEE Transactions on Audio, Speech, and Language Processing",
-    year    = "2006",
-    volume  = "14",
+    author={A. W. Rix and J. G. Beerends and D. S. Kim and P. Kroon and O. Ghitza}, 
+    journal={IEEE Transactions on Audio, Speech, and Language Processing}, 
+    title={Objective Assessment of Speech and Audio Quality: Technology and Applications}, 
+    year={2006}, 
+    volume={14}, 
+    number={6}, 
+    pages={1890-1901},
+    month={Nov},
 }
 
-@article {RBHH_PESQ,
-    author  = "Antony W. Rix and John G. Beerends and Michael P. Hollier and Andries P. Hekstra",
-    title   = "Perceptual Evaluation of Speech Quality (PESQ) - A New Method For Speech Quality Assessment of Telephone Networks and Codecs",
-    journal = "Proceedings of the International Conference on Acoustics, Speech, and Signal Processing (ICASSP)",
-    year    = "2001",
-}
+@inproceedings {RBHH_PESQ,
+    author = {Rix, A. W. and Beerends, J. G. and Hollier, M. P. and Hekstra, A. P.},
+    title = {Perceptual Evaluation of Speech Quality (PESQ) - A New Method for Speech Quality Assessment of Telephone Networks and Codecs},
+    booktitle = {Proceedings of the Acoustics, Speech, and Signal Processing, 200. On IEEE International Conference - Volume 02},
+    series = {ICASSP '01},
+    year = {2001},
+    pages = {749-752},
+    publisher = {IEEE Computer Society},
+    address = {Washington, DC, USA},
+} 
 
 @book {ANSI_SII,
     author = "American National Standards Institute (ANSI)",
@@ -167,11 +219,13 @@ Time–Frequency Weighted Noisy Speech",
     title = "Methods for calculation of the speech intelligibility index",
 }
 
-@article {HP1998,
-    author  = "John H. L. Hansen and Bryan L. Pellom",
-    title   = "An Effective Quality Evaluation Protocol For Speech Enhancement Algorithms",
-    journal = "Proceedings of the International Conference on Speech and Language Processing",
-    year    = "1998",
+@inproceedings {HP1998,
+    title={An effective quality evaluation protocol for speech enhancement algorithms},
+    author={Hansen, J. H.L. and Pellom, B. L.},
+    booktitle={ICSLP},
+    volume={7},
+    pages={2819-2822},
+    year={1998}
 }
 
 @book {ITU800,
@@ -194,12 +248,13 @@ Time–Frequency Weighted Noisy Speech",
 }
 
 @article {PSW2011,
-    author  = "Kuldip Paliwal and Belinda Schwerin and Kamil Wojcicki",
-    title   = "Role of modulation magnitude and phase spectrum towards
-speech intelligibility",
+    title = "Role of modulation magnitude and phase spectrum towards speech intelligibility",
     journal = "Speech Communication",
-    year    = "2011",
-    volume  = "53"
+    volume = "53",
+    number = "3",
+    pages = "327-339",
+    year = "2011",
+    author = "K. Paliwal and B. Schwerin and K. Wójcicki",
 }
 
 @book {Quatieri2002,
@@ -210,33 +265,40 @@ speech intelligibility",
 }
 
 @ARTICLE {MBG2006,
-    author  = "Ning Ma and M. Bouchard and R. A. Goubran",
-    title   = "Speech enhancement using a masking threshold constrained Kalman filter and its heuristic implementations",
-    journal = "IEEE Transactions on Audio, Speech, and Language Processing",
-    year    = "2006",
-    volume  = "14"
+    author={N. Ma and M. Bouchard and R. A. Goubran}, 
+    journal={IEEE Transactions on Audio, Speech, and Language Processing}, 
+    title={Speech enhancement using a masking threshold constrained Kalman filter and its heuristic implementations}, 
+    year={2006}, 
+    volume={14}, 
+    number={1}, 
+    pages={19-32}, 
+    month={Jan},
 }
 
 @online {TIMIT,
-    author = "John S. Garofolo and Lori F. Lamel and William M. Fisher and Jonathan G. Fiscus and David S. Pallett and Nancy L. Dahlgren and Victor Zue",
+    author = "J. S. Garofolo and L. F. Lamel and W. M. Fisher and J. G. Fiscus and D. S. Pallett and N. L. Dahlgren and V. Zue",
     title  = "TIMIT Acoustic-Phonetic Continuous Speech Corpus",
     year   = "1993",
     url    = "https://catalog.ldc.upenn.edu/ldc93s1"
 }
 
 @ARTICLE {PWS2010,
-    author  = "Kuldip Paliwal and Kamil Wojcicki and Belinda Schwerin",
-    title   = "Single-channel speech enhancement using spectral subtraction in the short-time modulation domain",
-    journal = "Speech Communication",
-    year    = "2010",
-    volume  = "52"
+    title={Single-channel speech enhancement using spectral subtraction in the short-time modulation domain},
+    author={K. Paliwal and B. Schwerin and K. Wójcicki},
+    journal={Speech Communication},
+    volume={52},
+    number={5},
+    pages={450-475},
+    year={2010},
+    publisher={Elsevier}
 }
 
-@ARTICLE {GreenBergArai2001,
-    author  = "Steven Greenberg and Takayuki Arai",
-    title   = "The Relation Between Speech Intelligibility and the Complex Modulation Spectrum",
-    journal = "Proceedings of the 7th European Conference on Speech Communication and Technology",
-    year    = "2001"
+@inproceedings {GreenBergArai2001,
+    title={The relation between speech intelligibility and the complex modulation spectrum.},
+    author={Greenberg, S. and Arai, T.},
+    booktitle={2nd INTERSPEECH Event, Aalborg, Denmark},
+    pages={473-476},
+    year={2001}
 }
 
 @PHDTHESIS {Li2006Phd,
@@ -247,108 +309,145 @@ speech intelligibility",
 }
 
 @ARTICLE {Atlas2003,
-    author  = "Les Atlas and Shihab A. Shamma",
-    title   = "Joint Acoustic and Modulation Frequency",
-    journal = "EURASIP Journal on Applied Signal Processing",
-    year    = "2003"
+    author="Atlas, L. and Shamma, S. A.",
+    title="Joint Acoustic and Modulation Frequency",
+    journal="EURASIP Journal on Advances in Signal Processing",
+    year="2003",
+    month="July",
 }
 
 @ARTICLE {WuChen1998,
-    author  = "Wen-Rong Wu and Po-Cheng Chen",
-    title   = "Subband Kalman Filtering for Speech Enhancement",
-    journal = "IEEE Transactions on Circuits and Systems",
-    year    = "1998",
-    volume  = "45"
+    author={Wen-Rong Wu and Po-Cheng Chen}, 
+    journal={IEEE Transactions on Circuits and Systems II: Analog and Digital Signal Processing}, 
+    title={Subband Kalman filtering for speech enhancement}, 
+    year={1998}, 
+    volume={45}, 
+    number={8}, 
+    pages={1072-1083},
+    month={Aug},
 }
 
-@ARTICLE {Gibson1991,
-    author  = "Jerry D. Gibson",
-    title   = "Filtering of Colored Noise for Speech Enhancement and Coding",
-    journal = "IEEE Transactions on Signal Processing",
-    year    = "1991",
-    volume  = "39"
+@ARTICLE {Gibson1991, 
+    author={J. D. Gibson and B. Koo and S. D. Gray}, 
+    journal={IEEE Transactions on Signal Processing}, 
+    title={Filtering of colored noise for speech enhancement and coding}, 
+    year={1991}, 
+    volume={39}, 
+    number={8}, 
+    pages={1732-1742},
+    month={Aug},
 }
 
 @ARTICLE {SP11,
-    author  = "Stephen So and Kuldip K. Paliwal",
-    title   = "Modulation-domain Kalman filtering for single-channel speech enhancement",
-    journal = "Speech Communication",
-    year    = "2011",
-    volume  = "53"
+    title={Modulation-domain Kalman filtering for single-channel speech enhancement},
+    author={So, S. and Paliwal, K. K.},
+    journal={Speech Communication},
+    volume={53},
+    number={6},
+    pages={818-829},
+    year={2011},
+    publisher={Elsevier}
 }
 
-@ARTICLE {KBP10,
-    author  = "Ulrik Kjems and Michael S. Pedersen and Jesper B. Boldt and Thomas Lunner and DeLiang Wang",
-    title   = "Speech Intelligibility of Ideal Binary Masked Mixtures",
-    journal = "European Signal Processing Conference",
-    year    = "2010"
+@INPROCEEDINGS {KBP10,
+    author={U. Kjems and M. S. Pedersen and J. B. Boldt and T. Lunner and D. Wang}, 
+    booktitle={2010 18th European Signal Processing Conference}, 
+    title={Speech intelligibility of ideal binary masked mixtures}, 
+    year={2010}, 
+    pages={1909-1913},
+    month={Aug},
 }
 
-@ARTICLE {KLPB10,
-    author  = "Seliz Gulsen Karado and Jan Larsen and Michael S. Pedersen and Jesper B. Boldt",
-    title   = "Robust Isolated Speech Recognition Using Binary Masks",
-    journal = "European Signal Processing Conference",
-    year    = "2010"
+@INPROCEEDINGS {KLPB10,
+    author={S. G. Karadogan and J. Larsen and M. SyskindPedersen and J. B. Boldt}, 
+    booktitle={2010 18th European Signal Processing Conference}, 
+    title={Robust isolated speech recognition using binary masks}, 
+    year={2010}, 
+    pages={1988-1992},
+    month={Aug},
 }
 
 @ARTICLE {KBP09,
-    author  = "Ulrik Kjems and Jesper B. Boldt and Michael S. Pedersen and Thomas Lunner and DeLiang Wang",
+    author  = "U. Kjems and J. B. Boldt and M. S. Pedersen and T. Lunner and D. L. Wang",
     title   = "Role of mask pattern in intelligibility of ideal binary-masked noisy speech",
     journal = "Acoustical Society of America",
-    year    = "2009"
+    year    = "2009",
+    month	= "Sep",
+    volume  = "126",
+    issue 	= "3",
 }
 
 @ARTICLE {Anzalone2006,
-    author  = "Anzalone, M. C. and Calandruccio, L. and Doherty, K. A. and Carney, L.H.",
-    title   = "Determination of the potential benefit of time-frequency gain manipulation",
-    journal = "Ear Hear",
-    year    = "2006"
+    title={Determination of the potential benefit of time-frequency gain manipulation},
+    author={Anzalone, M. C. and Calandruccio, L. and Doherty, K. A. and Carney, L. H.},
+    journal={Ear and hearing},
+    volume={27},
+    number={5},
+    pages={480-492},
+    year={2006},
+    publisher={NIH Public Access}
 }
 
 @ARTICLE {LiLoizou2008,
-    author  = "Li, N. and Loizou, P. C.",
-    title   = "Factors influencing intelligibility of ideal binary-masked speech: Implications for noise reduction",
-    journal = "Acoustical Society of America",
-    year    = "2008"
+    title={Factors influencing intelligibility of ideal binary-masked speech: Implications for noise reduction},
+    author={Li, N. and Loizou, P. C.},
+    journal={The Journal of the Acoustical Society of America},
+    volume={123},
+    number={3},
+    pages={1673-1682},
+    year={2008},
+    publisher={ASA}
 }
 
 @ARTICLE {Brungart2006,
-    author  = "Douglas S. Brungart and Peter S. Chang and Brian D. Simpson and DeLiang Wang",
-    title   = "Isolating the energetic component of speech-on-speech masking with ideal time-frequency segregation",
-    journal = "Acoustical Society of America",
-    year    = "2006"
+    title={Isolating the energetic component of speech-on-speech masking with ideal time-frequency segregation},
+    author={Brungart, D. S. and Chang, P. S. and Simpson, B. D. and Wang, D. L.},
+    journal={The Journal of the Acoustical Society of America},
+    volume={120},
+    number={6},
+    pages={4007-4018},
+    year={2006},
+    publisher={ASA}
 }
 
 @article {Ellis2006,
-    author  = "Daniel P. W. Ellis",
-    title   = "Model-Based Scene Analysis",
-    journal = "Computational Auditory Scene Analysis: Principles, Algorithms, and Application",
-    year    = "2006",
-    note    = "Edited by DeLiang Wang and Guy J. Brown"
+    title={Model-based scene analysis},
+    author={Ellis, D. P.W.},
+    journal={Computational auditory scene analysis: Principles, algorithms, and applications},
+    pages={115-146},
+    year={2006}
 }
 
-@article {HuWang2004,
-    author  = "Guoning Hu and DeLiang Wang",
-    title   = "Monaural speech segregation based on pitch tracking and amplitude modulation",
-    journal = "IEEE Transactions On Neural Networks",
-    year    = "2004",
-    volume  = "15"
+@INPROCEEDINGS {HuWang2004,
+    author={G. Hu and D. Wang}, 
+    booktitle={2002 IEEE International Conference on Acoustics, Speech, and Signal Processing}, 
+    title={Monaural speech segregation based on pitch tracking and amplitude modulation}, 
+    year={2002}, 
+    volume={1}, 
+    pages={553-556},
+    month={May},
 }
 
 @article {LiWang2009,
-    author  = "Yipeng Li and DeLiang Wang",
-    title   = "On the optimality of ideal binary time–frequency masks",
-    journal = "Speech Communication",
-    year    = "2009",
-    volume  = "51"
+    title={On the optimality of ideal binary time--frequency masks},
+    author={Li, Y. and Wang, D. L.},
+    journal={Speech Communication},
+    volume={51},
+    number={3},
+    pages={230-239},
+    year={2009},
+    publisher={Elsevier}
 }
 
-@book {Wang2005,
-    author    = "DeLiang Wang",
-    title     = "On Ideal Binary Mask As the Computational Goal of Auditory Scene Analysis",
-    publisher = "Springer",
-    year      = "2005",
-    series    = "Speech Separation by Humans and Machines"
+@Inbook {Wang2005,
+    author="Wang, DeLiang",
+    editor="Divenyi, Pierre",
+    title="On Ideal Binary Mask As the Computational Goal of Auditory Scene Analysis",
+    bookTitle="Speech Separation by Humans and Machines",
+    year="2005",
+    publisher="Springer US",
+    address="Boston, MA",
+    pages="181-197",
 }
 
 @book {WangBrown2006,
@@ -366,25 +465,35 @@ speech intelligibility",
 }
 
 @article {Kozou2005,
-    author  = "Kozou, H. and Kujala, T. and Shtyrov, Y. and Toppila, E. and Starck, J. and Alku, P. and Näätänen, R.",
-    title   = "The effect of different noise types on the speech and non-speech elicited mismatch negativity",
-    journal = "Hearing Research",
-    year    = "2005",
-    volume  = "199"
+    title={The effect of different noise types on the speech and non-speech elicited mismatch negativity},
+    author={Kozou, H. and Kujala, T. and Shtyrov, Y. and Toppila, E. and Starck, J. and Alku, P. and Näätänen, R.},
+    journal={Hearing research},
+    volume={199},
+    number={1},
+    pages={31-39},
+    year={2005},
+    publisher={Elsevier}
 }
 
 @article {Aydin2000,
-    author  = "Nizamettin Aydin and Hugh S. Markus",
-    title   = "Optimization of processing parameters for the analysis and detection of embolic signals",
-    journal = "European Journal of Ultrasound",
-    year    = "2000"
+    title={Optimization of processing parameters for the analysis and detection of embolic signals},
+    author={Aydin, N. and Markus, H. S.},
+    journal={European Journal of ultrasound},
+    volume={12},
+    number={1},
+    pages={69-79},
+    year={2000},
+    publisher={Elsevier}
 }
 
-@article {Berouti1979,
-    author  = "M. Berouti and R. Schwartz and J. Makhoul",
-    title   = "Enhancement of speech corrupted by acoustic noise",
-    journal = "Acoustics, Speech, and Signal Processing, IEEE International Conference on ICASSP '79",
-    year    = "1979"
+@INPROCEEDINGS {Berouti1979,
+    author={M. Berouti and R. Schwartz and J. Makhoul}, 
+    booktitle={ICASSP '79. IEEE International Conference on Acoustics, Speech, and Signal Processing}, 
+    title={Enhancement of speech corrupted by acoustic noise}, 
+    year={1979}, 
+    volume={4}, 
+    pages={208-211},
+    month={Apr},
 }
 
 @book {ADSP2009,
@@ -395,13 +504,14 @@ speech intelligibility",
 }
 
 @article {Widrow1975,
-    author  = "Bernard Widrow and John R. Glover Jr. and John M. McCool and John Kaunitz and Charles S. Williams and Robert H. Hearn and James R. Zeidler and Eugene Dong Jr. and Robert C. Goodlin",
-    title   = "Adaptive Noise Cancelling: Principles and Applications",
-    journal = "Proceedings of the IEEE",
-    year    = "1975",
-    volume  = "63",
-    number  = "12",
-    month   = "dec"
+    author={B. Widrow and J. R. Glover and J. M. McCool and J. Kaunitz and C. S. Williams and R. H. Hearn and J. R. Zeidler and J. Eugene Dong and R. C. Goodlin}, 
+    journal={Proceedings of the IEEE}, 
+    title={Adaptive noise cancelling: Principles and applications}, 
+    year={1975}, 
+    volume={63}, 
+    number={12}, 
+    pages={1692-1716},
+    month={Dec},
 }
 
 @book {Loizou2007,
@@ -412,19 +522,24 @@ speech intelligibility",
 }
 
 @article {FukaneSahare2011,
-    author  = "Anuradha R. Fukane and Shashikant L. Sahare",
-    title   = "Different Approaches of Spectral Subtraction method for Enhancing the Speech Signal in Noisy Environments",
-    journal = "International Journal of Scientific \& Engineering Research",
-    year    = "2011",
-    volume  = "2"
+    title={Different approaches of spectral subtraction method for enhancing the speech signal in noisy environments},
+    author={Fukane, A. R. and Sahare, S. L.},
+    journal={International Journal of Scientific \& Engineering Research},
+    volume={2},
+    number={5},
+    pages={1},
+    year={2011}
 }
 
 @article {Boll1979,
-    author  = "Steven F. Boll",
-    title   = "Suppression of Acoustic Noise in Speech Using Spectral Subtraction",
-    journal = "IEEE Transactions On Acoustics, Speech and Signal Processing",
-    year    = "1979",
-    volume  = "27"
+    author={S. Boll}, 
+    journal={IEEE Transactions on Acoustics, Speech, and Signal Processing}, 
+    title={Suppression of acoustic noise in speech using spectral subtraction}, 
+    year={1979}, 
+    volume={27}, 
+    number={2}, 
+    pages={113-120},
+    month={Apr},
 }
 
 @book {Springer2007,
@@ -447,11 +562,13 @@ speech intelligibility",
     year = "2001",
 }
 
-@article {STOI,
-    author  = "Cees H. Taal and Richard C. Hendriks and Richard Heusdens",
-    title   = "A Short-Time Objective Intelligibility Measure for Time-Frequency Weighted Noisy Speech",
-    journal = "IEEE",
-    year    = "2010"
+@INPROCEEDINGS {STOI,
+    author={C. H. Taal and R. C. Hendriks and R. Heusdens and J. Jensen}, 
+    booktitle={2010 IEEE International Conference on Acoustics, Speech and Signal Processing}, 
+    title={A short-time objective intelligibility measure for time-frequency weighted noisy speech}, 
+    year={2010}, 
+    pages={4214-4217},
+    month={March},
 }
 
 @book {SpeechEnhancement2005,
@@ -462,12 +579,13 @@ speech intelligibility",
 }
 
 @article {Kalman1960,
-    Author = "Kalman, Rudolph Emil",
-    Title = "A New Approach to Linear Filtering and Prediction Problems",
-    Journal = "Transactions of the ASME--Journal of Basic Engineering",
-    Volume = "82",
-    Number = "Series D",
-    Year = "1960"
+    title={A new approach to linear filtering and prediction problems},
+    author={Kalman, R. E. and others},
+    journal={Journal of basic Engineering},
+    volume={82},
+    number={1},
+    pages={35-45},
+    year={1960}
 }
 
 @book {Maybeck1979,
@@ -478,10 +596,12 @@ speech intelligibility",
     volume    = "1"
 }
 
-@article {PaliwalBasu1987,
-    author  = "Paliwal, K.K. and Basu, A.",
-    title   = "A speech enhancement method based on Kalman filtering",
-    journal = "Proc. IEEE Int. Conf. Acoustics, Speech, Signal Processing",
-    year    = "1987",
-    volume  = "12"
+@INPROCEEDINGS {PaliwalBasu1987,
+    author={K. Paliwal and A. Basu}, 
+    booktitle={ICASSP '87. IEEE International Conference on Acoustics, Speech, and Signal Processing}, 
+    title={A speech enhancement method based on Kalman filtering}, 
+    year={1987}, 
+    volume={12}, 
+    pages={177-180},
+    month={Apr},
 }
