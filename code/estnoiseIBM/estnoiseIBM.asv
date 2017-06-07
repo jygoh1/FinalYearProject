@@ -126,21 +126,19 @@ else
     % loop for each frame
     for t=1:nr
         mm = mask(t,:);
-        mm(mm == 0) = th;    % if mask says 0 (that this T-F unit is noise) then reduced a-posteriori speech presence probability
-        mm(mm == 1) = 1.5 + th;
+        mm(mm == 0) = 1 - th;    % if mask says 0 (that this T-F unit is noise) then reduced a-posteriori speech presence probability
+        mm(mm == 1) = 2 + th;
         
         yft=yf(t,:);        % noisy speech power spectrum
         
-        xih1_temp = 10^(qq.asnr/10)*mean(mm); % speech-present SNR
-        xih1r_temp = 1/(1 + xih1_temp)-1;
+        xih1_temp = 10^(qq.asnr/10); % speech-present SNR
+        xih1r_temp = 1/(1 + xih1_temp*mean(mm))-1;
         
 %         pfac=(1/(qq.pspri*mean(mm))-1)*(1+xih1_temp);
 %         pfac=(1/(qq.pspri*mean(mm))-1)*(1+xih1);
-%         pfac=(1/(qq.pspri)-1)*(1+xih1);
-        pfac=(1/(qq.pspri)-1)*(1+xih1_temp);
+        pfac=(1/(qq.pspri)-1)*(1+xih1);
         
-%         ph1y=(1+pfac*exp(xih1r*yft./xt)).^(-1); % a-posteriori speech presence prob (18)
-        ph1y=(1+pfac*exp(xih1r_temp*yft./xt)).^(-1); % a-posteriori speech presence prob (18)
+        ph1y=(1+pfac*exp(xih1r*yft./xt)).^(-1); % a-posteriori speech presence prob (18)
         
         
         ph1y = ph1y .* mm;

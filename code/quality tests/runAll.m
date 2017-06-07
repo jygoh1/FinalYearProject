@@ -14,9 +14,10 @@ fs_slow = 1/Ts;
 
 mask_th = 0.15;
 
-% % MMSE-enhanced
-% y_mmse = ssubmmse(y_babble, fs);
-% 
+% MMSE-enhanced
+y_mmse = ssubmmse(y_babble, fs);
+
+
 % % MMSE-enhanced LPCs
 % % linear MDKF
 % y_MDKF = idealMDKF_linear(y_babble, y_mmse, fs, Tw, Ts, p_MDKF, Tw_slow, Ts_slow, fs_slow);
@@ -39,22 +40,6 @@ y_MDKF_uncorrIBM = uncorrelatedMDKF_IBM_all(y_babble, y_clean, fs, Tw, Ts, p_MDK
 y_maskLPC = MDKFmaskLPC(y_babble, y_clean, fs, Tw, Ts, p_MDKF, Tw_slow, Ts_slow, fs_slow, LC, mask_th);
 
 
-cutoff = min([length(y_clean), length(y_MDKF), length(y_MDKF_uncorrIBM), length(y_maskLPC), length(y_mmse)]);
-
-y_clean = y_clean(1:cutoff);
-y_babble = y_babble(1:cutoff);
-y_MDKF = y_MDKF(1:cutoff);
-y_MDKF_uncorrIBM = y_MDKF_uncorrIBM(1:cutoff);
-y_maskLPC = y_maskLPC(1:cutoff);
-y_mmse = y_mmse(1:cutoff);
-
-SNRbabble = snrseg(y_babble, y_clean, fs);
-SNRMDKF = snrseg(y_MDKF, y_clean, fs);
-SNRMDKFmask = snrseg(y_MDKF_uncorrIBM, y_clean, fs);
-SNRLPCmask = snrseg(y_maskLPC, y_clean, fs);
-SNRmmse = snrseg(y_mmse, y_clean, fs);
-
-
 %% PESQ
 audiowrite('FYP\testfiles\y_clean.wav',y_clean,fs);
 audiowrite('FYP\testfiles\y_babble.wav',y_babble,fs);
@@ -69,11 +54,27 @@ pesqMDKFmask = pesqITU(fs,'FYP\testfiles\y_clean.wav','FYP\testfiles\y_MDKF_unco
 pesqLPCmask = pesqITU(fs,'FYP\testfiles\y_clean.wav','FYP\testfiles\y_maskLPC.wav');
 pesqMMSE = pesqITU(fs,'FYP\testfiles\y_clean.wav','FYP\testfiles\y_mmse.wav');
 
-%%
+%% STOI
 stoiNoisy = stoi(y_clean,y_babble,fs);
 stoiMDKF = stoi(y_clean,y_MDKF,fs);
 stoiLPCmask = stoi(y_clean,y_maskLPC,fs);
 stoiMDKFmask = stoi(y_clean,y_MDKF_uncorrIBM,fs);
 stoiMMSE = stoi(y_clean,y_mmse,fs);
+
+%% segSNR
+cutoff = min([length(y_clean), length(y_MDKF), length(y_MDKF_uncorrIBM), length(y_maskLPC)]);
+
+y_clean = y_clean(1:cutoff);
+y_babble = y_babble(1:cutoff);
+y_MDKF = y_MDKF(1:cutoff);
+y_MDKF_uncorrIBM = y_MDKF_uncorrIBM(1:cutoff);
+y_maskLPC = y_maskLPC(1:cutoff);
+y_mmse = y_mmse(1:cutoff);
+
+SNRbabble = snrseg(y_babble, y_clean, fs);
+SNRMDKF = snrseg(y_MDKF, y_clean, fs);
+SNRMDKFmask = snrseg(y_MDKF_uncorrIBM, y_clean, fs);
+SNRLPCmask = snrseg(y_maskLPC, y_clean, fs);
+SNRmmse = snrseg(y_mmse, y_clean, fs);
 
 end

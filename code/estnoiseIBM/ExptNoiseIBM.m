@@ -5,6 +5,8 @@ beep off;
 
 addpath(genpath('FYP'));
 addpath(genpath('voicebox'));
+addpath(genpath('pesqSTOI'));
+warning('off','all')
 
 %% generate clean and noise signals
 
@@ -19,7 +21,7 @@ y_clean = activlev(y_clean,fs,'n');     % normalise active level to 0 dB
 ns = length(y_clean);       % number of speech samples
 
 noises = {'white'};
-targetSNR = 5;      % if noiselevel = 5, target SNR is 5dB
+targetSNR = 0;      % if noiselevel = 5, target SNR is 5dB
 
 % read in the noises
 [vj,fsj] = readwav([nato noises{1}]);
@@ -39,10 +41,9 @@ Ts = 4e-3;          % frame shift in s (overlap)
 Tw_slow = 24e-3;     % window and shift for each KF (in seconds)
 Ts_slow = 4e-3;
 fs_slow = 1/Ts;
-LC = 15;
+LC = 0;
 
-mask_th = 0.99;
-
+mask_th = 1;
 mode='pJim'; 
 
 % figure;
@@ -61,6 +62,8 @@ mode='pJim';
 % title(['Speech corrupted with white Gaussian noise (' num2str(targetSNR) ' dB SNR)']);
 
 
+y_mmse = ssubmmse(y_babble, fs);
+
 % subplot(m,n,3);
 
 y_MDKF = idealMDKF_linear(y_babble, y_clean, fs, Tw, Ts, p_MDKF, Tw_slow, Ts_slow, fs_slow);       % reduce noise but has distortion
@@ -75,17 +78,6 @@ y_MDKF_IBMnoise = idealMDKF_noiseIBM(y_babble, y_clean, fs, Tw, Ts, p_MDKF, Tw_s
 % title(['IBM-noise MDKF with p=' num2str(p_MDKF)]);
 
 
-%% segSNR
-cutoff = min([length(y_clean), length(y_MDKF), length(y_MDKF_IBMnoise)]);
-
-y_clean = y_clean(1:cutoff);
-y_MDKF = y_MDKF(1:cutoff);
-y_MDKF_IBMnoise = y_MDKF_IBMnoise(1:cutoff);
-
-SNRMDKFnoiseIBM = snrseg(y_MDKF_IBMnoise, y_clean, fs);
-SNRMDKF = snrseg(y_MDKF, y_clean, fs);
-
-
 %% PESQ
 audiowrite('FYP\testfiles\y_clean.wav',y_clean,fs);
 audiowrite('FYP\testfiles\y_MDKF.wav',y_MDKF,fs);
@@ -95,3 +87,21 @@ pesqMDKFnoiseIBM = pesqITU(fs,'FYP\testfiles\y_clean.wav','FYP\testfiles\y_MDKF_
 pesqMDKF = pesqITU(fs,'FYP\testfiles\y_clean.wav','FYP\testfiles\y_MDKF.wav');
 
 pesqMDKFnoiseIBM/pesqMDKF
+
+%% segSNR
+cutoff = min([length(y_clean), length(y_MDKF), length(y_MDKF_IBMnoise)]);
+
+y_clean = y_clean(1:cutoff);
+y_MDKF = y_MDKF(1:cutoff);
+y_MDKF_IBMnoise = y_MDKF_IBMnoise(1:cutoff);
+
+segSNRMDKFnoiseIBM = snrseg(y_MDKF_IBMnoise, y_clean, fs);
+segSNRMDKF = snrseg(y_MDKF, y_clean, fs);
+
+segSNRMDKFnoiseIBM/segSNRMDKF
+
+%% STOI
+stoiMDKF = stoi(y_clean,y_MDKF,fs);
+stoiMDKF_IBMnoise = stoi(y_clean,y_MDKF_IBMnoise,fs);
+
+stoiMDKF_IBMnoise/stoiMDKF

@@ -1,3 +1,14 @@
+@ARTICLE{noiseVarySlower, 
+    author={R. Martin}, 
+    journal={IEEE Transactions on Speech and Audio Processing}, 
+    title={Noise power spectral density estimation based on optimal smoothing and minimum statistics}, 
+    year={2001}, 
+    volume={9}, 
+    number={5}, 
+    pages={504-512},
+    month={Jul},
+}
+
 @conference{StokesIBM,
     title = {Reducing Binary Masking Artifacts in Blind Audio Source Separation},
     author = {Stokes, T. and Hummersone, C. and Brookes, T.},

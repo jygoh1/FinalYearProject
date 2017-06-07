@@ -15,10 +15,6 @@ nato = [databases 'Noises\NatoNoise0\'];
 [y_clean,fs,words,phonemes] = readsph([timit 'DR1\MDPK0\SX333.wav'],'wt');
 % [y_clean,fs] = audioread('sp15.wav');
 
-% downsample from 16 -> 8kHz
-fs = fs/2;
-y_clean = downsample(y_clean,2);
-
 y_clean = activlev(y_clean,fs,'n');     % normalise active level to 0 dB
 
 % zeropad = fs*0.5;
@@ -27,20 +23,20 @@ y_clean = activlev(y_clean,fs,'n');     % normalise active level to 0 dB
 ns = length(y_clean);       % number of speech samples
 
 noises = {'white'};
-noiseSNR = -5;      % if noiselevel = 5, target SNR is -5dB
+targetSNR = 5;      % if noiselevel = 5, target SNR is -5dB
 
 % read in the noises
 [vj,fsj] = readwav([nato noises{1}]);
 vjr = resample(vj,fs,fsj);
 v = vjr(1:ns)/std(vjr(1:ns));  % extract the initial chunck of noise and set to 0 dB; v is noise
 
-y_babble = v_addnoise(y_clean,fs,-noiseSNR,'nzZ',v); % add noise at chosen level keeping speech at 0 dB
+y_babble = v_addnoise(y_clean,fs,targetSNR,'nzZ',v); % add noise at chosen level keeping speech at 0 dB
 
 %% spectrogram
 m=5;
 n=2;
 
-mode='pJcwiat';      % append 'c' to include colour bar
+mode='pJcwiatl';      % append 'c' to include colour bar
 bw = [];
 fmax = [];
 dbrange = [-12 20];     % power in dB to plot on spectrogram
@@ -63,13 +59,13 @@ subplot(m,n,3);
 spgrambw(y_babble, fs, mode, bw, fmax, dbrange, tinc, phonemes);
 get(gca,'XTickLabel');
 ylabel('Freq. (kHz)');
-title(['Spectrogram of speech embedded in multitalker babble at ' num2str(noiseSNR) 'dB SNR']);
+title(['Spectrogram of speech embedded in multitalker babble at ' num2str(targetSNR) ' dB SNR']);
 
 subplot(m,n,4);
 spgrambw(y_babble, fs, mode, bw, fmax, dbrange, tinc, phonemes);
 get(gca,'XTickLabel');
 ylabel('Freq. (kHz)');
-title(['Spectrogram of speech embedded in multitalker babble at ' num2str(noiseSNR) 'dB SNR']);
+title(['Spectrogram of speech embedded in multitalker babble at ' num2str(targetSNR) ' dB SNR']);
 
 subplot(m,n,5);
 Tw = 20e-3;                 % frame duration in s
@@ -83,20 +79,20 @@ axis('xy');
 get(gca,'XTickLabel');
 xlabel('Time (s)');
 ylabel('Freq. (kHz)');
-title(['IBM with SNR threshold of ' num2str(LC) 'dB']);
+title(['IBM with SNR threshold of ' num2str(LC) ' dB']);
 
 subplot(m,n,7);
 spgrambw(y_IBM_1, fs, mode, bw, fmax, dbrange, tinc, phonemes);
 get(gca,'XTickLabel');
 ylabel('Freq. (kHz)');
-title(['Spectrogram of segregated mixture using IBM SNR threshold of ' num2str(LC) 'dB']);
+title(['Spectrogram of segregated mixture using IBM SNR threshold of ' num2str(LC) ' dB']);
 
 subplot(m,n,9);
 [y_TBM_1, TBMmask] = TBM(y_babble, y_clean, fs, Tw, Ts, LC ); 
 spgrambw(y_TBM_1, fs, mode, bw, fmax, dbrange, tinc, phonemes);
 get(gca,'XTickLabel');
 ylabel('Freq. (kHz)');
-title(['Spectrogram of segregated mixture using TBM SNR threshold of ' num2str(LC) 'dB']);
+title(['Spectrogram of segregated mixture using TBM SNR threshold of ' num2str(LC) ' dB']);
 
 subplot(m,n,6);
 LC = 0;         % local SNR criterion in dB
@@ -107,42 +103,42 @@ axis('xy');
 get(gca,'XTickLabel');
 xlabel('Time (s)');
 ylabel('Freq. (kHz)');
-title(['IBM with SNR threshold of ' num2str(LC) 'dB']);
+title(['IBM with SNR threshold of ' num2str(LC) ' dB']);
 
 subplot(m,n,8);
 spgrambw(y_IBM_2, fs, mode, bw, fmax, dbrange, tinc, phonemes);
 get(gca,'XTickLabel');
 ylabel('Freq. (kHz)');
-title(['Spectrogram of segregated mixture using IBM SNR threshold of ' num2str(LC) 'dB']);
+title(['Spectrogram of segregated mixture using IBM SNR threshold of ' num2str(LC) ' dB']);
 
 subplot(m,n,10);
 [y_TBM_2, TBMmask] = TBM(y_babble, y_clean, fs, Tw, Ts, LC ); 
 spgrambw(y_TBM_2, fs, mode, bw, fmax, dbrange, tinc, phonemes);
 get(gca,'XTickLabel');
 ylabel('Freq. (kHz)');
-title(['Spectrogram of segregated mixture using TBM SNR threshold of ' num2str(LC) 'dB']);
+title(['Spectrogram of segregated mixture using TBM SNR threshold of ' num2str(LC) ' dB']);
 
 
 %% spectrogram
 m=4;
 n=1;
 
-mode='pJi';      % append 'c' to include colour bar
+mode='pJim';      % append 'c' to include colour bar
 
 figure;
 subplot(m,n,1);
 spgrambw(y_clean, fs, mode);
 get(gca,'XTickLabel');
 xlabel('');
-ylabel('Freq. (kHz)');
+% ylabel('Freq. (kHz)');
 title('Spectrogram of clean speech');
 
 subplot(m,n,2);
 spgrambw(y_babble, fs, mode);
 get(gca,'XTickLabel');
 xlabel('');
-ylabel('Freq. (kHz)');
-title(['Speech corrupted with white Gaussian noise at ' num2str(noiseSNR) 'dB SNR']);
+% ylabel('Freq. (kHz)');
+title(['Speech corrupted with white Gaussian noise at ' num2str(targetSNR) ' dB SNR']);
 
 subplot(m,n,3);
 LC = 0;         % local SNR criterion in dB
@@ -151,11 +147,11 @@ LC = 0;         % local SNR criterion in dB
 imagesc(T,F/1e3,mask);         % plot it manually
 axis('xy');
 get(gca,'XTickLabel');
-ylabel('Freq. (kHz)');
-title(['IBM with SNR threshold of ' num2str(LC) 'dB']);
+ylabel('Frequency (kMel)');
+title(['IBM with SNR threshold of ' num2str(LC) ' dB']);
 
 subplot(m,n,4);
 spgrambw(y_IBM, fs, mode);
 get(gca,'XTickLabel');
-ylabel('Freq. (kHz)');
-title(['Spectrogram of segregated mixture using IBM SNR threshold of ' num2str(LC) 'dB']);
+% ylabel('Freq. (kHz)');
+title(['Spectrogram of segregated mixture using IBM SNR threshold of ' num2str(LC) ' dB']);

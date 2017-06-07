@@ -87,7 +87,7 @@ Speech enhancement algorithms aim to reduce the background noise of a noise-corr
 \clearpage
 
 
-\nomlabelwidth=30mm					% standard indentation between nomenclature acronym and description
+\nomlabelwidth=30mm				% indentation between nomenclature acronym and description
 \makenomenclature
 \nomenclature{\textbf{LMS}}{Least Mean Squares}
 \nomenclature{\textbf{NLMS}}{Normalised Least Mean Squares}
@@ -110,6 +110,8 @@ Speech enhancement algorithms aim to reduce the background noise of a noise-corr
 \nomenclature{\textbf{fwSNRseg}}{Frequency-Weighted Signal-to-Noise Ratio}
 \nomenclature{\textbf{MOS}}{Mean Opinion Score}
 \nomenclature{\textbf{PDF}}{Probability Density Function}
+\nomenclature{\textbf{ML}}{Maximum Likelihood}
+\nomenclature{\textbf{PSD}}{Power Spectral Density}
 \printnomenclature
 
 
@@ -201,7 +203,7 @@ One way to estimate spectral noise power is to exploit the time periods where sp
 
 To improve noise estimation, methods have been proposed based on minimum statistics (MS) \cite{noiseMS}. The method in \cite{noiseMS} does not use a VAD. Instead, it tracks spectral minima in each frequency band without distinguishing between between speech presence and absence. The power spectrum of the noisy signal is tracked frame-by-frame and observed over a short time period. A general assumption is that within the observed time frame, speech is absent for a non-zero portion of the total time period. The spectral noise power is then obtained from the minimum of the estimated power spectrum of the noisy signal. Similar to VADs, if the noise power rises within the observed time period, it can be tracked with some time delay. Due to the delay, the local noise power estimates tend to be underestimated. This results in residual noise and musical noise artifacts when the noise estimation is used in a speech enhancer.
 
-A more recent method to estimate the noise power spectral density is to use a minimum mean-squared-error (MMSE) optimal estimation method \cite{MMSEnoise}, which can be interpreted as a VAD-based noise power estimator \cite{MMSEnoiseBetter}. Generally, MMSE-based estimators are more robust to non-stationary noise and are less computationally intensive as compared to MS-based methods \cite{MMSEnoise}. The estimator in \cite{MMSEnoiseBetter} replaces the hard VAD of the estimator in \cite{MMSEnoise} with a soft speech presence probability (SPP) with a fixed \textit{a priori} SNR as a parameter of the likelihood of speech presence, using a value typical in speech presence. This soft estimation overcomes the issue of random fluctuations in the estimated SNR. This modification automatically makes the estimator unbiased, and it retains similar performance while achieving lower computational complexity compared to \cite{MMSEnoise}.
+A more recent method to estimate the noise power spectral density (PSD) is to use a minimum mean-squared-error (MMSE) optimal estimation method \cite{MMSEnoise}, which can be interpreted as a VAD-based noise power estimator \cite{MMSEnoiseBetter}. Generally, MMSE-based estimators are more robust to non-stationary noise and are less computationally intensive as compared to MS-based methods \cite{MMSEnoise}. The estimator in \cite{MMSEnoiseBetter} replaces the hard VAD of the estimator in \cite{MMSEnoise} with a soft speech presence probability (SPP) with a fixed \textit{a priori} SNR as a parameter of the likelihood of speech presence, using a value typical in speech presence. This soft estimation overcomes the issue of random fluctuations in the estimated SNR. This modification automatically makes the estimator unbiased, and it retains similar performance while achieving lower computational complexity compared to \cite{MMSEnoise}.
 
 \section{Spectral Subtraction}\label{specSub}
 
@@ -1002,6 +1004,106 @@ LPC weight threshold    & 0.15            \\ \hline
 \end{figure}
 
 \section{Evaluation}
+
+
+\chapter{IBM-improved Noise Estimation}
+
+\section{Introduction}
+
+Noise estimation is a critical part of speech enhancement, and the performance of enhancement algorithms is heavily affected by the accuracy of the noise estimation. In this chapter, a modification of an existing noise spectral estimation method based on an ideal binary mask (IBM) is proposed.
+
+A popular method to estimate the noise power spectral density (PSD) is to use a minimum mean-squared-error (MMSE) optimal estimation method, which can be interpreted as a VAD-based noise power estimator. This chapter proposes a few tweaks to the parameters used in the algorithm described in \cite{MMSEnoiseBetter}, based on the information provided by an IBM.
+
+\section{MMSE Noise Estimation}
+
+To aid the understanding of the modifications made in this chapter, we first present a summary of the MMSE noise estimator in \cite{MMSEnoiseBetter}. A majority of the equations are left out for clarity, and only those critical to the proposed modification will be inserted in this report.
+
+Let $y$, $s$ and $n$ be the noisy speech, clean speech and noise respectively, and assume that they are additive in the short-time Fourier domain, giving the noisy observed speech as $Y=S+N$, where time and frequency indices are omitted for convenience and $S$, $N$ are the complex spectral speech and noise components respectively. The clean speech and noise are assumed independent, such that $\mathbb{E}(|Y|^2)=\mathbb{E}(|S|^2)+\mathbb{E}(|N|^2)$. Define the spectral speech and noise power as $\mathbb{E}(|S|^2)=\sigma_S^2$ and $\mathbb{E}(|N|^2)=\sigma_N^2$ respectively, and the \textit{a priori} and \textit{a posteriori} Signal-to-Noise Ratio (SNR) by $\zeta=\sigma_S^2/\sigma_N^2$ and $\gamma=|y|^2/\sigma_N^2$ respectively.
+
+Firstly, it is assumed that the noise and speech spectral coefficients ($p_N(n)$ and $p_S(s)$ respectively) have a complex Gaussian distribution. This gives a complex Gaussian distribution for the noisy speech $p_Y(y)$ which depends on the true SNR. The noise power estimator shown in \cite{MMSEnoise} is based on an MMSE estimate of the noise periodogram, which can be obtained by calculating the conditional expectation $\mathbb{E}(|N|^2|y)$ (equation omitted for clarity), which can be written as a function of the power of the noisy observation, the \textit{a priori} SNR and the spectral noise power.
+
+In practice, the \textit{a priori} SNR and the spectral noise power have to be estimated. When estimating noise power, it is a common assumption that the noise signal varies more slowly than speech \cite{noiseVarySlower}. Therefore, \cite{MMSEnoise} uses the spectral noise power estimate of the previous time frame ($l-1$) i.e. $\hat{\sigma}_N^2=\hat{\sigma}_N^2(l-1)$, assuming some correlation between the noise in adjacent frames of speech.
+
+Estimating the \textit{a priori} SNR is more complicated, as speech tends to vary more rapidly between successive frames. In \cite{MMSEnoise}, the proposed method to estimate $\hat{\zeta}$ uses a maximum-likelihood (ML) estimate followed by bias compensation. When doing so, the MMSE estimator can be viewed as a hard-threshold voice activity detector (VAD) based decision between the noisy observation and the spectral noise power estimate. The resultant estimator is biased and requires bias compensation.
+
+Finally, after estimating the noise periodogram from $\mathbb{E}(|N|^2|y)$, the noise PSD is obtained via recursive smoothing with a parameter $\alpha_{pow}=0.8$ \cite{MMSEnoise}:
+
+\begin{equation}\label{eq:noisePSDfromPeriodogram}
+\hat{\sigma}_N^2(l)=\alpha_{pow}\hat{\sigma}_N^2(l-1)+(1-\alpha_{pow})\mathbb{E}(|N|^2|y(l))
+\end{equation}
+
+\subsection{Assumptions in Unbiased MMSE Estimator}
+
+The previous section dealt with the original noise power MMSE estimator as described in \cite{MMSEnoise}. A modification was made in \cite{MMSEnoiseBetter} to produce an unbiased estimator based on a soft speech presence probability (SPP) estimate with fixed priors, instead of a hard VAD threshold. This section covers part of the modification, and in particular highlights certain assumptions made that can be improved using IBM information.
+
+When speech presence is uncertain, an MMSE estimator for the noise periodogram is given by:
+
+\begin{equation}\label{eq:noisePeriodogramUncertainSPP}
+\mathbb{E}(|N|^2|y)=P(H_0|y)\mathbb{E}(|N|^2|y,H_0)+P(H_1|y)\mathbb{E}(|N|^2|y,H_1)
+\end{equation}
+
+where $H_0$ and $H_1$ indicate speech absence and speech presence respectively. Using Bayes' Theorem, the \textit{a posteriori} SPP can be expressed as:
+
+\begin{equation}\label{eq:aposterioriSPP}
+P(H_1|y)=\frac{P(H_1)p_{Y|H1}(y)}{P(H_0)p_{Y|H0}(y)+P(H_1)p_{Y|H1}(y)}
+\end{equation}
+
+Thus, computing the \textit{a posteriori} SPP requires the \textit{a priori} probabilities $P(H_1)=1-P(H_0)$ and the likelihood functions for speech presence $p_{Y|H1}(y)$ and speech absence $p_{Y|H0}(y)$. Without an observation, \cite{MMSEnoiseBetter} assumes that a time-frequency point being considered is equally likely to contain speech or not contain speech i.e. uniform priors $P(H_1)=P(H_0)=0.5$ were chosen, independent of the observation. Given an IBM, this can be improved.
+
+The likelihood functions $p_{Y|H1}(y)$ and $p_{Y|H0}(y)$ in Equation \ref{eq:aposterioriSPP} indicate how well the observation $y$ fits the modelling parameters for speech presence and absence respectively, and can be modelled with complex Gaussian distributions (equations omitted). The likelihood under speech presence depends on the \textit{a priori} SNR. While the algorithm in \cite{MMSEnoise} uses a complex Gaussian distribution for the noisy observation $p_Y(y)$ which depends on the true local \textit{a priori} SNR, the likelihood under speech presence is instead a function of a parameterised \textit{a priori} SNR, reflecting the typical SNR when speech is present. In \cite{MMSEnoiseBetter}, this typical SNR is fixed at $15$ dB. This is another area in which information from an IBM can be useful.
+
+Substituting the likelihood functions for speech absence and speech presence (equations omitted in this report) into Equation \ref{eq:aposterioriSPP}, an expression for the \textit{a posteriori} SPP can be obtained as:
+
+\begin{equation}\label{eq:aposterioriSPP_likelihood}
+P(H_1|y)=\Bigg(1+\frac{P(H_0)}{P(H_1)}(1+\zeta_{H_1})e^{-\frac{|y|^2}{\hat{\sigma}_N^2}\frac{\zeta_{H_1}}{1+\zeta_{H_1}}}\Bigg)^{-1}
+\end{equation}
+
+where the spectral noise power estimate of the previous time frame is used i.e. $\hat{\sigma}_N^2=\hat{\sigma}_N^2(l-1)$ as before.
+
+If the noise power estimate $\hat{\sigma}_N^2$ underestimates the true noise power $\sigma_N^2$, the \textit{a posteriori} SPP in Equation \ref{eq:aposterioriSPP_likelihood} will be overestimated, and the noise power will not be tracked as quickly as needed. In the worst case, the noise power might remain the same. To avoid this stagnation due to underestimated noise power, a check is done in \cite{MMSEnoiseBetter} to verify if the \textit{a posteriori} SPP has been close to $1$ for a long time. The \textit{a posteriori} SPP is first recursively smoothed over time: $\bar{P}(l)=0.9\bar{P}(l-1)+0.1P(H_1|y(l))$. If this smoothed quantity is larger than $0.99$, the update is deemed to have stagnated; the current \textit{a posteriori} SPP estimate $P(H_1|y(l))$ is then forced to be lower than $0.99$.
+
+The noise power spectrum can then be computed from the estimated \textit{a posteriori} SPP $P(H_1|y(l))$, which is used to weight the noisy input power spectrum $|Y|^2$ and the previous estimate of the noise power accordingly:
+
+\begin{equation}\label{eq:rawNoiseSpectrum}
+\mathbb{E}(|N|^2|y(l))=P(H_1|y(l))\hat{\sigma}_N^2(l-1)+[1-P(H_1|y(l))]|Y(l)|^2
+\end{equation}
+
+Finally, this raw noise estimate is smoothed as in Equation \ref{eq:noisePSDfromPeriodogram} to obtain the estimated noise PSD.
+
+
+\section{Modifying noise estimation}
+
+In the previous section which briefly reviewed the MMSE noise estimators of \cite{MMSEnoise} and \cite{MMSEnoiseBetter}, some parameters are notably fixed. In this section, we use an IBM to provide information that allows us to vary these parameters.
+
+
+\section{Performance Results and Discussion}
+
+As with all previous experiments, the algorithm discussed in this section is run against other control algorithms, with the parameters used shown in Table \ref{table:NMDKFparams}.
+
+In this section, the algorithm using the IBM-enhanced noise estimate will be termed NMDKF, with the other algorithms named as before.
+
+\begin{table}[ht!]
+\centering
+\begin{tabular}{|c|c|}
+\hline
+\textbf{Parameter}      & \textbf{Value} \\ \hline
+Sampling frequency      & 16 kHz         \\ \hline
+Acoustic frame length   & 16 ms          \\ \hline
+Acoustic frame shift    & 4 ms           \\ \hline
+Modulation frame length & 24 ms          \\ \hline
+Modulation frame shift  & 4 ms           \\ \hline
+Windowing function      & Hamming window \\ \hline
+MDKF model order        & 2              \\ \hline
+LPCs generated from     & clean speech   \\ \hline
+IBM zeros threshold     &             \\ \hline
+IBM ones threshold      &             \\ \hline
+\end{tabular}
+\caption{List of parameters used to evaluate algorithms}
+\label{table:NMDKFparams}
+\end{table}
+
+\section{Evaluation}
+
 
 
 \chapter{Conclusion and Future Work}
