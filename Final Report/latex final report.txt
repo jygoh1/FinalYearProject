@@ -150,14 +150,16 @@ Chapter 3 analyses the project, breaking down the requirements into specific del
 
 Chapter 5 covers the first proposed modification, whereby an ideal binary mask is applied to a set of training speech samples. This gives useful statistical information that is then used to improve on a baseline Kalman filter implementation. Its performance relative to existing methods is evaluated and discussed.
 
-Chapter 6 explores a different approach. Here, the linear prediction coefficients used in a Kalman filter algorithm are modified by using a weighted sum to calculate the autocorrelation function, with weights determined from an ideal binary mask applied to the input signal. As before, this enhancer is evaluated and discussed relative to existing methods. Finally, Chapter 7 concludes the project and briefly explores possible areas for future work.
+Chapter 6 explores a different approach. Here, the linear prediction coefficients used in a Kalman filter algorithm are modified by using a weighted sum to calculate the autocorrelation function, with weights determined from an ideal binary mask applied to the input signal. As before, this enhancer is evaluated and discussed relative to existing methods.
+
+A third modification is proposed in Chapter 7. Noise estimation is an important part of speech enhancement, and a method is proposed to incorporate binary mask information to improve the accuracy of noise estimation in a Kalman filter-based speech enhancer. Finally, Chapter 8 concludes the project and briefly explores possible areas for future work.
 
 
 \chapter{Background}
 
-The goal of a speech enhancement algorithm is to reduce the background noise of a noise-corrupted speech input without distorting the underlying clean speech \cite{SpeechEnhancement2005}. Traditionally, speech enhancement algorithms for noise reduction can be grouped into three main categories: noise reduction via filtering techniques, noise reduction via spectral restoration, and speech-model-based noise reduction methods \cite{Springer2007}.
+The goal of a speech enhancement algorithm is to reduce the background noise of a noise-corrupted speech input without distorting the underlying clean speech \cite{SpeechEnhancement2005}. Traditionally, speech enhancement algorithms for noise reduction can be grouped into three main categories: noise reduction via filtering techniques, noise reduction via spectral restoration, and speech-model-based noise reduction methods \cite{Springer2007}. Overall, speech enhancement techniques aim to improve the speech using audio signal processing techniques.
 
-Overall, speech enhancement techniques aim to improve the speech using audio signal processing techniques; some widely-used methods are described in this chapter. This chapter also provides the background to some relevant aspects of speech enhancement, including possible operating domains, noise estimation, and performance evaluation measures.
+Some widely-used speech enhancement methods are described in this chapter. This chapter also provides the background to some relevant aspects of speech enhancement, including possible operating domains, noise estimation, and performance evaluation measures.
 
 \section{Enhancement Domains}
 
@@ -187,11 +189,11 @@ This is used in the setup of the algorithm described in Section \ref{MDKF}.
 
 Modulation-domain processing starts off similarly to T-F processing, in that the noisy input signal undergoes STFT analysis to produce time-varying frequency components.
 
-For speech enhancement, the amplitudes envelope of each frequency band is regarded as one modulation signal; the spectral amplitudes of each frequency band are windowed into overlapping modulation frames, with a separate modulation frame length and frame overlap compared to the acoustic frame length and overlap of STFT, where each acoustic frame provides one modulation-domain sample for each frequency bin. If each modulation frame contains $M$ samples (i.e. $M$ acoustic frames form one modulation frame) and each acoustic frame contains $N$ time-domain samples, each modulation frame is constructed from $MN$ time-domain samples. The modulation-domain signal has a frequency determined by the acoustic frame increment: since each acoustic frame provides one modulation sample, successive modulation samples are spaced apart by the acoustic frame shift. If the time-domain signal has a sampling frequency of $f_s$ Hz and the acoustic frame shift is $L$H z, the modulation-domain sampling frequency is $(f_s/L)$ Hz.
+For speech enhancement, the amplitudes envelope of each frequency band is regarded as one modulation signal; the spectral amplitudes of each frequency band are windowed into overlapping modulation frames, with a separate modulation frame length and frame overlap compared to the acoustic frame length and overlap of STFT, where each acoustic frame provides one modulation-domain sample for each frequency bin. If each modulation frame contains $M$ samples (i.e. $M$ acoustic frames form one modulation frame) and each acoustic frame contains $N$ time-domain samples, each modulation frame is constructed from $MN$ time-domain samples. The modulation-domain signal has a frequency determined by the acoustic frame increment: since each acoustic frame provides one modulation sample, successive modulation samples are spaced apart by the acoustic frame shift. If the time-domain signal has a sampling frequency of $f_s$ Hz and the acoustic frame shift is $L$ Hz, the modulation-domain sampling frequency is $(f_s/L)$ Hz.
 
 A processing algorithm then estimates the modulation frames of clean speech, which are then overlap-added to reconstruct the modified modulation signals. Combining this with the phase spectrum of the noisy input signal and performing the inverse STFT then produces the enhanced time-domain speech signal.
 
-Even though the acoustic envelope directly contains the speech information, the temporal dynamics of the envelope better represent the information contained in speech \cite{Hermansky98}. These dynamics, which are at significantly lower frequencies than the speech signal itself, are provided in the modulation spectrum, suggesting that working in the modulation domain for speech processing can produce better results. More detailed description of modulation-domain-based speech processing is provided in Section \ref{KF}.
+Even though the acoustic envelope directly contains the speech information, the temporal dynamics of the envelope better represent the information contained in speech \cite{Hermansky98}. These dynamics, which are at significantly lower frequencies than the speech signal itself, are provided in the modulation spectrum, suggesting that working in the modulation domain for speech processing can produce better results. More detailed description is provided in Section \ref{KF}.
 
 \section{Noise Estimation}\label{noiseEstimation}
 
@@ -207,7 +209,7 @@ A more recent method to estimate the noise power spectral density (PSD) is to us
 
 \section{Spectral Subtraction}\label{specSub}
 
-Spectral subtraction is a widely-used filtering technique which operates in the time-frequency domain. In this method, stationary or slowly-varying noise is attenuated from noisy speech by subtracting the magnitude noise spectrum, estimated during periods where speech is absent \cite{Boll1979}. It is also possible to estimate the noise using a secondary sensor \cite{Widrow1975}. The estimated noise spectrum is then subtracted from the noisy spectrum to produce an approximated spectrum of the clean speech. The spectral error can then be computed and reduced separately. The algorithm can be further enhanced by incorporating residual noise reduction and non-speech signal attenuation \cite{Boll1979}, achieving even greater noise reduction.
+Spectral subtraction is a widely-used filtering technique which operates in the time-frequency domain. In this method, stationary or slowly-varying noise is attenuated from noisy speech by subtracting the magnitude noise spectrum, estimated during periods where speech is absent \cite{Boll1979}. It is also possible to estimate the noise using a secondary sensor \cite{Widrow1975}. The estimated noise spectrum is then subtracted from the noisy spectrum to produce an approximated spectrum of the clean speech. The spectral error can then be computed and reduced separately. The algorithm can be further refined by incorporating residual noise reduction and non-speech signal attenuation \cite{Boll1979}.
 
 Spectral subtraction works on the back of a few assumptions: firstly, that the background noise is additive to the clean signal \cite{Boll1979}. This assumption means that the complex spectrum of the input noisy signal can be expressed as the sum of the speech spectrum and the noise spectrum. Next, it is assumed that the noise is a stationary or a slowly varying process (locally stationary). This allows the algorithm enough time to accurately formulate an updated estimate for the new noise magnitude spectrum before speech activity starts again. Lastly, the underlying assumption is that noise can be significantly reduced by removing its effect in the magnitude spectrum only i.e. phase spectrum is untouched, and the estimate of the clean speech magnitude spectrum is combined with the phase spectrum of the noisy input signal \cite{ADSP2009}.
 
@@ -329,7 +331,7 @@ where
 R(i)=\sum_{n=i}^{N-1}s(n-i)s(n)
 \end{equation}
 
-is the autocorrelation function of the signal $s(n)$. Since the autocorrelation function is even i.e. $R(i)=R(-i)$, the coefficients $R(i-k)$ form the autocorrelation matrix $\textbf{R}$, which is a symmetric Toeplitz matrix \cite{LPCanalysis}. In matrix notation, Equation \ref{eq:diffEqnAutoCorr} can be written as:
+is the autocorrelation function of the signal $s(n)$. The coefficients $R(i-k)$ form the autocorrelation matrix $\textbf{R}$, which is a symmetric Toeplitz matrix \cite{LPCanalysis} since the autocorrelation function is even i.e. $R(i)=R(-i)$. In matrix notation, Equation \ref{eq:diffEqnAutoCorr} can be written as:
 
 \begin{equation}\label{eq:autoCorrMatrix}
 \textbf{R}\textbf{A}=-\textbf{r}
@@ -629,7 +631,7 @@ In this chapter, the project aims are analysed and broken down into specific del
 
 \section{Deliverables}
 
-The goal of this project is to modify a Modulation-Domain Kalman Filter (KF) speech enhancement algorithm by incorporating data obtained from an ideal binary mask (IBM). This project proposes a few methods to do so.
+The goal is to modify a Modulation-Domain Kalman Filter (KF) speech enhancement method by integrating data from an ideal binary mask (IBM). This project proposes a few methods to do so.
 
 In the first method, IBM statistics are used to scale the predicted value and variance in the MDKF. This requires an implementation of the MDKF, and also involves obtaining the IBM statistical information. This can be broken down into a few deliverables, as follows:
 
@@ -1020,7 +1022,7 @@ To aid the understanding of the modifications made in this chapter, we first pre
 
 Let $y$, $s$ and $n$ be the noisy speech, clean speech and noise respectively, and assume that they are additive in the short-time Fourier domain, giving the noisy observed speech as $Y=S+N$, where time and frequency indices are omitted for convenience and $S$, $N$ are the complex spectral speech and noise components respectively. The clean speech and noise are assumed independent, such that $\mathbb{E}(|Y|^2)=\mathbb{E}(|S|^2)+\mathbb{E}(|N|^2)$. Define the spectral speech and noise power as $\mathbb{E}(|S|^2)=\sigma_S^2$ and $\mathbb{E}(|N|^2)=\sigma_N^2$ respectively, and the \textit{a priori} and \textit{a posteriori} Signal-to-Noise Ratio (SNR) by $\zeta=\sigma_S^2/\sigma_N^2$ and $\gamma=|y|^2/\sigma_N^2$ respectively.
 
-Firstly, it is assumed that the noise and speech spectral coefficients ($p_N(n)$ and $p_S(s)$ respectively) have a complex Gaussian distribution. This gives a complex Gaussian distribution for the noisy speech $p_Y(y)$ which depends on the true SNR. The noise power estimator shown in \cite{MMSEnoise} is based on an MMSE estimate of the noise periodogram, which can be obtained by calculating the conditional expectation $\mathbb{E}(|N|^2|y)$ (equation omitted for clarity), which can be written as a function of the power of the noisy observation, the \textit{a priori} SNR and the spectral noise power.
+It is assumed that the noise and speech spectral coefficients ($p_N(n)$ and $p_S(s)$ respectively) have complex Gaussian distributions. This gives a complex Gaussian distribution for the noisy speech $p_Y(y)$ which depends on the true SNR. The noise power estimator shown in \cite{MMSEnoise} is based on an MMSE estimate of the noise periodogram, which can be obtained by calculating the conditional expectation $\mathbb{E}(|N|^2|y)$ (equation omitted for clarity), which is a function of the power of the noisy observation, the \textit{a priori} SNR and the spectral noise power.
 
 In practice, the \textit{a priori} SNR and the spectral noise power have to be estimated. When estimating noise power, it is a common assumption that the noise signal varies more slowly than speech \cite{noiseVarySlower}. Therefore, \cite{MMSEnoise} uses the spectral noise power estimate of the previous time frame ($l-1$) i.e. $\hat{\sigma}_N^2=\hat{\sigma}_N^2(l-1)$, assuming some correlation between the noise in adjacent frames of speech.
 
@@ -1062,7 +1064,7 @@ where the spectral noise power estimate of the previous time frame is used i.e. 
 
 If the noise power estimate $\hat{\sigma}_N^2$ underestimates the true noise power $\sigma_N^2$, the \textit{a posteriori} SPP in Equation \ref{eq:aposterioriSPP_likelihood} will be overestimated, and the noise power will not be tracked as quickly as needed. In the worst case, the noise power might remain the same. To avoid this stagnation due to underestimated noise power, a check is done in \cite{MMSEnoiseBetter} to verify if the \textit{a posteriori} SPP has been close to $1$ for a long time. The \textit{a posteriori} SPP is first recursively smoothed over time: $\bar{P}(l)=0.9\bar{P}(l-1)+0.1P(H_1|y(l))$. If this smoothed quantity is larger than $0.99$, the update is deemed to have stagnated; the current \textit{a posteriori} SPP estimate $P(H_1|y(l))$ is then forced to be lower than $0.99$.
 
-The noise power spectrum can then be computed from the estimated \textit{a posteriori} SPP $P(H_1|y(l))$, which is used to weight the noisy input power spectrum $|Y|^2$ and the previous estimate of the noise power accordingly:
+The noise power spectrum can then be computed from the estimated \textit{a posteriori} SPP $P(H_1|y(l))$, which is used to weight the noisy input power spectrum $|Y|^2$ and the previous estimate of the noise power $\hat{\sigma}_N^2(l-1)$ accordingly:
 
 \begin{equation}\label{eq:rawNoiseSpectrum}
 \mathbb{E}(|N|^2|y(l))=P(H_1|y(l))\hat{\sigma}_N^2(l-1)+[1-P(H_1|y(l))]|Y(l)|^2
@@ -1071,9 +1073,53 @@ The noise power spectrum can then be computed from the estimated \textit{a poste
 Finally, this raw noise estimate is smoothed as in Equation \ref{eq:noisePSDfromPeriodogram} to obtain the estimated noise PSD.
 
 
-\section{Modifying noise estimation}
+\section{Modifying Noise Estimation}
 
 In the previous section which briefly reviewed the MMSE noise estimators of \cite{MMSEnoise} and \cite{MMSEnoiseBetter}, some parameters are notably fixed. In this section, we use an IBM to provide information that allows us to vary these parameters.
+
+LINK THIS TO FINDING OPTIMAL THRESHOLD BELOW
+
+\section{Optimal IBM-Modified Estimator Threshold}
+
+Given the modification, a set of thresholds for the binary mask needed to be found. An optimal ratio was found to be:
+
+
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.7\linewidth]{estnoise_segSNRratios}
+\captionof{figure}{Average segSNR ratios comparing IBM-modified noise estimation with original MMSE noise estimation vs. speech corrupted by white noise at varying SNR levels}
+\label{fig:estnoise_segSNRratios}
+\end{figure}
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.7\linewidth]{estnoise_PESQratios}
+\captionof{figure}{Average PESQ ratios comparing IBM-modified noise estimation with original MMSE noise estimation vs. speech corrupted by white noise at varying SNR levels}
+\label{fig:estnoise_PESQratios}
+\end{figure}
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.7\linewidth]{estnoise_STOIratios}
+\captionof{figure}{Average STOI ratios comparing IBM-modified noise estimation with original MMSE noise estimation vs. speech corrupted by white noise at varying SNR levels}
+\label{fig:estnoise_STOIratios}
+\end{figure}
+
+\subsection{Estimated Global SNR}
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.7\linewidth]{estnoise_compareglobalSNR}
+\captionof{figure}{Estimated global SNR of different noise estimation methods vs. actual global SNR of input speech}
+\label{fig:estnoise_compareglobalSNR}
+\end{figure}
+
+In Figure \ref{fig:estnoise_segSNRratios}, we saw that the segSNR of the optimal-threshold ($th=1.0$) IBM-modified noise estimator is largely lower than that of the original MMSE noise estimator of \cite{MMSEnoiseBetter}. This is verified in Figure \ref{fig:estnoise_compareglobalSNR}.
+
+Figure \ref{fig:estnoise_compareglobalSNR} compares the averaged estimated global SNR of the IBM-modified noise estimation algorithm and the original MMSE noise estimator, plotted against the actual input global SNR. In the plot, the true $45^{\circ}$ line is represented by a green dotted line i.e. the closer to the green line, the more accurate the SNR estimation. The plot shows that both algorithms tend to underestimate the noise level (overestimate SNR) when the noise is very large ($-15$ dB input SNR or lower), and vice versa when the noise is small (high input SNR). However, an across-the-board feature is that the original MMSE noise estimator largely matches the real value better than the IBM-modified noise estimator.
+
+A possible explanation for this is that the noise is random, and the MMSE noise estimator in \cite{MMSEnoiseBetter} uses only a fixed \textit{a priori} SNR value typical of speech. However, incorporating IBM data meant tweaking the original spectral components, which meant modifying this SNR value adaptively. Using the threshold values determined in Figures \ref{fig:estnoise_PESQratios} and \ref{fig:estnoise_STOIratios} better represented the actual speech information, but might not represent the numerical SNR as well as the original algorithm.
 
 
 \section{Performance Results and Discussion}
@@ -1095,8 +1141,8 @@ Modulation frame shift  & 4 ms           \\ \hline
 Windowing function      & Hamming window \\ \hline
 MDKF model order        & 2              \\ \hline
 LPCs generated from     & clean speech   \\ \hline
-IBM zeros threshold     &             \\ \hline
-IBM ones threshold      &             \\ \hline
+IBM zeros threshold     & 1.0            \\ \hline
+IBM ones threshold      & 2.5            \\ \hline
 \end{tabular}
 \caption{List of parameters used to evaluate algorithms}
 \label{table:NMDKFparams}

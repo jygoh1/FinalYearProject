@@ -102,7 +102,7 @@ h = plot(targetSNR,stoi(:,[1,3,4,5]),'linewidth',1.2);
 
 title('\fontsize{19}Average STOI values');
 xlabel('\fontsize{14}Global SNR of input noisy speech (dB)');
-ylabel({'\fontsize{14}segSNR (dB)'});
+ylabel({'\fontsize{14}STOI'});
 aaaa = get(gca,'XTickLabel');
 set(h,{'Marker'},{'s';'o';'*';'^'})
 set(gca,'XTickLabel',aaaa,'fontsize',12)
@@ -114,9 +114,10 @@ h = plot(targetSNR,stoi(:,[2,3,4,5]),'linewidth',1.2);
 
 title('\fontsize{19}Average STOI values');
 xlabel('\fontsize{14}Global SNR of input noisy speech (dB)');
-ylabel({'\fontsize{14}segSNR (dB)'});
+ylabel({'\fontsize{14}STOI'});
 aaaa = get(gca,'XTickLabel');
 set(h,{'Marker'},{'s';'o';'*';'^'})
+set(h,{'Color'},{'r';'b'})
 set(gca,'XTickLabel',aaaa,'fontsize',12)
 legendCell = {'LMDKF', 'MDKF', 'MMSE', 'Noisy'};
 legend(legendCell,'FontSize',10.5)
