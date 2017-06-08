@@ -65,19 +65,22 @@ numSNR = length(targetSNR);
 
 snrMDKFmask = zeros(numSNR, numFiles);
 snrMaskLPC = zeros(numSNR, numFiles);
+snrNoiseMask = zeros(numSNR, numFiles);
 snrMDKF = zeros(numSNR, numFiles);
 snrMMSE = zeros(numSNR, numFiles);
 snrNoisy = zeros(numSNR, numFiles);
 
-pesqMDKF = zeros(numSNR, numFiles);
 pesqMDKFmask = zeros(numSNR, numFiles);
 pesqLPCmask = zeros(numSNR, numFiles);
+pesqNoiseMask = zeros(numSNR, numFiles);
+pesqMDKF = zeros(numSNR, numFiles);
 pesqMMSE = zeros(numSNR, numFiles);
 pesqNoisy = zeros(numSNR, numFiles);
 
-stoiMDKF = zeros(numSNR, numFiles);
 stoiMDKFmask = zeros(numSNR, numFiles);
 stoiLPCmask = zeros(numSNR, numFiles);
+stoiNoiseMask = zeros(numSNR, numFiles);
+stoiMDKF = zeros(numSNR, numFiles);
 stoiMMSE = zeros(numSNR, numFiles);
 stoiNoisy = zeros(numSNR, numFiles);
 
@@ -93,9 +96,9 @@ for k = 1:numFiles
 
     for i = 1:length(targetSNR)
         noisy = v_addnoise(clean, fs, targetSNR(i), 'nzZ', v);  % add noise at chosen level keeping speech at 0 dB
-        [snrMDKFmask(i,k), snrMaskLPC(i,k), snrMDKF(i,k), snrMMSE(i,k), snrNoisy(i,k), ...
-            pesqMDKF(i,k), pesqMDKFmask(i,k), pesqLPCmask(i,k), pesqMMSE(i,k), pesqNoisy(i,k), ...
-            stoiMDKF(i,k), stoiMDKFmask(i,k), stoiLPCmask(i,k), stoiMMSE(i,k), stoiNoisy(i,k)] = runAll(clean, noisy, fs);
+        [snrMDKFmask(i,k), snrMaskLPC(i,k), snrNoiseMask(i,k), snrMDKF(i,k), snrMMSE(i,k), snrNoisy(i,k), ...
+            pesqMDKFmask(i,k), pesqLPCmask(i,k), pesqNoiseMask(i,k), pesqMDKF(i,k), pesqMMSE(i,k), pesqNoisy(i,k), ...
+            stoiMDKFmask(i,k), stoiLPCmask(i,k), stoiNoiseMask(i,k), stoiMDKF(i,k), stoiMMSE(i,k), stoiNoisy(i,k)] = runAll(clean, noisy, fs);
     end
     k
 end
@@ -103,22 +106,25 @@ end
 %%
 snrMDKFmask = snrMDKFmask(:,1:k);
 snrMaskLPC = snrMaskLPC(:,1:k);
+snrNoiseMask = snrNoiseMask(:,1:k);
 snrMDKF = snrMDKF(:,1:k);
 snrMMSE = snrMMSE(:,1:k);
 snrNoisy = snrNoisy(:,1:k);
 
-pesqMDKF = pesqMDKF(:,1:k);
 pesqMDKFmask = pesqMDKFmask(:,1:k);
 pesqLPCmask = pesqLPCmask(:,1:k);
+pesqNoiseMask = pesqNoiseMask(:,1:k);
+pesqMDKF = pesqMDKF(:,1:k);
 pesqMMSE = pesqMMSE(:,1:k);
 pesqNoisy = pesqNoisy(:,1:k);
 
-stoiMDKF = stoiMDKF(:,1:k);
 stoiMDKFmask = stoiMDKFmask(:,1:k);
 stoiLPCmask = stoiLPCmask(:,1:k);
+stoiNoiseMask = stoiNoiseMask(:,1:k);
+stoiMDKF = stoiMDKF(:,1:k);
 stoiMMSE = stoiMMSE(:,1:k);
 stoiNoisy = stoiNoisy(:,1:k);
 
-save('snrStats_2','snrMDKFmask','snrMaskLPC','snrMDKF','snrMMSE','snrNoisy');
-save('pesqStats_2','pesqMDKF','pesqMDKFmask','pesqLPCmask','pesqMMSE','pesqNoisy');
-save('stoiStats_2','stoiMDKF','stoiMDKFmask','stoiLPCmask','stoiMMSE','stoiNoisy');
+save('snrStats_2','snrMDKFmask','snrMaskLPC','snrNoiseMask','snrMDKF','snrMMSE','snrNoisy');
+save('pesqStats_2','pesqMDKFmask','pesqLPCmask','pesqNoiseMask','pesqMDKF','pesqMMSE','pesqNoisy');
+save('stoiStats_2','stoiMDKFmask','stoiLPCmask','stoiNoiseMask','stoiMDKF','stoiMMSE','stoiNoisy');
