@@ -663,7 +663,7 @@ In this project, the MDKF in Section \ref{MDKF} is used as a baseline algorithm.
 
 In \cite{PSW2011}, it was shown that short modulation frame durations of $10-32$ ms retain good intelligibility overall as compared to longer frame lengths. This is briefly verified below.
 
-Using clean speech as the ``noisy'' input speech to the MDKF filter, a plot of the average LPC excitation variance per modulation frame against a range of modulation frame lengths is shown below in Figure \ref{fig:compareModFrameLengths}, where the error is normalised against the length of the modulation frame and averaged over 40 randomly chosen speech samples from the TIMIT dataset.
+Using clean speech as the ``noisy'' input speech to the MDKF filter, a plot of the average LPC excitation variance per modulation frame against a range of modulation frame lengths is shown below in Figure \ref{fig:compareModFrameLengths}, where the error is normalised against the length of the modulation frame and averaged over 38 randomly chosen speech samples from the TIMIT dataset.
 
 \begin{figure}[ht!]
 \centering
@@ -935,6 +935,13 @@ IBM SNR threshold (LC)  & 0 dB           \\ \hline
 \label{fig:BMMDKF_MDKF_MMSE_Noisy_pesq}
 \end{figure}
 
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.7\linewidth]{BMMDKF_MDKF_MMSE_Noisy_STOI}
+\captionof{figure}{Average STOI values of different algorithms vs. speech corrupted by white noise at varying SNR levels}
+\label{fig:BMMDKF_MDKF_MMSE_Noisy_STOI}
+\end{figure}
+
 \section{Evaluation}
 
 \subsection{Algorithm Runtime}
@@ -1003,6 +1010,13 @@ LPC weight threshold    & 0.15            \\ \hline
 \includegraphics[width=0.7\linewidth]{LMDKF_MDKF_MMSE_Noisy_pesq}
 \captionof{figure}{Average PESQ values of different algorithms vs. speech corrupted by white noise at varying SNR levels}
 \label{fig:LMDKF_MDKF_MMSE_Noisy_pesq}
+\end{figure}
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.7\linewidth]{LMDKF_MDKF_MMSE_Noisy_STOI}
+\captionof{figure}{Average STOI values of different algorithms vs. speech corrupted by white noise at varying SNR levels}
+\label{fig:LMDKF_MDKF_MMSE_Noisy_STOI}
 \end{figure}
 
 \section{Evaluation}
@@ -1147,6 +1161,29 @@ IBM ones threshold      & 2.5            \\ \hline
 \caption{List of parameters used to evaluate algorithms}
 \label{table:NMDKFparams}
 \end{table}
+
+\newpage
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.7\linewidth]{NMDKF_MDKF_MMSE_Noisy_segSNR}
+\captionof{figure}{Average segSNR values of different algorithms vs. speech corrupted by white noise at varying SNR levels}
+\label{fig:NMDKF_MDKF_MMSE_Noisy_segSNR}
+\end{figure}
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.7\linewidth]{NMDKF_MDKF_MMSE_Noisy_pesq}
+\captionof{figure}{Average PESQ values of different algorithms vs. speech corrupted by white noise at varying SNR levels}
+\label{fig:NMDKF_MDKF_MMSE_Noisy_pesq}
+\end{figure}
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.7\linewidth]{NMDKF_MDKF_MMSE_Noisy_STOI}
+\captionof{figure}{Average STOI values of different algorithms vs. speech corrupted by white noise at varying SNR levels}
+\label{fig:NMDKF_MDKF_MMSE_Noisy_STOI}
+\end{figure}
 
 \section{Evaluation}
 

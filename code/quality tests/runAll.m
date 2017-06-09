@@ -62,14 +62,6 @@ pesqLPCmask = pesqITU(fs,'FYP\testfiles\y_clean.wav','FYP\testfiles\y_maskLPC.wa
 pesqNoisemask = pesqITU(fs,'FYP\testfiles\y_clean.wav','FYP\testfiles\y_MDKF_IBMnoise.wav');
 pesqMMSE = pesqITU(fs,'FYP\testfiles\y_clean.wav','FYP\testfiles\y_mmse.wav');
 
-%% STOI
-stoiNoisy = stoi(y_clean,y_babble,fs);
-stoiMDKF = stoi(y_clean,y_MDKF,fs);
-stoiLPCmask = stoi(y_clean,y_maskLPC,fs);
-stoiMDKFmask = stoi(y_clean,y_MDKF_uncorrIBM,fs);
-stoiNoisemask = stoi(y_clean,y_MDKF_IBMnoise,fs);
-stoiMMSE = stoi(y_clean,y_mmse,fs);
-
 %% segSNR
 cutoff = min([length(y_clean), length(y_MDKF), length(y_MDKF_uncorrIBM)]);
 
@@ -87,5 +79,13 @@ SNRMDKFmask = snrseg(y_MDKF_uncorrIBM, y_clean, fs);
 SNRLPCmask = snrseg(y_maskLPC, y_clean, fs);
 SNRNoisemask = snrseg(y_MDKF_IBMnoise, y_clean, fs);
 SNRmmse = snrseg(y_mmse, y_clean, fs);
+
+%% STOI
+stoiNoisy = stoi(y_clean,y_babble,fs);
+stoiMDKF = stoi(y_clean,y_MDKF,fs);
+stoiLPCmask = stoi(y_clean,y_maskLPC,fs);
+stoiMDKFmask = stoi(y_clean,y_MDKF_uncorrIBM,fs);
+stoiNoisemask = stoi(y_clean,y_MDKF_IBMnoise,fs);
+stoiMMSE = stoi(y_clean,y_mmse,fs);
 
 end

@@ -46,7 +46,7 @@ for i=1:length(folders)
     end
 end
 
-fileNames = datasample(fileNames,floor(length(fileNames)/11),'Replace',false);
+fileNames = datasample(fileNames,floor(length(fileNames)/10),'Replace',false);
 
 %%
 [clean,fs] = readsph(fileNames{1},'wt');
@@ -101,6 +101,10 @@ for k = 1:numFiles
             stoiMDKFmask(i,k), stoiLPCmask(i,k), stoiNoiseMask(i,k), stoiMDKF(i,k), stoiMMSE(i,k), stoiNoisy(i,k)] = runAll(clean, noisy, fs);
     end
     k
+    
+    save('snrStats_3','snrMDKFmask','snrMaskLPC','snrNoiseMask','snrMDKF','snrMMSE','snrNoisy');
+    save('pesqStats_3','pesqMDKFmask','pesqLPCmask','pesqNoiseMask','pesqMDKF','pesqMMSE','pesqNoisy');
+    save('stoiStats_3','stoiMDKFmask','stoiLPCmask','stoiNoiseMask','stoiMDKF','stoiMMSE','stoiNoisy');
 end
 
 %%
@@ -125,6 +129,6 @@ stoiMDKF = stoiMDKF(:,1:k);
 stoiMMSE = stoiMMSE(:,1:k);
 stoiNoisy = stoiNoisy(:,1:k);
 
-save('snrStats_2','snrMDKFmask','snrMaskLPC','snrNoiseMask','snrMDKF','snrMMSE','snrNoisy');
-save('pesqStats_2','pesqMDKFmask','pesqLPCmask','pesqNoiseMask','pesqMDKF','pesqMMSE','pesqNoisy');
-save('stoiStats_2','stoiMDKFmask','stoiLPCmask','stoiNoiseMask','stoiMDKF','stoiMMSE','stoiNoisy');
+save('snrStats_3','snrMDKFmask','snrMaskLPC','snrNoiseMask','snrMDKF','snrMMSE','snrNoisy');
+save('pesqStats_3','pesqMDKFmask','pesqLPCmask','pesqNoiseMask','pesqMDKF','pesqMMSE','pesqNoisy');
+save('stoiStats_3','stoiMDKFmask','stoiLPCmask','stoiNoiseMask','stoiMDKF','stoiMMSE','stoiNoisy');
