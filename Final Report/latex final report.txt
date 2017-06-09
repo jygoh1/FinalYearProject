@@ -918,7 +918,7 @@ IBM SNR threshold (LC)  & 0 dB           \\ \hline
 \label{table:BMMDKFparams}
 \end{table}
 
-\newpage
+\clearpage
 
 
 \begin{figure}[ht!]
@@ -995,8 +995,8 @@ LPC weight threshold    & 0.15            \\ \hline
 \label{table:LMDKFparams}
 \end{table}
 
+\clearpage
 
-\newpage
 
 \begin{figure}[ht!]
 \centering
@@ -1097,7 +1097,7 @@ LINK THIS TO FINDING OPTIMAL THRESHOLD BELOW
 
 Given the modification, a set of thresholds for the binary mask needed to be found. An optimal ratio was found to be:
 
-
+\clearpage
 
 \begin{figure}[ht!]
 \centering
@@ -1162,7 +1162,8 @@ IBM ones threshold      & 2.5            \\ \hline
 \label{table:NMDKFparams}
 \end{table}
 
-\newpage
+\clearpage
+
 
 \begin{figure}[ht!]
 \centering
@@ -1203,6 +1204,7 @@ better noise distribution? currently using gaussian for modification
 
 pesq/stoi highly correlated, but if possible would prefer to do human tests? lack of time and resources, as well as access to a highly specific test group (native english speaker, same place of origin and growing up etc.)
 
+combine multiple algorithms and test overall effect?
 
 \newpage
 \addcontentsline{toc}{chapter}{Bibliography}
