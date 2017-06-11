@@ -15,6 +15,10 @@ load 'snrStats_3';
 load 'pesqStats_3';
 load 'stoiStats_3';
 
+% load 'snrStats_mmseLPCs';
+% load 'pesqStats_mmseLPCs';
+% load 'stoiStats_mmseLPCs';
+
 %% SNR results
 snrMDKFmask_avg = mean(snrMDKFmask,2);
 snrMaskLPC_avg = mean(snrMaskLPC,2);

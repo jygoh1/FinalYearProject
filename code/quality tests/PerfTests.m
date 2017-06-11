@@ -102,9 +102,9 @@ for k = 1:numFiles
     end
     k
     
-    save('snrStats_3','snrMDKFmask','snrMaskLPC','snrNoiseMask','snrMDKF','snrMMSE','snrNoisy');
-    save('pesqStats_3','pesqMDKFmask','pesqLPCmask','pesqNoiseMask','pesqMDKF','pesqMMSE','pesqNoisy');
-    save('stoiStats_3','stoiMDKFmask','stoiLPCmask','stoiNoiseMask','stoiMDKF','stoiMMSE','stoiNoisy');
+    save('snrStats_mmseLPCs','snrMDKFmask','snrMaskLPC','snrNoiseMask','snrMDKF','snrMMSE','snrNoisy');
+    save('pesqStats_mmseLPCs','pesqMDKFmask','pesqLPCmask','pesqNoiseMask','pesqMDKF','pesqMMSE','pesqNoisy');
+    save('stoiStats_mmseLPCs','stoiMDKFmask','stoiLPCmask','stoiNoiseMask','stoiMDKF','stoiMMSE','stoiNoisy');
 end
 
 %%
@@ -129,6 +129,6 @@ stoiMDKF = stoiMDKF(:,1:k);
 stoiMMSE = stoiMMSE(:,1:k);
 stoiNoisy = stoiNoisy(:,1:k);
 
-save('snrStats_3','snrMDKFmask','snrMaskLPC','snrNoiseMask','snrMDKF','snrMMSE','snrNoisy');
-save('pesqStats_3','pesqMDKFmask','pesqLPCmask','pesqNoiseMask','pesqMDKF','pesqMMSE','pesqNoisy');
-save('stoiStats_3','stoiMDKFmask','stoiLPCmask','stoiNoiseMask','stoiMDKF','stoiMMSE','stoiNoisy');
+save('snrStats_mmseLPCs','snrMDKFmask','snrMaskLPC','snrNoiseMask','snrMDKF','snrMMSE','snrNoisy');
+save('pesqStats_mmseLPCs','pesqMDKFmask','pesqLPCmask','pesqNoiseMask','pesqMDKF','pesqMMSE','pesqNoisy');
+save('stoiStats_mmseLPCs','stoiMDKFmask','stoiLPCmask','stoiNoiseMask','stoiMDKF','stoiMMSE','stoiNoisy');

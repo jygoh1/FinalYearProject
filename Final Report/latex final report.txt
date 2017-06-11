@@ -75,16 +75,37 @@ Second Marker: & \textbf{Evers, C.} \\[12pt]
 \restoregeometry
 
 
-\newpage
 \pagenumbering{roman}
-\begin{abstract}
-Speech enhancement algorithms aim to reduce the background noise of a noise-corrupted speech input without distorting the original clean speech. In real-world situations, this can be very challenging. Although many algorithms have been developed to improve the Signal-to-Noise Ratio (SNR) of the noisy input, they also introduce speech distortion and artifacts such as musical noise, damaging speech quality and intelligibility. Recently, there has been growing psychoacoustic and physiological evidence to support the use of the modulation domain for speech enhancement, where the modulation domain is defined as the temporal variations of the acoustic spectral components. This report proposes modifications to existing modulation-domain speech processing methods, where an Ideal Binary Mask (IBM) will be applied to training samples of noisy speech to obtain averaged statistical information that can then be applied on new test samples. The goal is to use this data to improve the performance of an existing modulation-domain Kalman Filter (MDKF). The performance of these proposed modifications is assessed by measuring the SNR, speech quality (using Perceptual Evaluation of Speech Quality or PESQ) and speech intelligibility (Short-Time Objective Intelligibility or STOI) of the enhanced speech. Results show that the developed algorithms provide some improvements in both speech quality and intelligibility over a range of input noise levels.
-\end{abstract}
+% \begin{abstract}
+\chapter*{Abstract}
+\thispagestyle{plain}
+\addcontentsline{toc}{chapter}{Abstract}
+Speech enhancement algorithms aim to reduce the background noise of a noise-corrupted speech input without distorting the original clean speech. In real-world situations, this can be very challenging. Although many algorithms have been developed to improve the Signal-to-Noise Ratio (SNR) of the noisy input, they also introduce speech distortion and artifacts such as musical noise, damaging speech quality and intelligibility. Recently, there has been growing psychoacoustic and physiological evidence to support the use of the modulation domain for speech enhancement, where the modulation domain is defined as the temporal variations of the acoustic spectral components. This report proposes modifications to existing modulation-domain speech processing methods, where an Ideal Binary Mask (IBM) will be applied to training samples of noisy speech to obtain averaged statistical information that can then be applied on new test samples. The goal is to use this data to improve the performance of an existing modulation-domain Kalman Filter (MDKF). The performance of these proposed modifications is assessed by measuring the segmental SNR (segSNR), speech quality (using Perceptual Evaluation of Speech Quality or PESQ) and speech intelligibility (Short-Time Objective Intelligibility or STOI) of the enhanced speech. Results show that the developed algorithms provide some improvements in both speech quality and intelligibility over a range of input noise levels.
+% \end{abstract}
+\clearpage
+
+\chapter*{Acknowledgements}
+\addcontentsline{toc}{chapter}{Acknowledgements}
+Firstly, I would like to express my sincere gratitude to my project supervisor, Mr Mike Brookes. His patient guidance and understanding has been very helpful throughout the course of the project, and meetings with him have always produced useful ideas and feedback.
+
+Next, I would like to express my appreciation to my family for their understanding and support, allowing me to successfully complete the project.
+
+Last but not least, I would like to thank my friends who have been by my side to support and motivate me throughout the course of the project.
 
 
 \newpage
 \tableofcontents
 \clearpage
+
+ 
+\newpage
+\addcontentsline{toc}{chapter}{\listfigurename}
+\listoffigures
+ 
+ 
+\newpage
+\addcontentsline{toc}{chapter}{\listtablename}
+\listoftables
 
 
 \nomlabelwidth=30mm				% indentation between nomenclature acronym and description
@@ -667,7 +688,7 @@ Using clean speech as the ``noisy'' input speech to the MDKF filter, a plot of t
 
 \begin{figure}[ht!]
 \centering
-\includegraphics[width=0.6\linewidth]{compareModFrameLengths}
+\includegraphics[width=0.5\linewidth]{compareModFrameLengths}
 \captionof{figure}{Plot of normalised excitation variance vs. modulation frame lengths}
 \label{fig:compareModFrameLengths}
 \end{figure}
@@ -676,9 +697,22 @@ Figure \ref{fig:compareModFrameLengths} clearly shows that the error decreases a
 
 \section{Kalman Filter Post Processing}
 
-The framework for the proposed speech enhancement algorithms in this project are shown in Figure ??. Similarly to \cite{WB16}, the Kalman filter is applied not to the original noisy input signal, but to the output of an MMSE-enhanced spectrum, using the algorithm of \cite{MMSEspeech}.
+%%%%%%%%%%%%%%%%%%%%
+NOT DONE
+%%%%%%%%%%%%%%%%%%%%
 
-The baseline system is the same as described in Section \ref{MDKF}: the noisy input time-domain speech signal undergoes the STFT transform and is enhanced by the MMSE algorithm. The amplitude spectrum of the enhanced speech is then used as input to the MDKF. The noise is estimated from the MMSE-enhanced amplitudes using the algorithm in \cite{MMSEnoiseBetter}. After processing through the Kalman filter, the output enhanced magnitudes are combined with the noisy phase spectrum, then processed through an inverse STFT to produce the output processed speech. In the ``oracle'' model, LPC coefficients are calculated from the clean speech, while in the practical model, LPCs are computed from the MMSE-enhanced speech, Although not as accurate as clean-speech LPCs, the effect of noise on the model is reduced when calculating LPCs from MMSE-enhanced speech rather than from the original noisy speech. In both cases, LPCs are computed from the spectral amplitudes within each frequency bin.
+The base framework for the proposed speech enhancement algorithms in this project are shown in Figure \ref{fig:blockdiagramMDKF}, which is based on a Modulation-Domain Kalman Filter (MDKF) as described in Section \ref{MDKF}. In this case, the Kalman filter is applied not to the original noisy input signal, but to the output of an MMSE-enhanced spectrum, using the algorithm of \cite{MMSEspeech}. Modifications are then proposed to this baseline algorithm.
+
+The noisy input time-domain speech signal undergoes the STFT transform and is enhanced by the MMSE algorithm. The amplitude spectrum of the MMSE-enhanced speech is used as input to the MDKF, and is also used to estimate the speech LPCs and noise power spectrum. The noise is estimated from the MMSE-enhanced amplitudes using the algorithm in \cite{MMSEnoiseBetter}. After processing through the Kalman filter, the output enhanced magnitudes are combined with the MMSE-enhanced phase spectrum, then processed through an inverse STFT to produce the output processed speech.
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=1\linewidth]{blockdiagramMDKF-MMSE}
+\captionof{figure}{Block diagram of baseline MMSE-MDKF model}
+\label{fig:blockdiagramMDKF}
+\end{figure}
+
+In the ``oracle'' model, LPC coefficients are calculated from the clean speech, while in the practical model, LPCs are computed from the MMSE-enhanced speech, Although not as accurate as clean-speech LPCs, the effect of noise on the model is greatly reduced when calculating LPCs from MMSE-enhanced speech rather than from the original noisy speech. In both cases, LPCs are computed from the spectral amplitudes within each frequency bin.
 
 
 \chapter{Testing Methodology}
@@ -764,7 +798,7 @@ The method that we propose to obtain $p(s)$ requires statistical information fro
 
 To generate the IBM, the STFT of the signal is first taken, producing a matrix of time-frequency (T-F) units, and the unit-wise signal-to-noise ratio (SNR) is then computed to produce a binary-valued matrix. In the MDKF setup, the same STFT of the signal is taken; the mask thus provides a speech-dominant/noise-dominant indicator for each T-F unit of the STFT-processed signal.
 
-To generate the speech-dominant PDF for one frequency bin in a speech signal, we picked out the samples of the amplitude spectrum of this frequency bin which had corresponding (the same T-F location) mask values indicating $1$. The mean and variance of these samples was then computed. The same process was done to compute the noise-dominant PDF for the same frequency bin. This was done for each frequency bin, and the values were averaged over all speech samples in the training dataset. All training samples were corrupted by white noise at $5$ dB SNR, which was found to maximise the IBM accuracy. To save time, the training of the mask statistics was computed once offline from the MDKF algorithm, with its values stored offline to pull when needed.
+To generate the speech-dominant PDF for one frequency bin in a speech signal, we picked out the samples of the amplitude spectrum of this frequency bin which had corresponding (the same T-F location) mask values indicating $1$. The mean and variance of these samples was then computed. The same process was done to compute the noise-dominant PDF for the same frequency bin. This was done for each frequency bin, and the values were averaged over all speech samples in the training dataset, which were corrupted by white noise at $5$ dB SNR. To save time, training of mask statistics was done once, with its values stored offline to pull when needed.
 
 \subsection{Modifying Observation}
 
@@ -895,9 +929,16 @@ Finally, the original state $\textbf{X}_{n|n}$ can be obtained with the reverse 
 
 \section{Performance Results and Discussion}
 
-In this section, the IBM-modified MDKF algorithm will be termed BMMDKF, and uses the modification described in Section \ref{IBM_KF}. For testing, the performance of the BMMDKF will be compared to a few control algorithms: the original MDKF of Section \ref{MDKF}, the MMSE speech enhancement algorithm and the original noisy input speech. These are respectively named MDKF, MMSE and Noisy in the plots that follow. As a theoretical comparison, all Kalman filter implementations evaluated utilise LPCs generated from clean speech.
+In this section, the IBM-modified MDKF algorithm uses the modification described in Section \ref{IBM_KF}, and will be termed BMMDKF. The block diagram for the BMMDKF is shown in Figure \ref{fig:blockdiagramBMMDKF}, highlighting the IBM modification in bold.
 
-For standardisation of testing, the parameters used generally follow those described in Chapter \ref{implementation}. For clarity, these parameters are shown in Table \ref{table:BMMDKFparams}.
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\linewidth]{blockdiagramBMMDKF}
+\captionof{figure}{Block diagram of IBM-modified MDKF (BMMDKF)}
+\label{fig:blockdiagramBMMDKF}
+\end{figure}
+
+For testing, the performance of the BMMDKF will be compared to a few control algorithms: the original MDKF of Section \ref{MDKF}, the MMSE speech enhancement algorithm and the original noisy input speech. These are respectively named MDKF, MMSE and Noisy in the plots that follow. To standardise testing, the parameters used generally follow those described in Chapter \ref{implementation}. They are shown in Table \ref{table:BMMDKFparams}.
 
 \begin{table}[ht!]
 \centering
@@ -914,31 +955,30 @@ MDKF model order        & 2              \\ \hline
 LPCs generated from     & clean speech   \\ \hline
 IBM SNR threshold (LC)  & 0 dB           \\ \hline
 \end{tabular}
-\caption{List of parameters used to evaluate algorithms}
+\caption{List of parameters used to evaluate BMMDKF and other algorithms}
 \label{table:BMMDKFparams}
 \end{table}
 
 \clearpage
 
-
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{BMMDKF_MDKF_MMSE_Noisy_segSNR}
-\captionof{figure}{Average segSNR values of different algorithms vs. speech corrupted by white noise at varying SNR levels}
+\captionof{figure}{Average segSNR values of BMMDKF and other algorithms vs. speech corrupted by white noise at varying SNR levels}
 \label{fig:BMMDKF_MDKF_MMSE_Noisy_segSNR}
 \end{figure}
 
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{BMMDKF_MDKF_MMSE_Noisy_pesq}
-\captionof{figure}{Average PESQ values of different algorithms vs. speech corrupted by white noise at varying SNR levels}
+\captionof{figure}{Average PESQ values of BMMDKF and other algorithms vs. speech corrupted by white noise at varying SNR levels}
 \label{fig:BMMDKF_MDKF_MMSE_Noisy_pesq}
 \end{figure}
 
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{BMMDKF_MDKF_MMSE_Noisy_STOI}
-\captionof{figure}{Average STOI values of different algorithms vs. speech corrupted by white noise at varying SNR levels}
+\captionof{figure}{Average STOI values of BMMDKF and other algorithms vs. speech corrupted by white noise at varying SNR levels}
 \label{fig:BMMDKF_MDKF_MMSE_Noisy_STOI}
 \end{figure}
 
@@ -949,12 +989,11 @@ IBM SNR threshold (LC)  & 0 dB           \\ \hline
 With separate PDFs for the signal-dominant and noise-dominant portions of the mask, a condition needs to be checked for each iteration to pull the correct mask statistics. This check, along with the modification of the observation mean and variance, slows the algorithm down by a significant amount. Currently, the enhancer is not being used in a real-time scenario, and thus speed is not crucial. If it is used in a real-time context in the future, however, the code will need to be modified so as to minimise the time delay of the enhancement.
 
 
-
 \chapter{Improved LPC Coefficients}
 
 \section{Introduction}
 
-The framework for the estimation of the LPC coefficients used in the MDKF was described earlier in Section \ref{LPC}. Since the LPCs aim to mimic the linear prediction model of speech, the accuracy of LPC estimation is critical to the performance of the enhancer. In this section, we proposed a simple modification to the LPC estimation by incorporating information from an available IBM, with the aim of improving the coefficients generated.
+The framework for the estimation of the linear prediction coefficients (LPCs) used in the MDKF was described earlier in Section \ref{LPC}. Since the LPCs aim to mimic the linear prediction model of speech, the accuracy of LPC estimation is critical to the performance of the enhancer. In this section, we proposed a simple modification to the LPC estimation by incorporating information from an available IBM, with the aim of improving the coefficients generated.
 
 \section{Weighted LPC estimation}
 
@@ -968,13 +1007,33 @@ E=\sum_{n}w(n)e^2(n)=\sum_{n}w(n)[s(n)+\sum_{k=1}^{p}a_k s(n-k)]^2
 
 where $w(n)$ represents the weight attached to each speech sample $s(n)$.
 
+This modification essentially represents a multiplication of the autocorrelation function by a scaling factor dependent on an IBM. In this algorithm, unlike the BMMDKF, the binary mask is specifically applied to the input of interest only. In the modulation-domain LPC estimation used in the MDKF, the LPCs are estimated from each modulating signal along with the corresponding binary mask frame, where the modulating signal and the binary mask are windowed in the same way. The windowed mask has values from $0$ to real numbers less than $1$, due to the windowing.
 
+The weights tested were of the form:
+
+\begin{equation}\label{eq:weightsLPCIBM}
+    w(n)= 
+\begin{cases}
+    1+th,& \text{if } IBM(n)==0\\
+    1-th,              & \text{otherwise}
+\end{cases}
+\end{equation}
+
+where $th$ represents a positive threshold value. The optimal threshold was found to be $0.15$ i.e. the optimal weights were determined to be $1+0.15=1.15$ when the mask is zero and $1-0.15=0.85$ when the mask shows a non-zero value. For example, a mask frame of $[0, 0, 0.48, 0]$ gives the weight vector $[1.15, 1.15, 0.85, 1.15]$, which is then multiplied element-wise with the input modulating signal frame. All other steps in the LPC estimation are the same as in Section \ref{LPC}.
+
+It should be noted that these values imply that when the mask indicates noise, the error is given a greater weight as compared to when the mask indicates speech. A possible explanation is that generally, the amplitude of the signal during speech activity is greater than that of speech absence, assuming that the noise is random but always present in the signal. As such, if the mask indicates that a certain time-frequency (T-F) unit contains only noise, the LPC modelled signal should also have noise at the same T-F unit to minimise the overall mean squared error, and likewise for when the mask indicates speech presence. However, speech can generally have a larger variation in amplitude as compared to that of noise only. As such, it can be argued that if the model needs to predict speech absence (i.e. speech absence), it has to do so with greater accuracy than if it needs to predict speech presence. This leads to the need for a greater weight when the mask indicates speech absence as compared to speech presence. Results agree with this weighting, showing some improvements over the original MDKF.
 
 \section{Performance Results and Discussion}
+In this section, the enhanced-LPC algorithm will be termed LMDKF, with the other algorithms named as before. The block diagram for the LDMKF is shown in Figure \ref{fig:blockdiagramLMDKF}.
 
-Similarly to previous experiments, the algorithm modified in this section is run against other control algorithms, with the parameters used shown in Table \ref{table:LMDKFparams}. As before, LPCs for all Kalman filter algorithms are generated from clean speech.
+Similarly to previous experiments, the LMDKF is run against other control algorithms, with the parameters used shown in Table \ref{table:LMDKFparams}.
 
-In this section, the enhanced-LPC algorithm will be termed LMDKF, with the other algorithms named as before.
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\linewidth]{blockdiagramLMDKF}
+\captionof{figure}{Block diagram of MDKF using IBM-enhanced LPCs (LMDKF)}
+\label{fig:blockdiagramLMDKF}
+\end{figure}
 
 \begin{table}[ht!]
 \centering
@@ -991,7 +1050,7 @@ MDKF model order        & 2              \\ \hline
 LPCs generated from     & clean speech   \\ \hline
 LPC weight threshold    & 0.15            \\ \hline
 \end{tabular}
-\caption{List of parameters used to evaluate algorithms}
+\caption{List of parameters used to evaluate LDMKF and other algorithms}
 \label{table:LMDKFparams}
 \end{table}
 
@@ -1001,21 +1060,21 @@ LPC weight threshold    & 0.15            \\ \hline
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{LMDKF_MDKF_MMSE_Noisy_segSNR}
-\captionof{figure}{Average segSNR values of different algorithms vs. speech corrupted by white noise at varying SNR levels}
+\captionof{figure}{Average segSNR values of LDMKF and other algorithms vs. speech corrupted by white noise at varying SNR levels}
 \label{fig:LMDKF_MDKF_MMSE_Noisy_segSNR}
 \end{figure}
 
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{LMDKF_MDKF_MMSE_Noisy_pesq}
-\captionof{figure}{Average PESQ values of different algorithms vs. speech corrupted by white noise at varying SNR levels}
+\captionof{figure}{Average PESQ values of LDMKF and other algorithms vs. speech corrupted by white noise at varying SNR levels}
 \label{fig:LMDKF_MDKF_MMSE_Noisy_pesq}
 \end{figure}
 
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{LMDKF_MDKF_MMSE_Noisy_STOI}
-\captionof{figure}{Average STOI values of different algorithms vs. speech corrupted by white noise at varying SNR levels}
+\captionof{figure}{Average STOI values of LDMKF and other algorithms vs. speech corrupted by white noise at varying SNR levels}
 \label{fig:LMDKF_MDKF_MMSE_Noisy_STOI}
 \end{figure}
 
@@ -1086,20 +1145,31 @@ The noise power spectrum can then be computed from the estimated \textit{a poste
 
 Finally, this raw noise estimate is smoothed as in Equation \ref{eq:noisePSDfromPeriodogram} to obtain the estimated noise PSD.
 
-
 \section{Modifying Noise Estimation}
 
 In the previous section which briefly reviewed the MMSE noise estimators of \cite{MMSEnoise} and \cite{MMSEnoiseBetter}, some parameters are notably fixed. In this section, we use an IBM to provide information that allows us to vary these parameters.
 
-LINK THIS TO FINDING OPTIMAL THRESHOLD BELOW
+Firstly, a typical speech-present SNR of $15$ dB is used when estimating the noise power for each frame. This provides an overall optimal result, but can be improved if a binary mask can indicate speech absence or presence. This SNR was therefore adaptively modified to be increased or decreased depending on what is indicated by the IBM for each frame. The IBM frame was not used directly, but mapped to a set of weights determined by the formula:
+
+\begin{equation}\label{eq:weightsNoiseIBM_withvalues}
+    w(n)= 
+\begin{cases}
+    th,& \text{if } IBM(n)==0\\
+    1.5+th,              & \text{otherwise}
+\end{cases}
+\end{equation}
+
+where $th$ is an empirically-determined positive constant. Notice that if the mask indicates speech presence, the corresponding weight is larger than $1$, essentially boosting the speech. On the whole, this was found to produce better results.
+
+The speech-present SNR was then multiplied by the mean of the current IBM frame, and this modified SNR was used for the current frame to calculate the \textit{a posteriori} SPP.
+
+However, this alone was found to be insufficient in improving the noise estimation. Thus, the IBM frame was additionally used to weight the \textit{a posteriori} SPP found in Equation \ref{eq:aposterioriSPP_likelihood}. Unlike the adjustment to the SNR, the SPP frame, which is used to obtain the noise estimate, was multiplied element-wise by the weighting IBM with values as determined in Equation \ref{eq:weightsNoiseIBM}. Combining these two adjustments showed the best results.
 
 \section{Optimal IBM-Modified Estimator Threshold}
 
-Given the modification, a set of thresholds for the binary mask needed to be found. An optimal ratio was found to be:
+Given the modification, an optimal threshold for the binary mask needed to be found. A few threshold values were tested and compared in the plots below. The following plots compare the ratio of an MDKF using the modified noise estimation and the original MDKF, plotted over a range of input SNR values and comparing segSNR, PESQ and STOI: a ratio of $>1$ means that the IBM-modified noise estimation performs better than the original.
 
-\clearpage
-
-\begin{figure}[ht!]
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.7\linewidth]{estnoise_segSNRratios}
 \captionof{figure}{Average segSNR ratios comparing IBM-modified noise estimation with original MMSE noise estimation vs. speech corrupted by white noise at varying SNR levels}
@@ -1120,6 +1190,16 @@ Given the modification, a set of thresholds for the binary mask needed to be fou
 \label{fig:estnoise_STOIratios}
 \end{figure}
 
+Figures \ref{fig:estnoise_segSNRratios} to \ref{fig:estnoise_STOIratios} show that $th=1.0$ is the best value. Although it has the worst-performing segSNR over most of the input SNR range tested, it generally outperforms all other threshold values for PESQ and STOI over most of the input SNR range, and these measures are arguably more important for a human listener as compared to segSNR. Therefore, $th=1.0$ was used as the threshold, producing the IBM-mapped weights:
+
+\begin{equation}\label{eq:weightsNoiseIBM}
+    w(n)= 
+\begin{cases}
+    1.0,& \text{if } IBM(n)==0\\
+    2.5,              & \text{otherwise}
+\end{cases}
+\end{equation}
+
 \subsection{Estimated Global SNR}
 
 \begin{figure}[ht!]
@@ -1135,12 +1215,18 @@ Figure \ref{fig:estnoise_compareglobalSNR} compares the averaged estimated globa
 
 A possible explanation for this is that the noise is random, and the MMSE noise estimator in \cite{MMSEnoiseBetter} uses only a fixed \textit{a priori} SNR value typical of speech. However, incorporating IBM data meant tweaking the original spectral components, which meant modifying this SNR value adaptively. Using the threshold values determined in Figures \ref{fig:estnoise_PESQratios} and \ref{fig:estnoise_STOIratios} better represented the actual speech information, but might not represent the numerical SNR as well as the original algorithm.
 
-
 \section{Performance Results and Discussion}
 
-As with all previous experiments, the algorithm discussed in this section is run against other control algorithms, with the parameters used shown in Table \ref{table:NMDKFparams}.
+In this section, the algorithm using the IBM-enhanced noise estimate will be termed NMDKF, with the other algorithms named as before. The block diagram for the proposed modification is shown in Figure \ref{fig:blockdiagramNMDKF}.
 
-In this section, the algorithm using the IBM-enhanced noise estimate will be termed NMDKF, with the other algorithms named as before.
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\linewidth]{blockdiagramNMDKF}
+\captionof{figure}{Block diagram of MDKF using IBM-modified noise estimation (NMDKF)}
+\label{fig:blockdiagramNMDKF}
+\end{figure}
+
+As with all previous experiments, the algorithm discussed in this section is run against other control algorithms, with the parameters used shown in Table \ref{table:NMDKFparams}.
 
 \begin{table}[ht!]
 \centering
@@ -1158,7 +1244,7 @@ LPCs generated from     & clean speech   \\ \hline
 IBM zeros threshold     & 1.0            \\ \hline
 IBM ones threshold      & 2.5            \\ \hline
 \end{tabular}
-\caption{List of parameters used to evaluate algorithms}
+\caption{List of parameters used to evaluate NMDKF and other algorithms}
 \label{table:NMDKFparams}
 \end{table}
 
@@ -1168,21 +1254,21 @@ IBM ones threshold      & 2.5            \\ \hline
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{NMDKF_MDKF_MMSE_Noisy_segSNR}
-\captionof{figure}{Average segSNR values of different algorithms vs. speech corrupted by white noise at varying SNR levels}
+\captionof{figure}{Average segSNR values of NMDKF and other algorithms vs. speech corrupted by white noise at varying SNR levels}
 \label{fig:NMDKF_MDKF_MMSE_Noisy_segSNR}
 \end{figure}
 
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{NMDKF_MDKF_MMSE_Noisy_pesq}
-\captionof{figure}{Average PESQ values of different algorithms vs. speech corrupted by white noise at varying SNR levels}
+\captionof{figure}{Average PESQ values of NMDKF and other algorithms vs. speech corrupted by white noise at varying SNR levels}
 \label{fig:NMDKF_MDKF_MMSE_Noisy_pesq}
 \end{figure}
 
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=0.7\linewidth]{NMDKF_MDKF_MMSE_Noisy_STOI}
-\captionof{figure}{Average STOI values of different algorithms vs. speech corrupted by white noise at varying SNR levels}
+\captionof{figure}{Average STOI values of NMDKF and other algorithms vs. speech corrupted by white noise at varying SNR levels}
 \label{fig:NMDKF_MDKF_MMSE_Noisy_STOI}
 \end{figure}
 

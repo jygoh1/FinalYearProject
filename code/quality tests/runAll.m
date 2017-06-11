@@ -20,31 +20,32 @@ maskth_noise = 1.0;
 y_mmse = ssubmmse(y_babble, fs);
 
 %%
-% % MMSE-enhanced LPCs
-% % linear MDKF
-% y_MDKF = idealMDKF_linear(y_babble, y_mmse, fs, Tw, Ts, p_MDKF, Tw_slow, Ts_slow, fs_slow);
-% 
-% % uncorrelated MDKF with IBM applied in KF equations
-% y_MDKF_uncorrIBM = uncorrelatedMDKF_IBM_all(y_babble, y_mmse, fs, Tw, Ts, p_MDKF, Tw_slow, Ts_slow, fs_slow, LC, u_present, var_present, u_absent, var_absent);
-% 
-% % mask-enhanced LPCs
-% y_maskLPC = MDKFmaskLPC(y_babble, y_mmse, fs, Tw, Ts, p_MDKF, Tw_slow, Ts_slow, fs_slow, LC, mask_th);
-%
-% % mask-enhanced noise estimation
-% y_MDKF_IBMnoise = idealMDKF_noiseIBM(y_babble, y_mmse, fs, Tw, Ts, p_MDKF, Tw_slow, Ts_slow, fs_slow, LC, maskth_noise);
-
-%% clean LPCs
+% MMSE-enhanced LPCs
 % linear MDKF
-y_MDKF = idealMDKF_linear(y_babble, y_clean, fs, Tw, Ts, p_MDKF, Tw_slow, Ts_slow, fs_slow);
+y_MDKF = idealMDKF_linear(y_mmse, y_mmse, fs, Tw, Ts, p_MDKF, Tw_slow, Ts_slow, fs_slow);
 
 % uncorrelated MDKF with IBM applied in KF equations
-y_MDKF_uncorrIBM = uncorrelatedMDKF_IBM_all(y_babble, y_clean, fs, Tw, Ts, p_MDKF, Tw_slow, Ts_slow, fs_slow, LC, u_present, var_present, u_absent, var_absent);
+y_MDKF_uncorrIBM = uncorrelatedMDKF_IBM_all(y_mmse, y_mmse, fs, Tw, Ts, p_MDKF, Tw_slow, Ts_slow, fs_slow, LC, u_present, var_present, u_absent, var_absent);
 
 % mask-enhanced LPCs
-y_maskLPC = MDKFmaskLPC(y_babble, y_clean, fs, Tw, Ts, p_MDKF, Tw_slow, Ts_slow, fs_slow, LC, maskth);
+y_maskLPC = MDKFmaskLPC(y_mmse, y_mmse, fs, Tw, Ts, p_MDKF, Tw_slow, Ts_slow, fs_slow, LC, maskth);
 
 % mask-enhanced noise estimation
-y_MDKF_IBMnoise = idealMDKF_noiseIBM(y_babble, y_clean, fs, Tw, Ts, p_MDKF, Tw_slow, Ts_slow, fs_slow, LC, maskth_noise);
+y_MDKF_IBMnoise = idealMDKF_noiseIBM(y_mmse, y_mmse, fs, Tw, Ts, p_MDKF, Tw_slow, Ts_slow, fs_slow, LC, maskth_noise);
+
+%%
+% % clean LPCs
+% % linear MDKF
+% y_MDKF = idealMDKF_linear(y_babble, y_clean, fs, Tw, Ts, p_MDKF, Tw_slow, Ts_slow, fs_slow);
+% 
+% % uncorrelated MDKF with IBM applied in KF equations
+% y_MDKF_uncorrIBM = uncorrelatedMDKF_IBM_all(y_babble, y_clean, fs, Tw, Ts, p_MDKF, Tw_slow, Ts_slow, fs_slow, LC, u_present, var_present, u_absent, var_absent);
+% 
+% % mask-enhanced LPCs
+% y_maskLPC = MDKFmaskLPC(y_babble, y_clean, fs, Tw, Ts, p_MDKF, Tw_slow, Ts_slow, fs_slow, LC, maskth);
+% 
+% % mask-enhanced noise estimation
+% y_MDKF_IBMnoise = idealMDKF_noiseIBM(y_babble, y_clean, fs, Tw, Ts, p_MDKF, Tw_slow, Ts_slow, fs_slow, LC, maskth_noise);
 
 %% PESQ
 audiowrite('FYP\testfiles\y_clean.wav',y_clean,fs);
