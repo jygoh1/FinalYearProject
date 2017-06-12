@@ -13,7 +13,7 @@ warning
 %%
 databases = '\\sapfs.ee.ic.ac.uk\Databases\';
 timit = [databases 'Speech\TIMIT\TIMIT\TRAIN\'];
-db = [timit 'DR2\'];
+db = [timit 'DR1\'];
 nato = [databases 'Noises\NatoNoise0\'];
 
 folders = dir(db);
@@ -46,7 +46,7 @@ for i=1:length(folders)
     end
 end
 
-fileNames = datasample(fileNames,floor(length(fileNames)/20),'Replace',false);
+fileNames = datasample(fileNames,floor(length(fileNames)/10),'Replace',false);
 
 %%
 [clean,fs] = readsph(fileNames{1},'wt');
@@ -98,13 +98,13 @@ for k = 1:numFiles
         noisy = v_addnoise(clean, fs, targetSNR(i), 'nzZ', v);  % add noise at chosen level keeping speech at 0 dB
         [snrMDKFmask(i,k), snrMaskLPC(i,k), snrNoiseMask(i,k), snrMDKF(i,k), snrMMSE(i,k), snrNoisy(i,k), ...
             pesqMDKFmask(i,k), pesqLPCmask(i,k), pesqNoiseMask(i,k), pesqMDKF(i,k), pesqMMSE(i,k), pesqNoisy(i,k), ...
-            stoiMDKFmask(i,k), stoiLPCmask(i,k), stoiNoiseMask(i,k), stoiMDKF(i,k), stoiMMSE(i,k), stoiNoisy(i,k)] = runAll(clean, noisy, fs);
+            stoiMDKFmask(i,k), stoiLPCmask(i,k), stoiNoiseMask(i,k), stoiMDKF(i,k), stoiMMSE(i,k), stoiNoisy(i,k)] = MMSErunAll(clean, noisy, fs);
     end
     k
     
-    save('snrStats_4','snrMDKFmask','snrMaskLPC','snrNoiseMask','snrMDKF','snrMMSE','snrNoisy');
-    save('pesqStats_4','pesqMDKFmask','pesqLPCmask','pesqNoiseMask','pesqMDKF','pesqMMSE','pesqNoisy');
-    save('stoiStats_4','stoiMDKFmask','stoiLPCmask','stoiNoiseMask','stoiMDKF','stoiMMSE','stoiNoisy');
+    save('snrStats_mmseLPCs','snrMDKFmask','snrMaskLPC','snrNoiseMask','snrMDKF','snrMMSE','snrNoisy');
+    save('pesqStats_mmseLPCs','pesqMDKFmask','pesqLPCmask','pesqNoiseMask','pesqMDKF','pesqMMSE','pesqNoisy');
+    save('stoiStats_mmseLPCs','stoiMDKFmask','stoiLPCmask','stoiNoiseMask','stoiMDKF','stoiMMSE','stoiNoisy');
 end
 
 %%
@@ -129,6 +129,6 @@ stoiMDKF = stoiMDKF(:,1:k);
 stoiMMSE = stoiMMSE(:,1:k);
 stoiNoisy = stoiNoisy(:,1:k);
 
-save('snrStats_4','snrMDKFmask','snrMaskLPC','snrNoiseMask','snrMDKF','snrMMSE','snrNoisy');
-save('pesqStats_4','pesqMDKFmask','pesqLPCmask','pesqNoiseMask','pesqMDKF','pesqMMSE','pesqNoisy');
-save('stoiStats_4','stoiMDKFmask','stoiLPCmask','stoiNoiseMask','stoiMDKF','stoiMMSE','stoiNoisy');
+save('snrStats_mmseLPCs','snrMDKFmask','snrMaskLPC','snrNoiseMask','snrMDKF','snrMMSE','snrNoisy');
+save('pesqStats_mmseLPCs','pesqMDKFmask','pesqLPCmask','pesqNoiseMask','pesqMDKF','pesqMMSE','pesqNoisy');
+save('stoiStats_mmseLPCs','stoiMDKFmask','stoiLPCmask','stoiNoiseMask','stoiMDKF','stoiMMSE','stoiNoisy');

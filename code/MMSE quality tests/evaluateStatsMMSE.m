@@ -11,17 +11,9 @@ addpath(genpath('pesqSTOI'));
 targetSNR = [-20 -15 -10 -5 0 5 10 15 20];
 targetSNR = targetSNR';
 
-% load 'snrStats_3';
-% load 'pesqStats_3';
-% load 'stoiStats_3';
-
-% load 'snrStats_mmseLPCs';
-% load 'pesqStats_mmseLPCs';
-% load 'stoiStats_mmseLPCs';
-
-load 'snrStats_4';
-load 'pesqStats_4';
-load 'stoiStats_4';
+load 'snrStats_mmseLPCs';
+load 'pesqStats_mmseLPCs';
+load 'stoiStats_mmseLPCs';
 
 %% SNR results
 % snrMDKFmask_avg = mean(snrMDKFmask,2);
@@ -147,6 +139,42 @@ set(gca,'XTickLabel',aaaa,'fontsize',12)
 legendCell = {'NMDKF', 'MDKF', 'MMSE', 'Noisy'};
 legend(legendCell,'FontSize',10.5)
 
+figure;
+h = plot(targetSNR,pesq(:,[1,4]),'linewidth',1.2);
+
+title('\fontsize{19}Average PESQ values');
+xlabel('\fontsize{14}Global SNR of input noisy speech (dB)');
+ylabel({'\fontsize{14}PESQ'});
+aaaa = get(gca,'XTickLabel');
+set(h,{'Marker'},{'s';'o'})
+set(gca,'XTickLabel',aaaa,'fontsize',12)
+legendCell = {'BMMDKF', 'MDKF'};
+legend(legendCell,'FontSize',10.5)
+
+figure;
+h = plot(targetSNR,pesq(:,[2,4]),'linewidth',1.2);
+
+title('\fontsize{19}Average PESQ values');
+xlabel('\fontsize{14}Global SNR of input noisy speech (dB)');
+ylabel({'\fontsize{14}PESQ'});
+aaaa = get(gca,'XTickLabel');
+set(h,{'Marker'},{'s';'o'})
+set(gca,'XTickLabel',aaaa,'fontsize',12)
+legendCell = {'LMDKF', 'MDKF'};
+legend(legendCell,'FontSize',10.5)
+
+figure;
+h = plot(targetSNR,pesq(:,[3,4]),'linewidth',1.2);
+
+title('\fontsize{19}Average PESQ values');
+xlabel('\fontsize{14}Global SNR of input noisy speech (dB)');
+ylabel({'\fontsize{14}PESQ'});
+aaaa = get(gca,'XTickLabel');
+set(h,{'Marker'},{'s';'o'})
+set(gca,'XTickLabel',aaaa,'fontsize',12)
+legendCell = {'NMDKF', 'MDKF'};
+legend(legendCell,'FontSize',10.5)
+
 %%
 stoi = [stoiMDKFmask_avg, stoiLPCmask_avg, stoiNoiseMask_avg, stoiMDKF_avg, stoiMMSE_avg, stoiNoisy_avg];
 
@@ -183,6 +211,43 @@ xlabel('\fontsize{14}Global SNR of input noisy speech (dB)');
 ylabel({'\fontsize{14}STOI'});
 aaaa = get(gca,'XTickLabel');
 set(h,{'Marker'},{'s';'o';'*';'^'})
+% set(h,{'Color'},{'r';'b'})
 set(gca,'XTickLabel',aaaa,'fontsize',12)
 legendCell = {'NMDKF', 'MDKF', 'MMSE', 'Noisy'};
+legend(legendCell,'FontSize',10.5)
+
+figure;
+h = plot(targetSNR,stoi(:,[1,4]),'linewidth',1.2);
+
+title('\fontsize{19}Average STOI values');
+xlabel('\fontsize{14}Global SNR of input noisy speech (dB)');
+ylabel({'\fontsize{14}STOI'});
+aaaa = get(gca,'XTickLabel');
+set(h,{'Marker'},{'s';'o'})
+set(gca,'XTickLabel',aaaa,'fontsize',12)
+legendCell = {'BMMDKF', 'MDKF'};
+legend(legendCell,'FontSize',10.5)
+
+figure;
+h = plot(targetSNR,stoi(:,[2,4]),'linewidth',1.2);
+
+title('\fontsize{19}Average STOI values');
+xlabel('\fontsize{14}Global SNR of input noisy speech (dB)');
+ylabel({'\fontsize{14}STOI'});
+aaaa = get(gca,'XTickLabel');
+set(h,{'Marker'},{'s';'o'})
+set(gca,'XTickLabel',aaaa,'fontsize',12)
+legendCell = {'LMDKF', 'MDKF'};
+legend(legendCell,'FontSize',10.5)
+
+figure;
+h = plot(targetSNR,stoi(:,[3,4]),'linewidth',1.2);
+
+title('\fontsize{19}Average STOI values');
+xlabel('\fontsize{14}Global SNR of input noisy speech (dB)');
+ylabel({'\fontsize{14}STOI'});
+aaaa = get(gca,'XTickLabel');
+set(h,{'Marker'},{'s';'o'})
+set(gca,'XTickLabel',aaaa,'fontsize',12)
+legendCell = {'NMDKF', 'MDKF'};
 legend(legendCell,'FontSize',10.5)
