@@ -52,7 +52,7 @@ sorting=none        % sort by order of appearance
 \raggedright
   Imperial College London\\[17pt]
   Department of Electrical and Electronic Engineering\\[17pt]
-  Final Year Project 2017: Final Report\\[17pt]
+  Final Year Project Report 2017\\[17pt]
 }
 
 \rule{\columnwidth}{3pt}
@@ -1007,13 +1007,13 @@ In addition, for the spectral regions still retained by the MDKF, many of them a
 
 It is clear from Figures \ref{fig:BMMDKF_MDKF_MMSE_Noisy_pesq} and \ref{fig:BMMDKF_MDKF_MMSE_Noisy_STOI} that the refinement provided by the IBM modification rises with a reduced global input SNR. This trend is unsurprising, as it is generally much more difficult to improve on a very good score as compared to a low score. When the input SNR is high or satisfactory, including the range $0$ to $20$ dB, the baseline MDKF already performs very well. For example, PESQ scores are in the range $3-4$, and STOI scores are at $0.94$ and above; these are very high scores and are difficult to significantly improve on, and thus the BMMDKF shows only small improvements when the input SNR is high. When the input SNR is very low, however, the BMMDKF performance is markedly more enhanced; at $-20$ dB input, its PESQ and STOI scores are $17.86\%$ and $6.43\%$ better than the MDKF respectively.
 
-\section{Conclusion}
+\section{Evaluation}
 
 This chapter proposes applying an optimal IBM to a training dataset to obtain averaged statistical information corresponding to speech-dominant and noise-dominant regions of white noise-corrupted speech. It is proposed to use this information to improve the parameters used in the MDKF iteration equations. This modification is termed the BMMDKF algorithm.
 
-Performance results show that the BMMDKF shows very similar segSNR results to the MDKF across the board. However, it provides significant improvements over the MDKF in terms of perceived quality and intelligibility when applied on speech corrupted by white noise for a large range of input SNR. The performance gains are much more significant for input signals at much lower SNR. Overall, the BMMDKF has proven to be theoretically preferable to the MDKF in tracking and recovering the underlying clean speech in a noisy input over a range of input noise levels.
+Performance results show that the BMMDKF shows very similar segSNR results to the MDKF across the board. However, it provides significant improvements over the MDKF in terms of perceived quality (PESQ) and intelligibility (STOI) when applied on speech corrupted by white noise for a large range of input SNR. Additionally, the performance gains are much more significant for input signals at much lower SNR, with PESQ and STOI scores better than the MDKF by $17.86\%$ and $6.43\%$ respectively at $-20$ dB input. Overall, the BMMDKF has proven to be superior to the MDKF in enhancing noisy speech.
 
-With separate PDFs for the signal-dominant and noise-dominant portions of the mask, a condition needs to be checked for each iteration to pull the correct mask statistics. This check, along with the modification of the observation mean and variance, slows the algorithm down by a significant amount. Currently, the enhancer is not being used in a real-time scenario, and thus speed is not crucial. If it is used in a real-time context in the future, however, the code will need to be modified so as to minimise the time delay of the enhancement.
+With separate PDFs for the signal-dominant and noise-dominant portions of the mask, a condition needs to be checked for each iteration to pull the correct mask statistics. This check, along with the modification of the observation mean and variance, slows the algorithm down by a small but significant amount. Currently, the enhancer is not being used in a real-time scenario, and thus speed is not crucial. If it is used for a real-time application in the future, however, the code will need to be refactored so as to minimise the time delay of the enhancement.
 
 
 \chapter{Improved LPC Coefficients}\label{LMDKF_chapter}
@@ -1113,11 +1113,13 @@ Across the board, Figure \ref{fig:LMDKF_MDKF_MMSE_Noisy_pesq} demonstrates that 
 
 On the surface, it appears that the changes to segSNR, PESQ and STOI balance out overall. However, it is arguable that segSNR is relatively unimportant compared to the other two measures when it comes to human listeners and their subjective opinions. Furthermore, the largest decrease in STOI score compared to the MDKF is $0.0092$, which is a $1\%$ decrease in intelligibility scores i.e. MDKF is estimated to accurately detect $1\%$ more words than LMDKF, which can be regarded as almost negligible. On the other hand, while the improvement in PESQ score is not huge, it is still significant, and possibly more important to a real listener than a $1\%$ reduction in words recognised. Overall, if we look past the raw numbers and consider what they constitute, the LMDKF is very similar to the MDKF, but it is very possible that the LMDKF is regarded slightly more favourably than the original MDKF in real listening tests.
 
-\section{Conclusion}
+\section{Evaluation}
 
 This chapter discusses modifying the LPC estimation part of the MDKF by using a weighted sum to compute the mean squared error, using an IBM applied on the input signal to determine these weights. Unlike the BMMDKF of Chapter \ref{BMMDKF_chapter}, the IBM here is specifically applied to the signal of interest, to determine the time-frequency (T-F) areas of the signal to modify in order to come up with useful weighting.
 
-This modification shows very minor degradation in segSNR and STOI scores, and a small but moderately significant improvement in PESQ scores. Overall, the LMDKF is very similar to the MDKF. However, the various numerical scores were analysed further, and it is conceivable that the LMDKF would be preferred over the MDKF.
+This modification shows very minor degradation in segSNR and STOI scores, and a small but moderately significant improvement in PESQ scores. Overall, the LMDKF is very similar to the MDKF, and on the surface, it appears that the changes to segSNR, PESQ and STOI balance out.
+
+Further analysis of the numerical scores, however, led to a suggestion that the LMDKF would be preferred over the MDKF. It is arguable that segSNR is relatively unimportant compared to perceived quality and intelligibility for human listeners. Furthermore, the largest decrease in STOI score compared to the MDKF is almost inconsequential. On the other hand, while the improvement in PESQ score is not huge, it is possibly more important to a real listener. It is hence feasible that the LMDKF is slightly favoured over the MDKF in real listening tests.
 
 
 \chapter{IBM-improved Noise Estimation}\label{NMDKF_chapter}
@@ -1321,22 +1323,24 @@ From Figure \ref{fig:NMDKF_MDKF_MMSE_Noisy_STOI}, the STOI scores of NMDKF and M
 
 For the most part, the NMDKF performs similarly or shows small improvements over the MDKF at low input SNR, while it performs similarly or worse at higher input SNR. This can lead to the conclusion that the NMDKF would not be preferred over the MDKF. However, consider that at high input SNR, the MDKF already posts very high scores by all measures. While the PESQ score of NMDKF is lower by MDKF by $0.2714$ at $20$ dB input, the scores are $3.5857$ and $3.8572$ for the NMDKF and MDKF respectively. On the PESQ scale, these are fairly high scores, and while the reduction in PESQ admittedly hurts quality and user experience, it is still a generally satisfactory score. Furthermore, the NMDKF PESQ scores are better where it is arguably more important to improve the scores: at lower input SNR. As mentioned previously, the NMDKF shows improvements from $-20$ to $5$ dB input SNR as compared to the MDKF by an average of $0.0323$. Informal listening tests showed a general preference for the NMDKF at these lower input SNR, while the difference at higher input SNR was significantly less perceptible.
 
-\section{Conclusion}
+\section{Evaluation}
 
-This chapter proposes a modification to the MMSE noise estimation method done in \cite{MMSEnoiseBetter}, by incorporating information from an IBM to tweak certain fixed parameters such as SPP and \textit{a priori} SNR. By and large, performance results show that the NMDKF performs better than the MDKF at lower input SNR and vice versa at higher input SNR. Overall, the modified algorithm performs similarly to the MDKF.
+This chapter proposes a modification to the MMSE noise estimation method in \cite{MMSEnoiseBetter}, by incorporating information from an IBM to alter parameters such as SPP and \textit{a priori} SNR. By and large, performance results show that the NMDKF performs better than the MDKF at lower input SNR and vice versa at higher input SNR. Overall, the NMDKF performs similarly to the MDKF.
 
-However, the NMDKF generally performs better than the original MDKF up to an input signal SNR of approximately $5$ dB. It is possible that an adaptive algorithm could be used to apply the noise estimation that performs better depending on the input noise level. Doing so will take extra time, and thus this selective framework could be used if speed was not of concern e.g. this might not be suitable for a real-time processing application.
+However, at high input SNR, the MDKF already gives high scores by all measures. While the reduced PESQ scores of the NMDKF admittedly hurt quality and user experience, it still posts satisfactory scores. Furthermore, the NMDKF PESQ scores are better where it arguably matters more: at lower input SNR. Informal listening tests also showed preference for the NMDKF at lower input SNR, while the difference at higher input SNR was less significant.
+
+The NMDKF generally performs better than the original MDKF up to an input signal SNR of $5$ dB. An adaptive algorithm could feasibly be used to apply the noise estimation that performs better, depending on the estimated input noise level. Doing so will take extra time, and thus this selective framework could be useful if speed was not of concern e.g. this might not be suitable for a real-time processing application.
 
 
 \chapter{Conclusion and Future Work}\label{conclusion}
 
-In this project, we explored three approaches to modifying a speech enhancement method based on a modulation-domain Kalman filter (MDKF), by using information extracted from an ideal binary mask (IBM). The aim was to improve the perceived quality and intelligibility of the enhanced noisy speech. The first approach is to include IBM information into the parameters of the MDKF iteration equations directly, covered in Chapter \ref{BMMDKF_chapter}. The next method, proposed in Chapter \ref{LMDKF_chapter}, proposes to modify estimation of the linear prediction coefficients (LPCs) by using a weighted sum to calculate the total error. In Chapter \ref{NMDKF_chapter}, the final method uses the IBM to tweak noise estimation parameters.
+In this project, we explored three approaches to modifying a speech enhancement method based on a modulation-domain Kalman filter (MDKF), by using information extracted from an ideal binary mask (IBM). The aim was to improve the perceived quality and intelligibility of the enhanced noisy speech. The first approach is to include IBM information into the parameters of the MDKF iteration equations directly, covered in Chapter \ref{BMMDKF_chapter}. The next method, proposed in Chapter \ref{LMDKF_chapter}, suggests to adjust estimation of the linear prediction coefficients (LPCs) by using a weighted sum to calculate the total error. In Chapter \ref{NMDKF_chapter}, the final method uses the IBM to tweak noise estimation parameters.
 
 In Chapter \ref{BMMDKF_chapter}, the IBM is applied to a set of training input samples to obtain separate averaged probability distribution statistics corresponding to speech-dominant and noise-dominant regions of the mask. This information is used to modify the observation mean and variance of an input noisy test signal to better track the underlying clean speech (BMMDKF method). Performance results show that the BMMDKF shows very similar segSNR results to the MDKF. However, it demonstrates significant improvements over the MDKF in terms of both perceived quality (PESQ) and intelligibility (STOI) when applied on noisy speech for a large range of input SNR, with larger performance gains at lower input SNR. Overall, the BMMDKF has proven to be preferable to the MDKF in enhancing noisy speech for a large range of input SNR.
 
 The next modification, discussed in Chapter \ref{LMDKF_chapter}, is concerned with tweaking the LPC estimation, which is used to obtain LPC coefficients used in the MDKF filter equations. The original LPC estimation aims to minimise the sum of errors; this method (LMDKF method) suggests to instead minimise a weighted sum of errors, with the weights determined from an IBM applied directly to the test signal. Unlike the method in Chapter \ref{BMMDKF_chapter}, the IBM here is applied to the specific input test signal only. The LMDKF shows very minor degradation in segSNR and STOI scores compared to the MDKF, and a small but moderately significant improvement in PESQ scores. Overall, it is similar to the MDKF, but when the various numerical scores were analysed further, it is conceivable that the LMDKF would be preferred over the MDKF due to the importance of the PESQ improvement.
 
-Finally, Chapter \ref{NMDKF_chapter} investigates a method (NMDKF method) to improve the MMSE noise estimation of \cite{MMSEnoiseBetter}, which is used to determine the error covariance matrix in the MDKF equations. The modification incorporates information from an IBM to tweak certain fixed parameters such as SPP and \textit{a priori} SNR, with the aim  of calculating the actual noise in each frame more accurately. On the whole, the modified algorithm performs similarly to the MDKF. However, the NMDKF shows improvements over the MDKF up to an input SNR of $5$ dB. An adaptive algorithm could be used to apply the better-performing noise estimation method depending on the input noise level. Doing so will take more time, and so this may not be acceptable for a real-time speech enhancer.
+Finally, Chapter \ref{NMDKF_chapter} investigates a method (NMDKF method) to improve the MMSE noise estimation of \cite{MMSEnoiseBetter}, which is used to determine the error covariance matrix in the MDKF equations. The modification incorporates information from an IBM to tweak certain parameters such as SPP and \textit{a priori} SNR, with the aim  of calculating the actual noise in each frame more accurately. Overall, the NMDKF performs similarly to the MDKF. However, it shows improvements over the MDKF up to an input SNR of $5$ dB in both PESQ and STOI. An adaptive algorithm could be used to apply the better-performing noise estimation method depending on the estimated input noise level. Doing so will take more time, and so this may not be acceptable for a real-time speech enhancer.
 
 \section{Future Work}
 
@@ -1344,17 +1348,17 @@ Finally, Chapter \ref{NMDKF_chapter} investigates a method (NMDKF method) to imp
 
 In the ``oracle'' baseline model used for all modifications, shown in Figure \ref{fig:blockdiagramMDKF}, LPC coefficients are calculated from the clean speech, as this project is more concerned with investigating the theoretical upper bound performance. In a real-world context, the clean speech is not available. A possible area for further study is to instead estimate the LPCs from the noisy speech passed through the MMSE speech enhancement algorithm used in \cite{MMSEspeech}. Although not as accurate as clean-speech LPCs, the effect of noise on the model can be greatly reduced when calculating LPCs from MMSE-enhanced speech rather than from the original noisy speech. If the results are favourable, this can be used for practical applications as it does not involve clean speech.
 
-\subsection{Real Listening Tests}
-
-In this project, PESQ and STOI routines were used to try and mimic the perceived quality and intelligibility measures of human listeners. While these routines have been proven to be highly correlated with the subjective scores, there is still merit to holding listening tests with real human listeners, to provide a more accurate performance measures and also allow for individual feedback.
-
 \subsection{Probability Distribution}
 
 In Chapter \ref{BMMDKF_chapter}, the BMMDKF algorithm assumes that the observation, prediction and IBM statistics are all Gaussian distributed. This simplifies the computation when combining these three parameters, and is a fairly accurate assumption. However, if allowed for additional computational complexity and algorithm runtime, it might be possible to investigate further the properties of these parameters, and find a better matching distribution. It is possible that these provide better performance gains that the BMMDKF, but at the end of the day the trade-offs between performance gains and algorithm complexity must be weighted and balanced.
 
 \subsection{Combining Modifications}
 
-This report discusses a few modifications to a baseline MDKF that provide varying degrees of improvements. It is possible that combining two or more of them could produce results better than any individual modification could achieve, and could be further investigated.
+This report discusses a few modifications to a baseline MDKF that provide varying degrees of improvements. It is possible that combining two or more of them could produce results better than any individual modification could achieve.
+
+\subsection{Real Listening Tests}
+
+In this project, PESQ and STOI routines were used to try and mimic the perceived quality and intelligibility measures of human listeners. While these routines have been proven to be highly correlated with the subjective scores, there is still merit to carrying out tests with real human listeners, to obtain more accurate performance results and also allow for individual feedback.
 
 
 \newpage
