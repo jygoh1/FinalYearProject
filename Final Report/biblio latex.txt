@@ -1,3 +1,14 @@
+@article{melscale,
+    title={A scale for the measurement of the psychological magnitude pitch},
+    author={Stevens, S. S. and Volkmann, J. and Newman, E. B.},
+    journal={The Journal of the Acoustical Society of America},
+    volume={8},
+    number={3},
+    pages={185-190},
+    year={1937},
+    publisher={ASA}
+}
+
 @ARTICLE{noiseVarySlower, 
     author={R. Martin}, 
     journal={IEEE Transactions on Speech and Audio Processing}, 
