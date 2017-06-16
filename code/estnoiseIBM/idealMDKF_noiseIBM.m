@@ -1,4 +1,4 @@
-function Y_MDKF = idealMDKF_noiseIBM(noisy, clean, fs, Tw, Ts, p, Tw_slow, Ts_slow, fs_slow, LC, mask_th)
+function Y_MDKF = idealMDKF_noiseIBM(noisy, clean, fs, Tw, Ts, p, Tw_slow, Ts_slow, fs_slow, LC, mask_th, maskth_add)
 
 %   noisy: noisy input speech
 %   clean: clean input speech
@@ -34,7 +34,7 @@ cleanfft_mag = abs(clean_fft);  % used to estimate LPCs in ideal case
 [~, mask] = IdBM(noisy, clean, fs, Tw, Ts, LC);
 
 f_noisy = enframe(noisy,W,Ns,'sp');
-x = estnoiseIBM(f_noisy,Ns/fs,mask',mask_th);   % estimate the noise power spectrum; each row is 1 time frame
+x = estnoiseIBM(f_noisy, Ns/fs, mask', mask_th, maskth_add);   % estimate the noise power spectrum; each row is 1 time frame
 % noisepow = 10*log10(sum(mean(x,1),2))
 
 % after doing enframe, one row is one time frame (i.e. freq bins along rows)

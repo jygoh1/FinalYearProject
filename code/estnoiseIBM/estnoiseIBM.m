@@ -1,4 +1,4 @@
-function [x,zo]=estnoiseIBM(yf, tz, mask, th, pp)
+function [x,zo]=estnoiseIBM(yf, tz, mask, th, add, pp)
 %ESTNOISEG - estimate MMSE noise spectrum [x,zo]=(yf,tz,pp)
 %
 % Usage:    ninc=round(0.016*fs);   % frame increment [fs=sample frequency]
@@ -92,7 +92,7 @@ else
         qq.psini=0.5;       % initial speech probability [0.5] (23)
         qq.tavini=0.064;        % assumed speech absent time at start [64 ms]
 
-        if nargin>=5 && ~isempty(pp)  % update fields from pp input
+        if nargin>=6 && ~isempty(pp)  % update fields from pp input
             qqn=fieldnames(qq);
             for i=1:length(qqn)
                 if isfield(pp,qqn{i})
@@ -127,7 +127,7 @@ else
     for t=1:nr
         mm = mask(t,:);
         mm(mm == 0) = th;    % if mask says 0 (that this T-F unit is noise) then reduced a-posteriori speech presence probability
-        mm(mm == 1) = 1.5 + th;
+        mm(mm == 1) = add + th;
         
         yft=yf(t,:);        % noisy speech power spectrum
         
