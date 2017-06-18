@@ -79,7 +79,7 @@ Second Marker: & \textbf{Evers, C.} \\[12pt]
 \chapter*{Abstract}
 \thispagestyle{plain}
 \addcontentsline{toc}{chapter}{Abstract}
-Speech enhancement algorithms aim to reduce the background noise of a noise-corrupted speech input without distorting the original clean speech. In real-world situations, this can be very challenging. Although many algorithms have been developed to improve the Signal-to-Noise Ratio (SNR) of the noisy input, they also introduce speech distortion and artifacts such as musical noise, damaging speech quality and intelligibility. Recent evidence has pointed to the use of the modulation domain for speech enhancement, where the modulation domain is defined as the temporal variations of the acoustic spectral components. This report proposes modifications to existing modulation-domain speech processing methods, where an Ideal Binary Mask (IBM) will be applied to training samples of noisy speech to obtain averaged statistical information that can then be applied on new test samples. The goal is to use this data to improve the performance of an existing Modulation-Domain Kalman Filter (MDKF). The performance of these proposed modifications is assessed by measuring the segmental SNR (segSNR), speech quality (using Perceptual Evaluation of Speech Quality or PESQ) and speech intelligibility (Short-Time Objective Intelligibility or STOI) of the enhanced speech. Results show that the developed algorithms provide varying degrees of improvements in both speech quality and intelligibility over a range of input noise levels.
+Speech enhancement algorithms aim to reduce the background noise of a noise-corrupted speech input without distorting the original clean speech. In real-world situations, this can be very challenging. Although many algorithms have been developed to improve the Signal-to-Noise Ratio (SNR) of the noisy input, they also introduce speech distortion and artifacts such as musical noise, damaging speech quality and intelligibility. Recent evidence has pointed to the use of the modulation domain for speech enhancement, where the modulation domain is defined as the temporal variations of the acoustic spectral components. This report proposes modifications to existing modulation-domain speech processing methods, where an Ideal Binary Mask (IBM) will be applied to training samples of noisy speech to obtain statistical information that can then be applied on new test samples. The goal is to use this data to improve the performance of an existing Modulation-Domain Kalman Filter (MDKF). The performance of these proposed modifications is assessed by measuring the segmental SNR (segSNR), speech quality (using Perceptual Evaluation of Speech Quality or PESQ) and speech intelligibility (Short-Time Objective Intelligibility or STOI) of the enhanced speech. Results show that the developed algorithms provide varying degrees of improvements in both speech quality and intelligibility over a range of input noise levels.
 \clearpage
 
 \chapter*{Acknowledgements}
@@ -157,11 +157,11 @@ However, speech enhancement is complex. Traditional speech enhancement technique
 
 In this project, the objective is to improve both speech quality and intelligibility by modifying an existing speech enhancement algorithm. Standard tests for quality and intelligibility, including the Perceptual Evaluation of Speech Quality (PESQ, \cite{PESQ}) and Short-Time Objective Intelligibility (STOI, \cite{STOI}), will be used to quantify the enhanced speech. 
 
-Specifically, the aim is to modify an existing speech enhancement algorithm based on a Kalman filter, by further incorporating additional information obtained from a so-called ``ideal binary mask''. A possible method is to scale the predicted value in the Kalman filter and modify its variance by an amount pre-determined from training data, with the goal that PESQ and STOI increase.
+Specifically, the aim is to modify an existing speech enhancement algorithm based on a Kalman filter, by further incorporating additional information obtained from a so-called ``ideal binary mask''. A possible method is to scale the predicted value in the Kalman filter and modify its variance by an amount pre-determined from training data, with the goal that both PESQ and STOI increase.
 
 \section{Project Scope}
 
-This project assumes the binary mask is already provided; how it is generated is therefore out of scope of this project. This project focuses on incorporating a given estimated binary mask into an existing Kalman filter speech enhancement implementation.
+This project assumes the binary mask is already provided; how it is generated is therefore out of scope of this project. The focus is on incorporating a given estimated binary mask into an existing Kalman filter speech enhancement implementation.
 
 This project makes use of MATLAB and signal processing techniques. In particular, the project utilises VOICEBOX, a speech processing toolbox for MATLAB \cite{VOICEBOX}, which is included in the Imperial College London Software Library.
 
@@ -175,7 +175,7 @@ Chapter \ref{BMMDKF_chapter} covers the first proposed modification, whereby an 
 
 Chapter \ref{LMDKF_chapter} explores a different approach. Here, the linear prediction coefficients used in a Kalman filter algorithm are modified by using a weighted sum to calculate the autocorrelation function, with weights determined from an ideal binary mask applied to the input signal. As before, this enhancer is evaluated and discussed relative to existing methods.
 
-A third modification is proposed in Chapter \ref{NMDKF_chapter}. Noise estimation is an important part of speech enhancement, and a method is proposed to incorporate binary mask information to improve the accuracy of noise estimation in a Kalman filter-based speech enhancer. Finally, Chapter \ref{conclusion} concludes the project and briefly explores possible areas for future work.
+Noise estimation is an important part of speech enhancement, and a modification is proposed in Chapter \ref{NMDKF_chapter} to incorporate binary mask information to improve the accuracy of noise estimation in a Kalman filter-based speech enhancer. Finally, Chapter \ref{conclusion} concludes the project and briefly explores possible areas for future work.
 
 
 \chapter{Background}\label{background}
@@ -200,7 +200,7 @@ Generally, adaptive filters are used when there is some quantity to be minimised
 
 \subsection{Time-Frequency Domain}\label{TF}
 
-Speech enhancement can be performed in the time-frequency (T-F) domain, which analyses signals in both time and frequency domains simultaneously, using various T-F representations \cite{Cohen94}. Assuming speech is quasi-stationary over sufficiently short periods \cite{Riley1989book}, the noisy input speech signal is divided into overlapping short frames, typically using a Hamming window, where the frame length is a compromise between temporal and frequency resolution \cite{GriffinLim84}. These frames will be called acoustic frames, and are separate from the modulation frames referred to in the modulation domain in Section \ref{ModulationDomain}. Performing the Fourier transform on these frames produces a T-F matrix, on which processing can then be done. This entire process is called the short-time Fourier Transform (STFT).
+Speech enhancement can be performed in the time-frequency (T-F) domain, which analyses signals in both time and frequency domains simultaneously, using various T-F representations \cite{Cohen94}. Assuming speech is quasi-stationary over sufficiently short periods \cite{Riley1989book}, the noisy input speech signal is divided into overlapping short frames, typically using a Hamming window, where the frame length is a compromise between time and frequency resolution \cite{GriffinLim84}. These frames are termed acoustic frames, and are separate from the modulation frames used in the modulation domain in Section \ref{ModulationDomain}. Performing the Fourier transform on these frames produces a T-F matrix, on which processing can then be done. This entire process is called the short-time Fourier Transform (STFT).
 
 Generally, T-F enhancement methods apply a gain function to suppress T-F regions which are noise-dominated while preserving speech-dominated regions, typically on the magnitude spectrum only. Computing the gain function depends on the noisy power spectrum, which needs to be estimated separately. After processing, inverse STFT followed by overlap-add reconstruction is performed to produce the enhanced time-domain speech signal. This approach works because speech is relatively sparse, due to limitations of the human ability in terms of speaking and listening i.e. with reasonable levels of noise, the speech can be divided into speech-dominated and noise-dominated regions.
 
@@ -212,23 +212,23 @@ This is used in the setup of the algorithm described in Section \ref{MDKF}.
 
 Modulation-domain processing starts off similarly to T-F processing, in that the noisy input signal undergoes STFT analysis to produce time-varying frequency components.
 
-For speech enhancement, the amplitudes envelope of each frequency band is regarded as one modulation signal; the spectral amplitudes of each frequency band are windowed into overlapping modulation frames, with a separate modulation frame length and frame overlap compared to the acoustic frame length and overlap of STFT, where each acoustic frame provides one modulation-domain sample for each frequency bin. If each modulation frame contains $M$ samples (i.e. $M$ acoustic frames form one modulation frame) and each acoustic frame contains $N$ time-domain samples, each modulation frame is constructed from $MN$ time-domain samples. The modulation-domain signal has a frequency determined by the acoustic frame increment: since each acoustic frame provides one modulation sample, successive modulation samples are spaced apart by the acoustic frame shift. If the time-domain signal has a sampling frequency of $f_s$ Hz and the acoustic frame shift is $L$ Hz, the modulation-domain sampling frequency is $(f_s/L)$ Hz.
+For speech enhancement, the amplitude envelope of each frequency band is regarded as one modulation signal. Each modulating signal is then windowed into overlapping modulation frames, with a separate modulation frame length and frame overlap compared to the acoustic frame length and overlap of STFT, where each acoustic frame provides one modulation-domain sample for each frequency bin. If each modulation frame contains $M$ samples (i.e. $M$ acoustic frames form one modulation frame) and each acoustic frame contains $N$ time-domain samples, each modulation frame is constructed from $MN$ time-domain samples. The modulation-domain signal has a frequency determined by the acoustic frame increment: since each acoustic frame provides one modulation sample, successive modulation samples are spaced apart by the acoustic frame shift.
 
-A processing algorithm then estimates the modulation frames of clean speech, which are then overlap-added to reconstruct the modified modulation signals. Combining this with the phase spectrum of the noisy input signal and performing the inverse STFT then produces the enhanced time-domain speech signal.
+A processing algorithm then estimates the modulation frames of clean speech, which are then overlap-added to reconstruct the modified modulation signals. Combining this with the phase spectrum of the noisy input signal and performing the inverse STFT then gives the enhanced time-domain speech signal.
 
 Even though the acoustic envelope directly contains the speech information, the temporal dynamics of the envelope better represent the information contained in speech \cite{Hermansky98}. These dynamics, which are at significantly lower frequencies than the speech signal itself, are provided in the modulation spectrum, suggesting that working in the modulation domain for speech processing can produce better results. More detailed description is provided in Section \ref{KF}.
 
 \section{Noise Estimation}\label{noiseEstimation}
 
-Noise estimation is an important part of speech processing. In many algorithms including those described in this report, performance is heavily affected by the accuracy of the noise estimation. The algorithms proposed in this project are rely on the estimation of the spectral noise power.
+Noise estimation is an important part of speech processing. In many algorithms including those described in this report, performance is heavily affected by the accuracy of the noise estimation.
 
-When estimating noise power, because the noise power can change very quickly, the spectral estimate has to be updated as often as possible \cite{MMSEnoiseBetter}. In speech enhancement, an overestimate or underestimate of the noise power will result in either over-suppression or under-suppression of the noisy signal, which can lead to excessive residual noise or reduced intelligibility in the enhanced signal \cite{MMSEnoiseBetter}. In either case, the quality or intelligibility of the enhanced speech is damaged.
+When estimating noise power, because the noise power can change very quickly, the spectral estimate has to be updated as often as possible \cite{MMSEnoiseBetter}. In speech enhancement, an overestimate or underestimate of the noise power will result in either excessive or insufficient suppression of the noisy signal, which can lead to excessive residual noise or reduced intelligibility in the enhanced signal \cite{MMSEnoiseBetter}. In either case, the quality or intelligibility of the enhanced speech is damaged.
 
-One way to estimate noise power is to exploit the periods when there is no speech, which requires identification of speech presence using a voice activity detector (VAD) \cite{VAD}. This method encounters problems when the noise is non-stationary, however, as a sudden increase in noise power may instead be interpreted as the onset of speech. Additionally, if the noise power changes when speech is present, this change can only be detected with some time delay \cite{MMSEnoiseBetter}.
+One method to compute noise power is to make use of the periods when there is no speech, which requires identification of speech presence using a voice activity detector (VAD) \cite{VAD}. This method encounters problems when the noise is non-stationary, however, as an abrupt increase in noise power might instead be interpreted as the onset of speech. Additionally, if the noise power varies when speech is present, the change will only be detected with some time delay \cite{MMSEnoiseBetter}.
 
-To improve noise estimation, methods have been proposed based on minimum statistics (MS) \cite{noiseMS}. The method in \cite{noiseMS} does not use a VAD. Instead, it tracks spectral minima in each frequency band without distinguishing between between speech presence and absence. The power spectrum of the noisy signal is tracked and observed over a short time period. A general assumption is that within the observed time frame, speech is absent for a non-zero portion of the total period. The spectral noise power can then be obtained from the minimum of the estimated power spectrum of the noisy signal. Similar to VADs, if the noise power changes within the observed period, it can be tracked with some time delay. Due to the delay, the local noise power estimates tend to be underestimated. This results in residual noise and musical noise artifacts when the noise estimation is used in a speech enhancer.
+To improve noise estimation, methods using minimum statistics (MS) have been proposed \cite{noiseMS}. The method in \cite{noiseMS} does not use a VAD. Instead, it tracks spectral minima in each frequency band without distinguishing between speech presence and absence. The power spectrum of the noisy signal is tracked and observed over a short time period. A general assumption is that within the observed time frame, speech is absent for a non-zero portion of the total period. The spectral noise power can then be obtained from the minimum of the estimated power spectrum of the noisy signal. Similar to VADs, if the noise power changes within the time frame, it can only be tracked with some time delay. Due to the delay, the local noise power estimates tend to be underestimated. This results in residual noise when the noise estimation is used in a speech enhancer.
 
-A more recent method to estimate the noise power spectral density (PSD) is to use a minimum mean-squared-error (MMSE) optimal estimation method \cite{MMSEnoise}, which can be interpreted as a noise power estimator based on a VAD \cite{MMSEnoiseBetter}. Generally, MMSE-based estimators are more robust to non-stationary noise and are less computationally intensive as compared to MS-based methods \cite{MMSEnoise}. The estimator in \cite{MMSEnoiseBetter} replaces the hard VAD of the estimator in \cite{MMSEnoise} with a soft speech presence probability (SPP) with a fixed \textit{a priori} SNR as a parameter of the likelihood of speech presence, using a value typical in speech presence. This soft estimation overcomes the issue of random fluctuations in the estimated SNR. This modification automatically makes the estimator unbiased, and it retains similar performance while achieving lower computational complexity compared to \cite{MMSEnoise}.
+A more recent method to estimate the noise power spectral density (PSD) is to use a minimum mean-squared-error (MMSE) optimal estimation method \cite{MMSEnoise}. Generally, MMSE-based estimators are more robust to non-stationary noise and are less computationally intensive as compared to MS-based methods \cite{MMSEnoise}. The estimator in \cite{MMSEnoiseBetter} replaces the hard VAD of the estimator in \cite{MMSEnoise} with a soft speech presence probability (SPP) with a fixed \textit{a priori} SNR as a parameter of the probability of speech presence, using a value typical in speech presence. This soft estimation overcomes the issue of random fluctuations in the estimated SNR. This modification automatically makes the estimator unbiased, and it retains similar performance while achieving lower computational complexity compared to \cite{MMSEnoise}.
 
 \section{Spectral Subtraction}\label{specSub}
 
@@ -240,9 +240,9 @@ As mentioned in Section \ref{TF}, the local stationarity assumption means the pr
 
 To avoid signal distortion introduced by data segmentation \cite{Aydin2000}, each frame is first multiplied by a windowing function before performing the Fourier Transform (typically using the Fast Fourier Transform or FFT). The output signal is then formed by the sum of these overlapping windowed frames. After processing, when the signal is being reassembled, the window is applied again.
 
-For the signal to remain undistorted, multiplying by these windows should not change its magnitude. To achieve this, particular overlap factor/window pairs must be used; for example, if a Hamming window is chosen, applying the window twice requires that the overlapped windows approximately sum to unity for an overlap factor of 4 i.e. each windowed frame overlaps each of its neighbours by 50\%, ensuring the output signal remains undistorted.
+For the signal to remain undistorted, multiplying by these windows should not change its magnitude. To achieve this, particular overlap factor/window pairs must be used; for example, if a Hamming window is chosen, applying the window twice requires that the overlapped windows approximately sum to unity for an overlap factor of 4 i.e. each windowed frame overlaps each of its neighbours by 75\%, ensuring the output signal remains undistorted.
 
-Spectral subtraction is popular largely because it is simple and easy to implement, requiring mainly the forward and inverse Fourier Transforms. However, this comes at a cost to performance. Subtracting the noise spectrum from the noisy input spectrum introduces distortion in the signal, known as musical noise \cite{Loizou2007}, as mentioned in Section \ref{TF}. Variations have been developed in attempts to mitigate this. A common variation involves over-subtraction and a noise floor. This method involves an over-subtraction factor, whereby an overestimate of the noise power spectrum is subtracted from that of the input, and using a noise spectral floor, which prevents the processed spectrum from going below a preset minimum value, to control both the amount of residual noise and musical noise \cite{Berouti1979}. However, it is generally evaluated that these modifications improve speech quality further but do not significantly affect the intelligibility of the input signals \cite{Loizou2007}.
+Spectral subtraction is popular largely because it is simple and easy to implement, requiring mainly the forward and inverse Fourier Transforms. However, this comes at a cost to performance. Subtracting the noise spectrum from the noisy input spectrum introduces distortion known as musical noise \cite{Loizou2007}, as mentioned in Section \ref{TF}. Variations have been developed in attempts to mitigate this. A common variation involves over-subtraction and a noise floor. This method involves an over-subtraction factor, whereby an overestimate of the noise power spectrum is subtracted from that of the input, and using a noise spectral floor, which prevents the processed spectrum from dropping below a pre-determined minimum, to manage both the amount of residual noise and musical noise \cite{Berouti1979}. However, it is generally evaluated that these modifications improve speech quality further but do not significantly affect the intelligibility of the input signals \cite{Loizou2007}.
 
 % \section{MMSE Speech Enhancement}
 
@@ -298,7 +298,7 @@ In some cases, it may be easier to estimate the TBM than the IBM, and so it was 
 
 \subsection{Musical Noise}
 
-The largest calculated SNR gain is achieved by using a fully-binary mask of $1$s and $0$s. However, doing so generally degrades the quality of the enhanced speech due to the introduction of musical noise, which refers to random, short tone-like bursts that, in some situations, can be more bothersome than the original noise. In \cite{StokesIBM}, the mask values were instead $1$ and $0.1$: if the mask indicates that speech is present, the gain is $1$, otherwise the gain is set to $0.1$ instead of cutting completely. By reducing the severity of the mask switching, the amount of musical noise artifacts introduced by the mask was reduced overall.
+The largest calculated SNR gain is achieved by using a fully-binary mask of $1$s and $0$s. However, doing so generally degrades the quality of the enhanced speech due to the introduction of musical noise, which in some situations can be more bothersome than the original noise. In \cite{StokesIBM}, the mask values were instead $1$ and $0.1$: if the mask indicates that speech is present, the gain is $1$, otherwise the gain is set to $0.1$ instead of cutting completely. By reducing the severity of the mask switching, the amount of musical noise artifacts introduced by the mask was reduced overall.
 
 \subsection{Practical Considerations}
 
@@ -380,13 +380,13 @@ The filter has a recursive ``predictor-corrector'' structure \cite{Maybeck1979};
 
 In \cite{PaliwalBasu1987}, the KF was proposed for speech enhancement, estimating linear prediction coefficients (LPCs) from clean speech to achieve excellent noise reduction. The KF is of particular interest for speech enhancement, as the speech model is inbuilt into the KF recursion equations, and the enhanced speech contains little to no musical noise, assuming clean LPCs are available \cite{MBG2006}; the performance of the KF is highly dependent on the accurate estimation of LPCs. However, for practical use, these parameters have to be estimated from noisy speech since the clean speech is not known \textit{a priori}, causing a significant drop in performance. Better performance has been demonstrated in variations of the original KF algorithm, such as a cascaded estimator/encoder structure which improves LPC estimates \cite{Gibson1991}.
 
-In recent years, the focus has shifted away from the traditional KF methods which utilise the acoustic domain, defined as the short-time Fourier Transform (STFT) of the signal. Instead, there has been growing interest in the modulation domain, defined as the variation of the magnitude spectrum over time \cite{Atlas2003}. Research in speech analysis has increasingly shown the importance of the modulation domain; for example, very low frequency modulations of sound have been demonstrated to be the fundamental carriers of information in speech \cite{Atlas2003}, due to physiological limitations on how rapidly the vocal tract is able to change with time \cite{PWS2010}. The slowly-varying modulation domain hence represents the temporal variation of the vocal tract \cite{SP11}.
+In recent years, the focus has shifted away from the traditional KF methods which utilise the acoustic domain, defined as the short-time Fourier Transform (STFT) of the signal. Instead, there has been growing interest in the modulation domain, defined as the variation of the magnitude spectrum over time \cite{Atlas2003}. Research in speech analysis has increasingly shown the importance of the modulation domain; for example, very low frequency modulations of sound have been demonstrated to carry the most important information in speech \cite{Atlas2003}, due to physiological limitations on how rapidly the vocal tract is able to change with time \cite{PWS2010}. The slowly-varying modulation domain hence represents the temporal variation of the vocal tract \cite{SP11}.
 
-The KF is capable of handling non-stationary signals as well as estimating both magnitude and phase spectra \cite{Li2006Phd}, which puts it at an advantage over STFT-based, acoustic domain-based methods for speech processing, as phase information has been shown to be more important in the modulation domain than in the acoustic domain \cite{GreenBergArai2001}. It was also noted in \cite{SP11} that the low order linear predictor KF was more appropriate for enhancing slower-varying modulating signals than for enhancing time-domain speech, as the time-domain signals contain long-term correlation which the low order linear predictor cannot fully incorporate. This is important for the KF, as its optimality works on the basis of incorporating and using all data available to the algorithm. These results suggest the use of the KF in the modulation domain as an improved method of speech enhancement \cite{SP11}.
+It was also noted in \cite{SP11} that the low order linear predictor KF was more appropriate for enhancing slower-varying modulating signals rather than time-domain signals, as the time-domain signals contain long-term correlation which the low order linear predictor cannot fully incorporate. This is important for the KF, as its optimality works on the basis of incorporating and using all data available to the algorithm. These results suggest the use of the KF in the modulation domain as an improved method of speech enhancement \cite{SP11}.
 
 \subsection{Modulation-Domain Kalman Filter}\label{MDKF}
 
-The modulation-domain KF (MDKF) is an adaptive minimum mean-squared error (MMSE) estimator that uses the statistics of time-varying changes in the magnitude spectrum of both speech and noise \cite{SP11}. In the MDKF, an analysis-modification-synthesis (AMS) framework is used to obtain the modulation domain in three steps. In the analysis stage, the input speech signal is processed using STFT; next, the noisy input spectrum undergoes some modification or processing; and lastly, the output processed signal is synthesised by inverse STFT followed by the overlap-add method. 
+The modulation-domain KF (MDKF) is an adaptive minimum mean-squared error (MMSE) estimator that uses the statistics of temporal variations in the amplitude spectrum of both speech and noise \cite{SP11}. In the MDKF, an analysis-modification-synthesis (AMS) architecture is used to get the modulation domain in three steps. In the analysis stage, the input speech signal is processed using STFT; next, the noisy input spectrum undergoes some modification or processing; and lastly, the output processed signal is synthesised by inverse STFT followed by the overlap-add method. 
 
 \subsubsection{Analysis-modification-synthesis framework in the acoustic domain}
 
@@ -418,7 +418,7 @@ Y(n,k)=|Y(n,k)|e^{j\angle Y(n,k)}
 
 where $|Y(n,k)|$ is the acoustic magnitude spectrum and $\angle Y(n,k)$ is the acoustic phase spectrum.
 
-Traditionally, AMS-based methods only modify the noisy acoustic magnitude spectrum $|Y(n,k)|$ to obtain a processed magnitude spectrum $|\hat{X}(n,k)|$; the modified spectrum is thus obtained by combining the enhanced magnitude spectrum with the original noisy phase spectrum $\angle Y(n,k)$:
+Traditionally, AMS frameworks only process the noisy acoustic magnitude spectrum $|Y(n,k)|$ to obtain a processed magnitude spectrum $|\hat{X}(n,k)|$. Thus, the modified spectrum is obtained by combining the enhanced magnitude spectrum with the original noisy phase spectrum $\angle Y(n,k)$:
 
 \begin{equation}\label{eq:AMS_STFT}
 \hat{X}(n,k)=|\hat{X}(n,k)|e^{j\angle Y(n,k)}
@@ -428,7 +428,7 @@ The enhanced speech $\hat{x}(n)$ is then reconstructed by performing the inverse
 
 \subsubsection{Kalman filter model in the modulation domain}
 
-As briefly introduced in Section \ref{ModulationDomain}, in the modulation domain, the acoustic magnitude spectrum of noisy speech is interpreted as a series of modulating signals spanning across time, where each modulating signal $|Y(n,k)|$ represents the variation of one frequency component over time, with $k=1,2,...,N$ where $N$ is the number of frequency bins. Each modulating signal is individually processed with a separate KF \cite{SP11}.
+As briefly introduced in Section \ref{ModulationDomain}, in the modulation domain, the acoustic amplitude spectrum of noisy speech is interpreted as a set of modulating signals spanning across time, where each modulating signal $|Y(n,k)|$ represents the variation of one frequency component over time, with $k=1,2,...,N$ where $N$ is the number of frequency bins. Each modulating signal is individually processed with a separate KF \cite{SP11}.
 
 To visualise this, imagine that a time-domain noisy speech signal sampled at $8$ kHz is windowed with a $64$ ms frame (window) length and $4$ ms frame shift. Taking the STFT, each window is analysed individually: the samples within a $64$ ms window are viewed as a frequency-domain signal with (for example) $256$ frequency bins. When the next window is taken (original window shifted by $4$ ms), the samples are again analysed into a set of $256$ frequency bins. Doing this for the entire signal produces $256$ time-varying signals (modulating signals), one for each frequency component and processed with its own KF, where the samples in each signal are $4$ ms apart. Within each KF, the modulating signal is further windowed, but the signal now has a much lower frequency: in this case, $\frac{1}{0.004}=250$ Hz. Assuming a modulating window of $64$ ms, each window only contains $\frac{64}{4}=16$ samples, compared to $512$ samples for a $64$ ms window of a $8$ kHz time-domain signal.
 
@@ -467,7 +467,7 @@ where $\textbf{X}(n,k)=[|X(n,k)|,|X(n-1,k)|,...|X(n-p+1,k)|]^T$ is the clean spe
 \end{bmatrix}
 \end{equation}
 
-The Kalman filter recursively calculates a linear unbiased MMSE estimate $\hat{\textbf{X}}(n|n,k)$ of the $k$-th modulation state vector at time $n$, given the noisy modulating signal up to and including time $n$ (i.e. $|Y(1,k)|,|Y(2,k)|,...|Y(n,k)|$) using the following equations:
+The Kalman filter recursively calculates a linear unbiased MMSE estimate $\hat{\textbf{X}}(n|n,k)$ of the $k$-th modulation state vector at time $n$, given the noisy modulating signal up to and including time $n$ (i.e. $|Y(1,k)|,|Y(2,k)|,...|Y(n,k)|$), by using the following equations:
 
 \begin{equation}\label{eq:MDKF_predictP}
 \textbf{P}(n|n-1,k)=\textbf{A}(k)\textbf{P}(n-1|n-1,k)\textbf{A}(k)^T+\sigma^2_{W(k)}\textbf{d}\textbf{d}^T
@@ -499,7 +499,7 @@ In particular, Equation \ref{eq:MDKF_updateXhat} is the main updating step, wher
 
 The accuracy of the weighted sum producing the updated state is critical in determining the correctness of the algorithm. Hence, it is imperative that the noise power is estimated as accurately as possible. There are a number of ways to do so, as discussed in Section \ref{noiseEstimation}.
 
-As the algorithm is running, each modulating signal $|Y(n,k)|$ is windowed into modulation frames, and the LPCs and excitation variance $\sigma^2_{W(k)}$ are estimated. Within each frame, the LPCs are kept constant, whereas the Kalman gain $\textbf{K}(n,k)$, error covariance matrix $\textbf{P}(n|n,k)$ and estimated state vector $\hat{\textbf{X}}(n|n,k)$ are updated every sample, regardless of frame.
+As the algorithm is running, each modulating signal $|Y(n,k)|$ is windowed into modulation frames, and the excitation variance $\sigma^2_{W(k)}$ and LPCs are estimated. Within each frame, the LPCs are kept constant, whereas the Kalman gain $\textbf{K}(n,k)$, error covariance matrix $\textbf{P}(n|n,k)$ and estimated state vector $\hat{\textbf{X}}(n|n,k)$ are updated every sample.
 
 \subsection{Comparison with Time-Domain Kalman Filter}
 
@@ -527,7 +527,7 @@ For comparison purposes, the time-domain Kalman filter (TDKF) equations are show
 
 where $\hat{\textbf{x}}(n|n-1)$ and $\hat{\textbf{x}}(n|n)$ are the \textit{a priori} (predicted) and \textit{a posteriori} (updated) state vectors respectively, $\textbf{P}(n|n-1)$ and $\textbf{P}(n|n)$ are the \textit{a priori} and \textit{a posteriori} error covariance matrices respectively, $\textbf{K}(n)$ is the Kalman gain, and $\sigma^2_{v}$, $\sigma^2_{w}$ are the noise and excitation variances respectively.
 
-Figure \ref{fig:compareTDKF_MDKF} compares the spectrograms of TDKF (order $18$) and MDKF (order $2$) applied on speech from the TIMIT database \cite{TIMIT}, corrupted by white Gaussian noise at $5$ dB SNR, and sampled at $16$ kHz. For the purposes of comparing performance limits, clean speech LPCs were used in the filters. Generally, both algorithms perform well in removing noise, especially when speech is absent. However, there is visibly some noise in the TDKF-enhanced speech; particularly, frequency components above $1.8$ kHz have been noticeably degraded by noise. A listening test confirmed this, detecting the presence of high-frequency artifacts.
+Figure \ref{fig:compareTDKF_MDKF} compares the spectrograms of TDKF (order $18$) and MDKF (order $2$) applied on speech from the TIMIT database \cite{TIMIT}, corrupted by white Gaussian noise at $5$ dB SNR, and sampled at $16$ kHz. For the purposes of comparing performance limits, clean speech LPCs were used in the filters. Generally, both algorithms perform well in removing noise, especially when speech is absent. However, there is visibly some noise in the TDKF-enhanced speech; particularly, frequency components above approximately $1.8$ kHz have been noticeably degraded by noise. A listening test confirmed this, detecting the presence of high-frequency artifacts.
 
 \begin{figure}[ht!]
 \centering
@@ -536,15 +536,15 @@ Figure \ref{fig:compareTDKF_MDKF} compares the spectrograms of TDKF (order $18$)
 \label{fig:compareTDKF_MDKF}
 \end{figure}
 
-This TDKF noise is a limitation of using the KF for speech enhancement. Similarly to how we rearranged Equation \ref{eq:MDKF_updateXhat}, Equation \ref{eq:TDKF_updateXhat} can be rewritten to show that the enhanced output is a weighted combination of the estimated speech and measured speech, where the relative weight depends on the Kalman gain $\textbf{K}(n)$. When speech is absent, $\textbf{P}(n|n-1)=\textbf{0}$, meaning that $\textbf{K}(n)=\textbf{0}$ and the estimated state is equal to the predicted state, being unaffected by the noisy measurement.
+This TDKF noise is an inherent constraint of using the KF for speech enhancement. Similarly to how we rearranged Equation \ref{eq:MDKF_updateXhat}, Equation \ref{eq:TDKF_updateXhat} can be rewritten to show that the enhanced output is a weighted combination of the estimated speech and measured speech, where the relative weight depends on the Kalman gain $\textbf{K}(n)$. When speech is absent, $\textbf{P}(n|n-1)=\textbf{0}$, meaning that $\textbf{K}(n)=\textbf{0}$ and the estimated state is equal to the predicted state, being unaffected by the noisy measurement.
 
-When speech is present, however, the algorithm does not work quite so perfectly. Using a low model order means that the TDKF linear predictor cannot fully replicate the harmonic structure of speech, which requires autocorrelation lags in the order of the number of samples in a pitch period \cite{SP11}. The prediction thus has unvoiced and noise-like characteristics, and the result is that the updated output only preserves the speech component below $1.8$ kHz \cite{SP11}. The resultant noise will be especially prevalent in regions of low SNR, where the prediction is weighted more heavily due to Equation \ref{eq:TDKF_updateK} producing a smaller $\textbf{K}(n)$.
+When speech is present, however, the algorithm does not work quite so perfectly. Using a low model order means that the TDKF linear predictor cannot fully replicate the harmonic structure of speech, which requires prohibitively large autocorrelation lags \cite{SP11}. The prediction thus relies on incomplete information; the result is that the updated output only preserves the speech component below $1.8$ kHz \cite{SP11}. The resultant noise will be especially prevalent in regions of low SNR, where the prediction is weighted more heavily due to Equation \ref{eq:TDKF_updateK} producing a smaller $\textbf{K}(n)$.
 
-MDKF has an inherent advantage over the TDKF due to the linear predictor model used. Compared to the TDKF, the MDKF models the temporal variation of the acoustic magnitude spectrum of speech. This is more comprehensive since the lower-order MDKF is able to model the modulating signal dynamics, due to physiological limitations of how quickly the vocal tract can change \cite{PWS2010}. This also better represents speech information overall, as it has been shown that low-frequency modulations of sound are the fundamental carriers of speech information \cite{Atlas2003}.
+MDKF has an inherent advantage over the TDKF. Compared to the TDKF, the MDKF models the temporal variation of the acoustic magnitude spectrum of speech. This is more comprehensive since the lower-order MDKF is able to model the modulating signal dynamics, due to physiological limitations of how quickly the vocal tract can change \cite{PWS2010}. This also better represents speech information overall, as it has been shown that low-frequency modulations of sound are the fundamental carriers of speech information \cite{Atlas2003}.
 
 \subsection{Performance of MDKF}
 
-Overall, experimental results from the TIMIT corpus (Figure \ref{fig:compareTDKF_MDKF}) show that under ideal conditions where clean speech LPCs can be obtained accurately, the linear predictor is sufficient to model the modulating signals of clean speech. As described earlier, the vocal tract tends to change slowly due to physiological constraints, and thus low LPC orders ($p=2$) were found to be sufficient. Using this, the MDKF was by far the best performing algorithm, doing better than all acoustic and time-domain methods tested, including the TDKF, for both white and coloured noise \cite{SP11}. This was despite both algorithms having access to clean speech LPCs.
+Overall, experimental results from the TIMIT corpus (Figure \ref{fig:compareTDKF_MDKF}) show that under ideal conditions where clean speech LPCs can be obtained accurately, the linear predictor is sufficient to model the modulating signals of clean speech. As described earlier, the vocal tract tends to change slowly due to physiological constraints, and thus low LPC orders ($p=2$) were found to be sufficient. Using this, the MDKF was by far the best performing algorithm, doing better than all other methods tested, including the TDKF, for both white and coloured noise \cite{SP11}. This was despite both algorithms having access to clean speech LPCs.
 
 However, clean speech is not available in reality; the presence of noise generally degrades the LPC estimates, worsening the performance of the MDKF algorithm. In \cite{SP11}, a practical MDKF algorithm was evaluated, which used an acoustic-domain pre-processor for LPC estimation to reduce the effect of noise degradation.
 
@@ -565,11 +565,11 @@ A widely used subjective quality measure is the Mean Opinion Score (MOS) \cite{I
 \begin{tabular}{|c|c|}
 \hline
 \textbf{Rating} & \textbf{Label} \\ \hline
-1               & Excellent      \\ \hline
-2               & Good           \\ \hline
+5               & Excellent      \\ \hline
+4               & Good           \\ \hline
 3               & Fair           \\ \hline
-4               & Poor           \\ \hline
-5               & Bad            \\ \hline
+2               & Poor           \\ \hline
+1               & Bad            \\ \hline
 \end{tabular}
 \caption{Categories of MOS: Absolute Category Rating}
 \label{table:ACR_MOS}
@@ -583,7 +583,7 @@ Many of the objective measures are highly correlated with subjective measures; i
 
 \subsubsection{SNR}
 
-Signal-to-Noise Ratio (SNR) is one of the oldest and most widely used objective quality methods \cite{HP1998}. It has low computational complexity, but requires both clean and distorted speech. The classic formula is calculated (in dB) as:
+Signal-to-Noise Ratio (SNR) is one of the most widely used objective quality methods \cite{HP1998}. It has low computational complexity, but requires both clean and distorted speech. The classic formula is calculated (in dB) as:
 
 \begin{equation}\label{eq:SNR}
 SNR=10\log_{10}\frac{\sum\limits_{n=1}^{N}x^2(n)}{\sum\limits_{n=1}^{N}\{x(n)-\hat{x}(n)\}^2}
@@ -601,7 +601,7 @@ SNR_{seg}=\frac{10}{M}\sum_{m=0}^{M-1}\log_{10}\frac{\sum\limits_{n=Lm}^{Lm+L-1}
 
 where $L$ is the frame length in number of samples and $M$ is the number of frames in the signal ($N=ML$). The logarithm of the ratio is computed before averaging, which means that frames with unusually large ratios are weighted less while frames with lower ratios are weighted more. This matches the perceptual quality better, ensuring that frames with large speech and low noise do not unfairly dominate the overall ratio.
 
-However, if the speech contains too much silence, the overall segSNR value decreases significantly as silent frames usually give large negative segSNR values. In this case, silent frames should be excluded from the averaging by using speech activity detectors. Similarly, frames which exhibit excessively large or small speech values should also be excluded. These modifications give segSNR values that match the subjective quality better. As a result, segSNR often has upper and lower bounds of $35$ dB and $-10$ dB respectively \cite{HP1998}.
+However, if the speech contains too much silence, the overall segSNR value decreases significantly as silent frames usually give large negative segSNR values. In this case, detectors should be used to recognise periods of speech activity, and silent frames should be excluded from the averaging. Similarly, frames which exhibit excessively large or small speech values should also be excluded. These modifications give segSNR values that match the subjective quality better. As a result, segSNR often has upper and lower bounds of $35$ dB and $-10$ dB respectively \cite{HP1998}.
 
 A separate variation of SNR is the frequency-weighed SNR (fwSNRseg), which weights the contribution of the different frequency bands. The fwSNRseg can be defined as:
 
@@ -645,7 +645,7 @@ STOI requires both clean and noisy speech. Both of these are first time-frequenc
 
 STOI contains an intermediate-stage intelligibility measure, which compares the temporal envelopes of the clean and degraded speech in time segments using a correlation coefficient. Before this comparison, the temporal envelopes are first normalised and clipped. The normalisation process compensates for global level differences, which should not dominate the speech intelligibility, while clipping prevents over-sensitivity of the model towards excessively degraded T-F units. This ensures that if a T-F unit is already deemed unintelligible, further corruption of this unit does not lead to a lower intelligibility prediction.
 
-These intermediary intelligibility measures are then averaged to a single value ranging from $0$ to $1$, where $1$ represents perfect intelligibility i.e. $100\%$ of words can be detected accurately. Results have demonstrated that this value is highly correlated with the true speech intelligibility of noisy speech from multiple listening experiments \cite{STOI_orig}.
+These intermediary intelligibility measures are then averaged to a single value ranging from $0$ to $1$, where $1$ represents perfect intelligibility i.e. $100\%$ of words can be detected accurately. Results from multiple listening experiments have demonstrated that this value is highly correlated with the true intelligibility of noisy speech \cite{STOI_orig}.
 
 
 \chapter{Problem Analysis}\label{problemAnalysis}
@@ -690,7 +690,7 @@ In this project, the MDKF in Section \ref{MDKF} is used as a baseline algorithm.
 
 In \cite{PSW2011}, it was shown that short modulation frame durations of $10-32$ ms retain good intelligibility overall as compared to longer frame lengths. This is briefly verified below.
 
-Using clean speech as the ``noisy'' input speech to the MDKF filter, a plot of the average LPC excitation variance per modulation frame against a range of modulation frame lengths is shown in Figure \ref{fig:compareModFrameLengths}, where the error is normalised against the length of the modulation frame and averaged over 38 randomly chosen speech samples from the TIMIT dataset.
+Using clean speech as the ``noisy'' input speech to the MDKF filter, a plot of the average LPC excitation variance per modulation frame against a range of modulation frame lengths is shown in Figure \ref{fig:compareModFrameLengths}, where the error is normalised against the length of the modulation frame and plotted over 38 randomly chosen speech samples from the TIMIT dataset.
 
 \begin{figure}[ht!]
 \centering
@@ -699,7 +699,7 @@ Using clean speech as the ``noisy'' input speech to the MDKF filter, a plot of t
 \label{fig:compareModFrameLengths}
 \end{figure}
 
-In Figure \ref{fig:compareModFrameLengths}, the red line shows the median and the bottom and top edges of the box indicate the $25$th and $75$th percentiles respectively. For the most part, the error decreases as the modulation frame length increases. Intuitively, this makes sense as the modulation domain represents the variation in speech, which changes much more slowly than the actual speech itself.
+In Figure \ref{fig:compareModFrameLengths}, the red line shows the median error, and the bottom and top edges of the box indicate the $25$th and $75$th percentiles respectively. For the most part, the error decreases as the modulation frame length increases. Intuitively, this makes sense as the modulation domain represents the variation in speech, which changes much more slowly than the actual speech itself.
 
 \begin{figure}[ht!]
 \centering
@@ -715,7 +715,7 @@ In Figure \ref{fig:compareModFrameLengths}, the red line shows the median and th
 \label{fig:modframelen_stoi}
 \end{figure}
 
-However, the numerical error does not fully represent the human perception of speech. Indeed, Figures \ref{fig:modframelen_pesq} and \ref{fig:modframelen_stoi} show that the PESQ and STOI scores decrease as the modulation frame length increases. It was empirically found through informal listening tests that a $16-24$ ms modulation frame length produced acceptable levels of noise, while being more intelligible than speech enhanced using longer frame lengths, which agrees with the conclusions in \cite{PSW2011}. This project thus uses a modulation frame length of $24$ ms with a $4$ ms frame shift for an overall balance of quality and intelligibility. Given a $4$ ms acoustic frame shift, the modulation domain sampling frequency is $250$ Hz, which gives $6$ samples per modulation frame.
+However, the numerical error does not fully represent the human perception of speech. Indeed, Figures \ref{fig:modframelen_pesq} and \ref{fig:modframelen_stoi} show that the PESQ and STOI scores decrease as the modulation frame length increases. It was empirically discovered through informal listening tests that a $16-24$ ms modulation frame length produced acceptable levels of noise, while being more intelligible than speech enhanced using longer frame lengths, which agrees with the conclusions in \cite{PSW2011}. This project thus uses a modulation frame length of $24$ ms with a $4$ ms frame shift for an overall balance of quality and intelligibility. Given a $4$ ms acoustic frame shift, the modulation domain sampling frequency is $250$ Hz, which gives $6$ samples per modulation frame.
 
 \section{Kalman Filter Framework}
 
@@ -728,7 +728,7 @@ The base framework for the proposed speech enhancement algorithms in this projec
 \label{fig:blockdiagramMDKF}
 \end{figure}
 
-The noisy input time-domain speech signal $y(n)$ first undergoes the STFT transform. The amplitude spectrum $|Y(n,k)|$ is used as input to the MDKF, and is also used to estimate the noise power spectrum. For a theoretical investigation of the best performance possible, the LPC coefficients are estimated from clean speech $s(n)$; specifically, they are estimated from the spectral amplitudes of the clean speech in each frequency bin. After processing through the Kalman filter, the output enhanced magnitudes are combined with the noisy phase spectrum $\theta(n,k)$, then processed through an inverse STFT to produce the output processed speech.
+The noisy input time-domain speech signal $y(n)$ first undergoes the STFT transform. The amplitude spectrum $|Y(n,k)|$ is used as input to the MDKF, and is also used to estimate the noise power spectrum. For a theoretical investigation of the best performance possible, the LPC coefficients are estimated from clean speech $s(n)$; specifically, they are estimated from the spectral amplitudes of the clean speech in each frequency bin. After processing through the Kalman filter, the output enhanced magnitudes are combined with the noisy phase spectrum $\theta(n,k)$, then processed through an inverse STFT to produce the output processed speech $\hat{s}(n)$.
 
 
 \chapter{Testing Methodology}\label{testingMethodology}
@@ -806,7 +806,7 @@ The method that we propose to obtain $p(s)$ requires statistical information fro
 
 To generate the IBM, the STFT of the signal is first taken, producing a matrix of time-frequency (T-F) units, and the unit-wise signal-to-noise ratio (SNR) is then computed to produce a binary-valued matrix. In the MDKF setup, the same STFT of the signal is taken; the mask thus provides a speech-dominant/noise-dominant indicator for each T-F unit of the STFT-processed signal.
 
-To generate the speech-dominant PDF for one frequency bin in a speech signal, we picked out the samples of the amplitude spectrum of this frequency bin which had corresponding (the same T-F location) mask values indicating $1$. The mean and variance of these samples was then computed. The same process was done to compute the noise-dominant PDF (mask value$=0$) for the same bin. This was done for each frequency bin, and the values were averaged over all speech samples in the training dataset, which were corrupted by white noise at $5$ dB SNR. To save time, training of mask statistics was done once, with its values stored offline to pull when needed.
+To generate the speech-dominant PDF for one frequency bin in a speech signal, we picked out the samples of the amplitude spectrum of this frequency bin which had corresponding (the same T-F location) mask values indicating $1$. The mean and variance of these samples was then computed. The same process was done to compute the noise-dominant PDF (mask value $=0$) for the same bin. This was done for each frequency bin, and the values were averaged over all speech samples in the training dataset, which were corrupted by white noise at $5$ dB SNR. To save time, training of mask statistics was done offline.
 
 \begin{figure}[H]
 \centering
@@ -815,7 +815,7 @@ To generate the speech-dominant PDF for one frequency bin in a speech signal, we
 \label{fig:PDF_IBMall}
 \end{figure}
 
-The speech-dominant and noise-dominant probability distributions of a typical frequency bin are shown in Figure \ref{fig:PDF_IBMall}. As expected, the mean of the speech-dominant region is higher than that of the noise-dominant region; in this case, the averages are $5.0361$ and $4.2535$ respectively, a difference of $0.7826$ or $18.4\%$. In terms of variances, the speech-dominant variance is higher than the noise-dominant variance, which is expected due to the extreme variability possible in speech, in terms of factors such as volume and speed of delivery.
+The speech-dominant and noise-dominant probability distributions of a typical frequency bin are shown in Figure \ref{fig:PDF_IBMall}. As expected, the mean of the speech-dominant region is higher than that of the noise-dominant region; in this case, the averages are $5.0361$ and $4.2535$ respectively. In terms of variances, the speech-dominant variance is higher than the noise-dominant variance, which is expected due to the extreme variability possible in speech, in terms of factors such as volume and speed of delivery.
 
 \subsection{Modifying Observation}
 
@@ -1004,7 +1004,9 @@ IBM SNR threshold (LC)  		& 0 dB           \\ \hline
 
 From Figure \ref{fig:BMMDKF_MDKF_MMSE_Noisy_segSNR}, the segSNR of BMMDKF and MDKF are very similar. However, it is generally true that the segSNR of BMMDKF is slightly larger at input SNRs from $-20$ to $0$ dB.
 
-The enhancement provided by BMMDKF is more obvious in Figures \ref{fig:BMMDKF_MDKF_MMSE_Noisy_pesq} and \ref{fig:BMMDKF_MDKF_MMSE_Noisy_STOI}, in the PESQ and STOI scores respectively. The average PESQ scores of BMMDKF are higher than that of MDKF across all input SNR, and show particularly large increase over the $-20$ to $5$ dB input SNR range: the BMMDKF PESQ scores are on average higher than that of MDKF by $0.1945$, a $10.0174\%$ increase over the MDKF. This improvement rises to $0.2245$ or $11.7359\%$ if we consider the $-20$ to $0$ dB input SNR range. Intelligibility scores also show advancement. Over the $-20$ to $0$ dB input SNR range, STOI scores of BMMDKF are on average higher than that of MDKF by $0.0323$ or $3.8646\%$. Overall, these results show a significant improvement in both perceived quality and intelligibility of enhanced speech.
+The enhancement provided by BMMDKF is more obvious in Figures \ref{fig:BMMDKF_MDKF_MMSE_Noisy_pesq} and \ref{fig:BMMDKF_MDKF_MMSE_Noisy_STOI}, in the PESQ and STOI scores respectively. The average PESQ scores of BMMDKF are higher than that of MDKF across all input SNR, and show particularly large increase over the $-20$ to $5$ dB input SNR range: the BMMDKF PESQ scores are on average higher than that of MDKF by $0.1945$, a $10.0174\%$ increase over the MDKF. This improvement rises to $0.2245$ or $11.7359\%$ if we consider the $-20$ to $0$ dB input SNR range.
+
+Intelligibility scores also show advancement. Over the $-20$ to $0$ dB input SNR range, STOI scores of BMMDKF are on average higher than that of MDKF by $0.0323$ or $3.8646\%$. Overall, these results show a significant improvement in both perceived quality and intelligibility of enhanced speech.
 
 \begin{figure}[H]
 \centering
@@ -1015,7 +1017,7 @@ The enhancement provided by BMMDKF is more obvious in Figures \ref{fig:BMMDKF_MD
 
 The spectrograms shown in Figure \ref{fig:clean_noisy_MDKF_BMMDKF_-20dB} provide additional evidence for the improved PESQ and STOI scores of the BMMDKF over the MDKF. For easier viewing of the important regions of the spectrogram, the frequency axis is in Hz, but uses the mel scale, a perceptual scale of pitches judged by listeners to be equal in distance from one another \cite{melscale}. The name ``mel'' is derived from the word ``melody'' to show that the scale was formed on the basis of pitch comparisons. Figure \ref{fig:clean_noisy_MDKF_BMMDKF_-20dB} shows the results of processing an input speech sentence corrupted by white noise at $-20$ dB SNR using the MDKF and BMMDKF, with the same range of power levels displayed for all plots.
 
-Noting that Figure \ref{fig:clean_noisy_MDKF_BMMDKF_-20dB} shows an extremely noisy input at $-20$ dB SNR, both methods are very proficient at removing noise and retaining the clean speech. However, the BMMDKF shows a major improvement over the MDKF. With the MDKF, most of the spectral components of the underlying clean speech above $1.5$ kHz (above the blue dotted line) have been completely wiped out. On the other hand, the BMMDKF preserves these high-frequency spectral components much better overall. This was verified with informal listening tests, where it was noticed that a significantly larger portion of the high-frequency components were absent in the MDKF-enhanced speech as compared to the BMMDKF.
+Noting that Figure \ref{fig:clean_noisy_MDKF_BMMDKF_-20dB} shows an extremely noisy input at $-20$ dB SNR, both methods are very proficient at removing noise and retaining the clean speech. However, the BMMDKF shows a major improvement over the MDKF. With the MDKF, most of the spectral components of the underlying clean speech above approximately $1.9$ kHz (above the blue dotted line) have been wiped out. On the other hand, the BMMDKF preserves these high-frequency spectral components much better overall. This was verified with informal listening tests, where it was noticed that a significantly larger portion of the high-frequency components were absent in the MDKF-enhanced speech as compared to the BMMDKF.
 
 In addition, the BMMDKF is visibly superior to the MDKF in terms of extracting smaller-amplitude spectral regions of the clean speech. Even though some of the high-SNR (darker) regions are better retained in the MDKF, the effect of this is much smaller, as informal listening tests only detected a minor difference in volume, which did not appreciably affect the perceived quality or intelligibility of the signal. Furthermore, there is a minor spike at the beginning of the MDKF-enhanced signal, which is mostly absent in the BMMDKF. With these improvements, it is hence clear why the BMMDKF posts better PESQ and STOI scores.
 
@@ -1249,7 +1251,7 @@ Figures \ref{fig:estnoise_segSNRratios} to \ref{fig:estnoise_STOIratios} show th
     w(n)= 
 \begin{cases}
     1.0,& \text{if } IBM(n)==0\\
-    11,              & \text{otherwise}
+    11.0,              & \text{otherwise}
 \end{cases}
 \end{equation}
 
@@ -1300,7 +1302,7 @@ LPCs generated from     		& clean speech   \\ \hline
 Input speech corrupted by     	& white noise    \\ \hline
 IBM SNR threshold (LC)  		& 0 dB           \\ \hline
 IBM zeros threshold     		& 1.0            \\ \hline
-IBM ones threshold      		& 2.5            \\ \hline
+IBM ones threshold      		& 11.0           \\ \hline
 \end{tabular}
 \caption{List of parameters used to evaluate NMDKF and other algorithms}
 \label{table:NMDKFparams}
@@ -1364,7 +1366,7 @@ In the ``oracle'' baseline model used for all modifications, shown in Figure \re
 
 \subsection{Probability Distribution}
 
-In Chapter \ref{BMMDKF_chapter}, the BMMDKF algorithm assumes that the observation, prediction and IBM statistics are all Gaussian distributed. This simplifies the computation when combining these three parameters, and is a fairly accurate assumption. However, if allowed for additional computational complexity and algorithm runtime, it might be possible to investigate further the properties of these parameters, and find a better matching distribution. It is possible that these provide better performance gains that the BMMDKF, but at the end of the day the trade-offs between performance gains and algorithm complexity must be weighted and balanced.
+In Chapter \ref{BMMDKF_chapter}, the BMMDKF algorithm assumes that the observation, prediction and IBM statistics are all Gaussian distributed. This simplifies the computation when combining these three parameters, and is a fairly accurate assumption. However, if allowed for additional computational complexity and algorithm runtime, it might be possible to investigate further the properties of these parameters, and find a better matching distribution. It is possible that these provide better performance gains than the BMMDKF, but at the end of the day the trade-offs between performance gains and algorithm complexity must be weighted and balanced.
 
 \subsection{Combining Modifications}
 

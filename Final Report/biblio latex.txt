@@ -323,13 +323,6 @@
     year={2001}
 }
 
-@PHDTHESIS {Li2006Phd,
-    author = "Li, C. J.",
-    title  = "Non-Gaussian, Non-stationary, and Nonlinear Signal Processing Methods",
-    school = "Aalborg University, Denmark",
-    year   = "2006"
-}
-
 @ARTICLE {Atlas2003,
     author="Atlas, L. and Shamma, S. A.",
     title="Joint Acoustic and Modulation Frequency",
